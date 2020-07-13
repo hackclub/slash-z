@@ -11,10 +11,22 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var zoomMachine ZoomMachine
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("error loading .env file:", err)
+	}
+
+	zoomMachine = ZoomMachine{
+		Accounts: []ZoomAccount{
+			ZoomAccount{
+				APIKey:    os.Getenv("ZOOM_API_KEY"),
+				APISecret: os.Getenv("ZOOM_API_SECRET"),
+				Email:     os.Getenv("ZOOM_EMAIL"),
+			},
+		},
 	}
 
 	port := os.Getenv("PORT")
@@ -27,17 +39,13 @@ func main() {
 }
 
 func slashZHandler(w http.ResponseWriter, r *http.Request) {
-	var (
-		apiKey    = os.Getenv("ZOOM_API_KEY")
-		apiSecret = os.Getenv("ZOOM_API_SECRET")
-		email     = os.Getenv("ZOOM_EMAIL")
-	)
+	client, account, err := zoomMachine.RandomClient()
+	if err != nil {
+		fmt.Fprintln(w, "error getting Zoom client:", err)
+		return
+	}
 
-	zoom.APIKey = apiKey
-	zoom.APISecret = apiSecret
-	zoom.Debug = true
-
-	user, err := zoom.GetUser(zoom.GetUserOpts{EmailOrID: email})
+	user, err := client.GetUser(zoom.GetUserOpts{EmailOrID: account.Email})
 	if err != nil {
 		log.Fatalf("got error retrieving user: %+v\n", err)
 	}
@@ -45,7 +53,7 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("%+v\n", user)
 
 	// only allowed to call 100 times per day
-	meeting, err := zoom.CreateMeeting(zoom.CreateMeetingOptions{
+	meeting, err := client.CreateMeeting(zoom.CreateMeetingOptions{
 		HostID:    user.ID,
 		Type:      zoom.MeetingTypeScheduled,
 		StartTime: &zoom.Time{time.Now()},
