@@ -31,5 +31,21 @@ Scratching down some notes:
 
 Flow:
 
+- Launch: load state of Airtable into ZoomMachine (only currently active calls?)
 - `/` creates new meeting in Zoom
-- Meeting goes to ZoomMachine which regularly checks whether participants join. Updates Slack as participants join. After certain amount of inactivity, close the call.
+  - "The host has another meeting in progress". Cycles between accounts if active meetings in progress.
+- Meeting goes to ZoomMachine which regularly checks whether participants join. Only applies to currently active calls:
+  - First participant to join becomes host
+  - Updates Slack as participants join
+  - After certain amount of inactivity, close the call
+
+Next steps:
+
+- UX of posted call in Slack
+- Update Slack as participants join and leave
+- First participant to join becomes host
+- Load and dump data to Airtable (assumption is that only one instances of `slash-z` is running at a time, I think)
+
+Before launch:
+
+- Zoom call passwords
