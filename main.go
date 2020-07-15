@@ -1,17 +1,19 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/himalayan-institute/zoom-lib-golang"
 	"github.com/joho/godotenv"
 )
 
-var zoomMachine ZoomMachine
+var (
+	zoomMachine ZoomMachine
+	slack       SlackClient
+)
 
 func main() {
 	err := godotenv.Load()
@@ -29,6 +31,10 @@ func main() {
 		},
 	}
 
+	slack = SlackClient{
+		Token: os.Getenv("SLACK_BOT_USER_OAUTH_ACCESS_TOKEN"),
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
@@ -38,39 +44,41 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
+// Called when someone runs `/z` in the Slack.
+//
+// We want to use this method to create a new Slack call, per
+// https://api.slack.com/apis/calls.
+//
+// TODO: Verify /command token before executing
 func slashZHandler(w http.ResponseWriter, r *http.Request) {
-	client, account, err := zoomMachine.RandomClient()
+	meeting, err := zoomMachine.CreateJoinableMeeting()
 	if err != nil {
-		fmt.Fprintln(w, "error getting Zoom client:", err)
+		fmt.Fprintln(w, "Error creating meeting:", err)
 		return
 	}
 
-	user, err := client.GetUser(zoom.GetUserOpts{EmailOrID: account.Email})
+	call, err := slack.ZoomMeetingToCall(meeting)
 	if err != nil {
-		log.Fatalf("got error retrieving user: %+v\n", err)
+		fmt.Fprintln(w, "Error turning Zoom meeting into Slack call:", err)
+		return
 	}
 
-	fmt.Printf("%+v\n", user)
-
-	// only allowed to call 100 times per day
-	meeting, err := client.CreateMeeting(zoom.CreateMeetingOptions{
-		HostID:    user.ID,
-		Type:      zoom.MeetingTypeScheduled,
-		StartTime: &zoom.Time{time.Now()},
-		// TODO: Add Timezone to the current Slack user's timezone
-		Settings: zoom.MeetingSettings{
-			HostVideo:        true,
-			ParticipantVideo: true,
-			JoinBeforeHost:   true,
-			Audio:            "both",
-			AlternativeHosts: "", // comma separated array
-			WaitingRoom:      false,
-			EnforceLogin:     false,
+	// Follows format of https://api.slack.com/apis/calls#3._post_the_call_to_channel
+	resp := map[string]interface{}{
+		"response_type": "in_channel",
+		"text":          "A new call was started by Zoom",
+		"blocks": []map[string]interface{}{
+			map[string]interface{}{
+				"type":    "call",
+				"call_id": call.ID,
+			},
 		},
-	})
-	if err != nil {
-		log.Fatalf("got error creating meeting: %+v\n", err)
 	}
 
-	fmt.Fprintln(w, meeting.JoinURL)
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		fmt.Fprintln(w, "Error encoding JSON response to Slack:", err)
+		return
+	}
 }

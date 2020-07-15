@@ -28,3 +28,8 @@ Scratching down some notes:
     - Email
     - API Key
     - API Secret
+
+Flow:
+
+- `/` creates new meeting in Zoom
+- Meeting goes to ZoomMachine which regularly checks whether participants join. Updates Slack as participants join. After certain amount of inactivity, close the call.
