@@ -66,3 +66,12 @@ func InsertNth(s string, r rune, n int, leftToRight bool) string {
 		return Reverse(buffer.String())
 	}
 }
+
+func AppendIfMissing(slice []string, s string) []string {
+	for _, ele := range slice {
+		if ele == s {
+			return slice
+		}
+	}
+	return append(slice, s)
+}

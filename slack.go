@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -127,4 +128,82 @@ func (c SlackClient) ZoomMeetingToCall(slackCreatorID string, meeting ZoomMeetin
 	}
 
 	return resp.Call, nil
+}
+
+type externalCallParticipant struct {
+	ExternalID  string `json:"external_id"`
+	DisplayName string `json:"display_name,omitempty"`
+	AvatarURL   string `json:"avatar_url,omitempty"`
+}
+
+// This is the request body for calls to both calls.participants.add and
+// calls.participants.remove. See Slack API docs for details.
+type participantsChangeReq struct {
+	CallID string                    `json:"id"`
+	Users  []externalCallParticipant `json:"users"`
+}
+
+// This is the response format for both calls.participants.add and
+// calls.participants.remove. See Slack API docs for details.
+type participantsChangeResp struct {
+	OK    bool   `json:"ok"`
+	Error string `json:"error"`
+}
+
+func (c SlackClient) AddParticipantToCall(callID, userZoomID, userName string) error {
+	req := participantsChangeReq{
+		CallID: callID,
+		Users: []externalCallParticipant{
+			externalCallParticipant{
+				ExternalID:  userZoomID,
+				DisplayName: userName,
+				AvatarURL:   "https://ui-avatars.com/api/?size=256&name=" + userName,
+			},
+		},
+	}
+
+	res, err := c.req("calls.participants.add", req)
+	if err != nil {
+		return err
+	}
+
+	var resp participantsChangeResp
+	if err := util.DecodeJSON(res.Body, &resp); err != nil {
+		return err
+	}
+
+	if resp.OK {
+		return nil
+	} else {
+		return errors.New("error from Slack API: " + resp.Error)
+	}
+}
+
+func (c SlackClient) RemoveParticipantFromCall(callID, userZoomID, userName string) error {
+	req := participantsChangeReq{
+		CallID: callID,
+		Users: []externalCallParticipant{
+			externalCallParticipant{
+				ExternalID:  userZoomID,
+				DisplayName: userName,
+				AvatarURL:   "https://ui-avatars.com/api/?size=256&name=" + userName,
+			},
+		},
+	}
+
+	res, err := c.req("calls.participants.remove", req)
+	if err != nil {
+		return err
+	}
+
+	var resp participantsChangeResp
+	if err := util.DecodeJSON(res.Body, &resp); err != nil {
+		return err
+	}
+
+	if resp.OK {
+		return nil
+	} else {
+		return errors.New("error from Slack API: " + resp.Error)
+	}
 }

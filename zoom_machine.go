@@ -1,13 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/hackclub/slash-z/lib/zoom"
 	"github.com/hackclub/slash-z/util"
-	"github.com/himalayan-institute/zoom-lib-golang"
 )
 
 type ZoomAccount struct {
@@ -91,7 +95,111 @@ func (machine *ZoomMachine) CreateJoinableMeeting() (ZoomMeeting, error) {
 
 func (machine *ZoomMachine) MockJoinableMeeting() (ZoomMeeting, error) {
 	return ZoomMeeting{
-		ID:  33333333333,
-		URL: "https://hackclub.com/examplemeeting",
+		ID:  98240669677,
+		URL: "https://hackclub.zoom.us/j/98240669677",
 	}, nil
+}
+
+type ZoomWebhookEnvelope struct {
+	Event   string `json:"event"`
+	Payload struct {
+		AccountID string      `json:"account_id"`
+		Object    interface{} `json:"object"`
+	} `json:"payload"`
+}
+
+type ZoomWebhookParticipantJoined struct {
+	MeetingID   string `json:"id"`
+	Participant struct {
+		ID       string    `json:"id"`
+		UserName string    `json:"user_name"`
+		JoinTime time.Time `json:"join_time"`
+	} `json:"participant"`
+}
+
+type ZoomWebhookParticipantLeft struct {
+	MeetingID   string `json:"id"`
+	Participant struct {
+		ID        string    `json:"id"`
+		UserName  string    `json:"user_name"`
+		LeaveTime time.Time `json:"leave_time"`
+	} `json:"participant"`
+}
+
+// Parsing method from "Combining the powers of *json.RawMessage and
+// interface{}" section of https://eagain.net/articles/go-dynamic-json/
+func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
+	var rawObj json.RawMessage
+	var webhook ZoomWebhookEnvelope
+
+	webhook.Payload.Object = &rawObj
+
+	if err := json.Unmarshal(bytes, &webhook); err != nil {
+		return err
+	}
+
+	switch webhook.Event {
+	case "meeting.participant_joined":
+		var obj ZoomWebhookParticipantJoined
+		if err := json.Unmarshal(rawObj, &obj); err != nil {
+			return err
+		}
+		webhook.Payload.Object = obj
+
+		// Add every person who joins the meeting as an alternative host. Zoom
+		// meetings can only have 1 active host at a time, which means that the
+		// first host remains the only host - but if they later leave the meeting,
+		// someone else can claim host by quitting and rejoining.
+		//
+		// Not sure if this actually makes sense... more of an idea that this might be helpful for now
+
+		client, _, err := machine.RandomClient()
+		if err != nil {
+			return err
+		}
+
+		meetingID, err := strconv.Atoi(obj.MeetingID)
+		if err != nil {
+			return err
+		}
+
+		meeting, err := client.GetMeeting(zoom.GetMeetingOptions{MeetingID: meetingID})
+		if err != nil {
+			return err
+		}
+
+		altHosts := strings.Split(meeting.Settings.AlternativeHosts, ",")
+		altHosts = util.AppendIfMissing(altHosts, obj.Participant.ID)
+
+		err = client.UpdateMeeting(zoom.UpdateMeetingOptions{
+			MeetingID: meetingID,
+			Settings: zoom.MeetingSettings{
+				AlternativeHosts: strings.Join(altHosts, ","),
+			},
+		})
+		if err != nil {
+			return err
+		}
+
+		// Add participant to the Slack call, so their icon shows up in the interface
+
+		if err := slack.AddParticipantToCall(globalCallID, obj.Participant.ID, obj.Participant.UserName); err != nil {
+			fmt.Println(err)
+		}
+	case "meeting.participant_left":
+		var obj ZoomWebhookParticipantLeft
+		if err := json.Unmarshal(rawObj, &obj); err != nil {
+			return err
+		}
+		webhook.Payload.Object = obj
+
+		if err := slack.RemoveParticipantFromCall(globalCallID, obj.Participant.ID, obj.Participant.UserName); err != nil {
+			fmt.Println(err)
+		}
+	default:
+		log.Println("unknown event type:", webhook.Event)
+		return nil
+	}
+
+	return nil
 }

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +16,9 @@ import (
 var (
 	zoomMachine ZoomMachine
 	slack       SlackClient
+
+	// Just for testing... one call at a time
+	globalCallID string
 )
 
 func main() {
@@ -41,7 +46,9 @@ func main() {
 		port = "3000"
 	}
 
-	http.HandleFunc("/slash-z", slashZHandler)
+	http.HandleFunc("/slack/slash-z", slashZHandler)
+	http.HandleFunc("/zoom/webhook", zoomWebhookHandler)
+
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
@@ -75,7 +82,7 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	meeting, err := zoomMachine.CreateJoinableMeeting()
+	meeting, err := zoomMachine.MockJoinableMeeting()
 	if err != nil {
 		fmt.Fprintln(w, "Error creating meeting:", err)
 		return
@@ -87,10 +94,12 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	globalCallID = call.ID
+
 	// Follows format of https://api.slack.com/apis/calls#3._post_the_call_to_channel
 	resp := map[string]interface{}{
 		"response_type": "in_channel",
-		"text":          "A new Zoom Pro was started with /z",
+		"text":          "A new Zoom Pro meeting was started with /z",
 		"blocks": []map[string]interface{}{
 			map[string]interface{}{
 				"type":    "call",
@@ -104,5 +113,17 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		fmt.Fprintln(w, "Error encoding JSON response to Slack:", err)
 		return
+	}
+}
+
+// TODO verify webhook with Authorization token
+func zoomWebhookHandler(w http.ResponseWriter, r *http.Request) {
+	var buf bytes.Buffer
+
+	io.Copy(&buf, r.Body)
+
+	if err := zoomMachine.ProcessWebhook(buf.Bytes()); err != nil {
+		fmt.Println("error processing Zoom webhook:", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
