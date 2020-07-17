@@ -41,7 +41,6 @@ Flow:
 
 Next steps:
 
-- UX of posted call in Slack
 - Update Slack as participants join and leave
 - First participant to join becomes host
 - Load and dump data to Airtable (assumption is that only one instances of `slash-z` is running at a time, I think)
@@ -49,3 +48,9 @@ Next steps:
 Before launch:
 
 - Zoom call passwords
+
+Current UX of call (mobile):
+
+![](https://hack.af/cdn-40)
+
+Design doc: [click here](https://hack.af/cdn-41)

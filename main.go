@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/schema"
 	"github.com/joho/godotenv"
 )
 
@@ -44,6 +45,14 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
+// Available params are token, team_id, team_domain, channel_id, channel_name,
+// user_id, user_name, command, response_url, and trigger_id
+//
+// I am only including fields I'm using in this object.
+type slashZReq struct {
+	UserID string `schema:"user_id"`
+}
+
 // Called when someone runs `/z` in the Slack.
 //
 // We want to use this method to create a new Slack call, per
@@ -51,13 +60,28 @@ func main() {
 //
 // TODO: Verify /command token before executing
 func slashZHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		fmt.Fprintln(w, "Error parsing request:", err)
+		return
+	}
+
+	var req slashZReq
+
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+
+	if err := decoder.Decode(&req, r.PostForm); err != nil {
+		fmt.Fprintln(w, "Error unmarshaling request body:", err)
+		return
+	}
+
 	meeting, err := zoomMachine.CreateJoinableMeeting()
 	if err != nil {
 		fmt.Fprintln(w, "Error creating meeting:", err)
 		return
 	}
 
-	call, err := slack.ZoomMeetingToCall(meeting)
+	call, err := slack.ZoomMeetingToCall(req.UserID, meeting)
 	if err != nil {
 		fmt.Fprintln(w, "Error turning Zoom meeting into Slack call:", err)
 		return
@@ -66,7 +90,7 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 	// Follows format of https://api.slack.com/apis/calls#3._post_the_call_to_channel
 	resp := map[string]interface{}{
 		"response_type": "in_channel",
-		"text":          "A new call was started by Zoom",
+		"text":          "A new Zoom Pro was started with /z",
 		"blocks": []map[string]interface{}{
 			map[string]interface{}{
 				"type":    "call",

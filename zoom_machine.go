@@ -3,8 +3,10 @@ package main
 import (
 	"errors"
 	"math/rand"
+	"strconv"
 	"time"
 
+	"github.com/hackclub/slash-z/util"
 	"github.com/himalayan-institute/zoom-lib-golang"
 )
 
@@ -17,6 +19,13 @@ type ZoomAccount struct {
 type ZoomMeeting struct {
 	ID  int
 	URL string
+}
+
+// "33333333333" -> "333-3333-3333"
+func (m ZoomMeeting) PrettyID() string {
+	strID := strconv.Itoa(m.ID)
+
+	return util.InsertNth(strID, '-', 4, false)
 }
 
 type ZoomMachine struct {
@@ -78,4 +87,11 @@ func (machine *ZoomMachine) CreateJoinableMeeting() (ZoomMeeting, error) {
 	}
 
 	return meeting, nil
+}
+
+func (machine *ZoomMachine) MockJoinableMeeting() (ZoomMeeting, error) {
+	return ZoomMeeting{
+		ID:  33333333333,
+		URL: "https://hackclub.com/examplemeeting",
+	}, nil
 }
