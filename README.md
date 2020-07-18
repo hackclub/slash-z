@@ -41,9 +41,8 @@ Flow:
 
 Next steps:
 
-- Update Slack as participants join and leave
 - First participant to join becomes host
-- Load and dump data to Airtable (assumption is that only one instances of `slash-z` is running at a time, I think)
+- Load and dump data to Airtable (assumption is that only one instance of `slash-z` is running at a time, I think)
 
 Before launch:
 

@@ -137,6 +137,10 @@ type externalCallParticipant struct {
 	AvatarURL   string `json:"avatar_url,omitempty"`
 }
 
+func (c SlackClient) generateExternalUserID(slackCallID, perMeetingUserZoomID string) string {
+	return slackCallID + "-" + perMeetingUserZoomID
+}
+
 // This is the request body for calls to both calls.participants.add and
 // calls.participants.remove. See Slack API docs for details.
 type participantsChangeReq struct {
@@ -151,12 +155,12 @@ type participantsChangeResp struct {
 	Error string `json:"error"`
 }
 
-func (c SlackClient) AddParticipantToCall(callID, userZoomID, userName string) error {
+func (c SlackClient) AddParticipantToCall(callID, perMeetingUserZoomID, userName string) error {
 	req := participantsChangeReq{
 		CallID: callID,
 		Users: []externalCallParticipant{
 			externalCallParticipant{
-				ExternalID:  userZoomID,
+				ExternalID:  c.generateExternalUserID(callID, perMeetingUserZoomID),
 				DisplayName: userName,
 				AvatarURL:   "https://ui-avatars.com/api/?size=256&name=" + userName,
 			},
@@ -180,12 +184,12 @@ func (c SlackClient) AddParticipantToCall(callID, userZoomID, userName string) e
 	}
 }
 
-func (c SlackClient) RemoveParticipantFromCall(callID, userZoomID, userName string) error {
+func (c SlackClient) RemoveParticipantFromCall(callID, perMeetingUserZoomID, userName string) error {
 	req := participantsChangeReq{
 		CallID: callID,
 		Users: []externalCallParticipant{
 			externalCallParticipant{
-				ExternalID:  userZoomID,
+				ExternalID:  c.generateExternalUserID(callID, perMeetingUserZoomID),
 				DisplayName: userName,
 				AvatarURL:   "https://ui-avatars.com/api/?size=256&name=" + userName,
 			},

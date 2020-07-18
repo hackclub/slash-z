@@ -92,6 +92,33 @@ func (db DB) GetHosts() ([]Host, error) {
 	return hosts, nil
 }
 
+func (db DB) GetHost(zoomID string) (Host, error) {
+	listParams := airtable.ListParameters{
+		FilterByFormula: `{Zoom ID} = "` + zoomID + `"`,
+	}
+
+	envelopes := []envelope{}
+
+	if err := db.client.ListRecords(TableHosts, &envelopes, listParams); err != nil {
+		return Host{}, err
+	}
+
+	if len(envelopes) > 1 {
+		return Host{}, errors.New("too many hosts, non-unique Zoom IDs")
+	} else if len(envelopes) == 0 {
+		return Host{}, errors.New("no hosts found")
+	}
+
+	var host Host
+	if err := json.Unmarshal(envelopes[0].Object, &host); err != nil {
+		return Host{}, err
+	}
+
+	host.AirtableID = envelopes[0].AirtableID
+
+	return host, nil
+}
+
 // TODO: Pretty sure I wrote this wrong (the last arg). See CreateMeeting for
 // reference.
 func (db DB) UpdateHost(h *Host) error {
@@ -138,6 +165,92 @@ func (db DB) CreateMeeting(m *Meeting) error {
 	}
 
 	m.AirtableID = e.AirtableID
+
+	return nil
+}
+
+// func (db DB) GetHost(zoomID string) (Host, error) {
+// 	listParams := airtable.ListParameters{
+// 		FilterByFormula: `{Zoom ID} = "` + zoomID + `"`,
+// 	}
+//
+// 	envelopes := []envelope{}
+//
+// 	if err := db.client.ListRecords(TableHosts, &envelopes, listParams); err != nil {
+// 		return Host{}, err
+// 	}
+//
+// 	if len(envelopes) > 1 {
+// 		return Host{}, errors.New("too many hosts, non-unique Zoom IDs")
+// 	} else if len(envelopes) == 0 {
+// 		return Host{}, errors.New("no hosts found")
+// 	}
+//
+// 	var host Host
+// 	if err := json.Unmarshal(envelopes[0].Object, &host); err != nil {
+// 		return Host{}, err
+// 	}
+//
+// 	return host, nil
+// }
+
+func (db DB) GetMeeting(zoomID string) (Meeting, error) {
+	listParams := airtable.ListParameters{
+		FilterByFormula: `{Zoom ID} = "` + zoomID + `"`,
+	}
+
+	envelopes := []envelope{}
+
+	if err := db.client.ListRecords(TableMeetings, &envelopes, listParams); err != nil {
+		return Meeting{}, err
+	}
+
+	if len(envelopes) > 1 {
+		return Meeting{}, errors.New("too many meetings, non-unique Zoom IDs")
+	} else if len(envelopes) == 0 {
+		return Meeting{}, errors.New("no meetings found")
+	}
+
+	var meeting Meeting
+	if err := json.Unmarshal(envelopes[0].Object, &meeting); err != nil {
+		return Meeting{}, err
+	}
+
+	meeting.AirtableID = envelopes[0].AirtableID
+
+	return meeting, nil
+}
+
+const TableParticipantEvents = "Participant Events"
+
+type ParticipantEvent struct {
+	AirtableID string    `json:"-"`
+	Time       time.Time `json:"Time,omitempty"`
+
+	// Actually only supports one host ID.
+	LinkedMeetingIDs []string `json:"Meeting,omitempty"`
+
+	// "Joined" or "Left"
+	Type string `json:"Type,omitempty"`
+
+	ParticipantName         string `json:"Participant Name,omitempty"`
+	ParticipantPerMeetingID string `json:"Participant Per-Meeting ID,omitempty"`
+	ParticipantZoomID       string `json:"Participant Zoom ID,omitempty"`
+}
+
+func (db DB) CreateParticipantEvent(p *ParticipantEvent) error {
+	contents, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+
+	e := envelope{Object: contents}
+
+	if err := db.client.CreateRecord(TableParticipantEvents, &e); err != nil {
+		return err
+	}
+
+	p.AirtableID = e.AirtableID
 
 	return nil
 }

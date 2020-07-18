@@ -5,13 +5,10 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/hackclub/slash-z/db"
 	"github.com/hackclub/slash-z/lib/zoom"
-	"github.com/hackclub/slash-z/util"
 )
 
 type ZoomMachine struct {
@@ -97,20 +94,24 @@ type ZoomWebhookEnvelope struct {
 }
 
 type ZoomWebhookParticipantJoined struct {
+	HostID      string `json:"host_id"`
 	MeetingID   string `json:"id"`
 	Participant struct {
-		ID       string    `json:"id"`
-		UserName string    `json:"user_name"`
-		JoinTime time.Time `json:"join_time"`
+		ZoomID       string    `json:"id"`
+		PerMeetingID string    `json:"user_id"`
+		UserName     string    `json:"user_name"`
+		JoinTime     time.Time `json:"join_time"`
 	} `json:"participant"`
 }
 
 type ZoomWebhookParticipantLeft struct {
+	HostID      string `json:"host_id"`
 	MeetingID   string `json:"id"`
 	Participant struct {
-		ID        string    `json:"id"`
-		UserName  string    `json:"user_name"`
-		LeaveTime time.Time `json:"leave_time"`
+		ZoomID       string    `json:"id"`
+		PerMeetingID string    `json:"user_id"`
+		UserName     string    `json:"user_name"`
+		LeaveTime    time.Time `json:"leave_time"`
 	} `json:"participant"`
 }
 
@@ -134,6 +135,39 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 		}
 		webhook.Payload.Object = obj
 
+		// DB actions
+
+		meeting, err := dbc.GetMeeting(obj.MeetingID)
+		if err != nil {
+			fmt.Println("failed to get meeting from DB:", err)
+			break
+		}
+
+		pe := db.ParticipantEvent{
+			Time:                    obj.Participant.JoinTime,
+			LinkedMeetingIDs:        []string{meeting.AirtableID},
+			Type:                    "Joined",
+			ParticipantName:         obj.Participant.UserName,
+			ParticipantPerMeetingID: obj.Participant.PerMeetingID,
+			ParticipantZoomID:       obj.Participant.ZoomID,
+		}
+
+		if err := dbc.CreateParticipantEvent(&pe); err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		// Add participant to the Slack call, so their icon shows up in the interface
+
+		if err := slack.AddParticipantToCall(
+			meeting.SlackCallID,
+			pe.ParticipantPerMeetingID,
+			pe.ParticipantName,
+		); err != nil {
+			fmt.Println(err)
+			break
+		}
+
 		// Add every person who joins the meeting as an alternative host. Zoom
 		// meetings can only have 1 active host at a time, which means that the
 		// first host remains the only host - but if they later leave the meeting,
@@ -141,37 +175,36 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 		//
 		// Not sure if this actually makes sense... more of an idea that this might be helpful for now
 
-		host := machine.RandomHost()
-		client := machine.HostToClient(host)
+		//host, err := dbc.GetHost(obj.HostID)
+		//if err != nil {
+		//	fmt.Println("failed to get host from DB:", err)
+		//	break
+		//}
 
-		meetingID, err := strconv.Atoi(obj.MeetingID)
-		if err != nil {
-			return err
-		}
+		//client := machine.HostToClient(host)
 
-		meeting, err := client.GetMeeting(zoom.GetMeetingOptions{MeetingID: meetingID})
-		if err != nil {
-			return err
-		}
+		//meetingID, err := strconv.Atoi(obj.MeetingID)
+		//if err != nil {
+		//	return err
+		//}
 
-		altHosts := strings.Split(meeting.Settings.AlternativeHosts, ",")
-		altHosts = util.AppendIfMissing(altHosts, obj.Participant.ID)
+		//meeting, err := client.GetMeeting(zoom.GetMeetingOptions{MeetingID: meetingID})
+		//if err != nil {
+		//	return err
+		//}
 
-		err = client.UpdateMeeting(zoom.UpdateMeetingOptions{
-			MeetingID: meetingID,
-			Settings: zoom.MeetingSettings{
-				AlternativeHosts: strings.Join(altHosts, ","),
-			},
-		})
-		if err != nil {
-			return err
-		}
+		//altHosts := strings.Split(meeting.Settings.AlternativeHosts, ",")
+		//altHosts = util.AppendIfMissing(altHosts, obj.Participant.ID)
 
-		// Add participant to the Slack call, so their icon shows up in the interface
-
-		if err := slack.AddParticipantToCall(globalCallID, obj.Participant.ID, obj.Participant.UserName); err != nil {
-			fmt.Println(err)
-		}
+		//err = client.UpdateMeeting(zoom.UpdateMeetingOptions{
+		//	MeetingID: meetingID,
+		//	Settings: zoom.MeetingSettings{
+		//		AlternativeHosts: strings.Join(altHosts, ","),
+		//	},
+		//})
+		//if err != nil {
+		//	return err
+		//}
 	case "meeting.participant_left":
 		var obj ZoomWebhookParticipantLeft
 		if err := json.Unmarshal(rawObj, &obj); err != nil {
@@ -179,7 +212,31 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 		}
 		webhook.Payload.Object = obj
 
-		if err := slack.RemoveParticipantFromCall(globalCallID, obj.Participant.ID, obj.Participant.UserName); err != nil {
+		meeting, err := dbc.GetMeeting(obj.MeetingID)
+		if err != nil {
+			fmt.Println("failed to get meeting from DB:", err)
+			break
+		}
+
+		pe := db.ParticipantEvent{
+			Time:                    obj.Participant.LeaveTime,
+			LinkedMeetingIDs:        []string{meeting.AirtableID},
+			Type:                    "Left",
+			ParticipantName:         obj.Participant.UserName,
+			ParticipantPerMeetingID: obj.Participant.PerMeetingID,
+			ParticipantZoomID:       obj.Participant.ZoomID,
+		}
+
+		if err := dbc.CreateParticipantEvent(&pe); err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		if err := slack.RemoveParticipantFromCall(
+			meeting.SlackCallID,
+			pe.ParticipantPerMeetingID,
+			pe.ParticipantName,
+		); err != nil {
 			fmt.Println(err)
 		}
 	default:
