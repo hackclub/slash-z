@@ -10,10 +10,13 @@ import (
 	"os"
 
 	"github.com/gorilla/schema"
+	database "github.com/hackclub/slash-z/db"
+	"github.com/hackclub/slash-z/lib/zoom"
 	"github.com/joho/godotenv"
 )
 
 var (
+	db          database.DB
 	zoomMachine ZoomMachine
 	slack       SlackClient
 
@@ -27,19 +30,52 @@ func main() {
 		log.Fatal("error loading .env file:", err)
 	}
 
-	zoomMachine = ZoomMachine{
-		Accounts: []ZoomAccount{
-			ZoomAccount{
-				APIKey:    os.Getenv("ZOOM_API_KEY"),
-				APISecret: os.Getenv("ZOOM_API_SECRET"),
-				Email:     os.Getenv("ZOOM_EMAIL"),
-			},
-		},
+	db, err := database.NewDB(os.Getenv("AIRTABLE_API_KEY"), os.Getenv("AIRTABLE_BASE"))
+	if err != nil {
+		fmt.Println("Failed to instantiate DB:", err)
+		os.Exit(1)
 	}
 
-	slack = SlackClient{
-		Token: os.Getenv("SLACK_BOT_USER_OAUTH_ACCESS_TOKEN"),
+	hosts, err := db.GetHosts()
+	if err != nil {
+		fmt.Println("Failed to load Zoom host accounts from Airtable:", err)
+		os.Exit(1)
 	}
+
+	// Load and set Zoom ID for any hosts that don't have one set
+	for _, h := range hosts {
+		if h.ZoomID != "" {
+			continue
+		}
+
+		user, err := zoom.NewClient(h.APIKey, h.APISecret).GetUser(zoom.GetUserOpts{
+			EmailOrID: h.Email,
+		})
+		if err != nil {
+			fmt.Println("Failed to get user info from Zoom for "+h.Email+":", err)
+			os.Exit(1)
+		}
+
+		h.ZoomID = user.ID
+
+		if err := db.UpdateHost(h); err != nil {
+			fmt.Println("Failed to set Zoom ID for host "+h.Email+":", err)
+			os.Exit(1)
+		}
+	}
+
+	zoomAccounts := make([]ZoomAccount, len(hosts))
+	for i, h := range hosts {
+		zoomAccounts[i] = ZoomAccount{
+			APIKey:    h.APIKey,
+			APISecret: h.APISecret,
+			Email:     h.Email,
+			ID:        h.ZoomID,
+		}
+	}
+	zoomMachine = ZoomMachine{Accounts: zoomAccounts}
+
+	slack = SlackClient{Token: os.Getenv("SLACK_BOT_USER_OAUTH_ACCESS_TOKEN")}
 
 	port := os.Getenv("PORT")
 	if port == "" {

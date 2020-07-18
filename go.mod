@@ -3,6 +3,7 @@ module github.com/hackclub/slash-z
 go 1.14
 
 require (
+	github.com/fabioberger/airtable-go v3.1.0+incompatible
 	github.com/google/go-querystring v1.0.0
 	github.com/gorilla/schema v1.1.0
 	github.com/himalayan-institute/zoom-lib-golang v1.0.0

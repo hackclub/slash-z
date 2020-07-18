@@ -18,6 +18,7 @@ type ZoomAccount struct {
 	APIKey    string
 	APISecret string
 	Email     string
+	ID        string
 }
 
 type ZoomMeeting struct {
