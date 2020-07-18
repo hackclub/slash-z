@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/schema"
 
+	"github.com/hackclub/slash-z/db"
 	"github.com/hackclub/slash-z/util"
 )
 
@@ -100,20 +101,20 @@ type callsAddResp struct {
 	Call SlackCall `json:"call"`
 }
 
-func (c SlackClient) ZoomMeetingToCall(slackCreatorID string, meeting ZoomMeeting) (SlackCall, error) {
+func (c SlackClient) ZoomMeetingToCall(slackCreatorID string, meeting db.Meeting) (SlackCall, error) {
 	creator, err := c.UserInfo(slackCreatorID)
 	if err != nil {
 		return SlackCall{}, err
 	}
 
 	req := callsAddReq{
-		ExternalUniqueID: strconv.Itoa(meeting.ID),
-		JoinURL:          meeting.URL,
+		ExternalUniqueID: strconv.Itoa(meeting.ZoomID),
+		JoinURL:          meeting.JoinURL,
 
 		CreatedBy:         creator.ID,
 		DateStart:         time.Now().Unix(),
-		DesktopAppJoinURL: "zoommtg://zoom.us/join?confno=" + strconv.Itoa(meeting.ID) + "&zc=0",
-		ExternalDisplayID: meeting.PrettyID(),
+		DesktopAppJoinURL: "zoommtg://zoom.us/join?confno=" + strconv.Itoa(meeting.ZoomID) + "&zc=0",
+		ExternalDisplayID: meeting.PrettyZoomID(),
 		Title:             "Zoom Pro meeting started by " + creator.Profile.DisplayName,
 	}
 

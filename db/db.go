@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/fabioberger/airtable-go"
+	"github.com/hackclub/slash-z/util"
 )
 
 type DB struct {
@@ -63,7 +65,7 @@ type Host struct {
 	ZoomID     string `json:"Zoom ID,omitempty"`
 }
 
-func (db *DB) GetHosts() ([]Host, error) {
+func (db DB) GetHosts() ([]Host, error) {
 	envelopes := []envelope{}
 
 	if err := db.client.ListRecords(TableHosts, &envelopes, airtable.ListParameters{}); err != nil {
@@ -90,19 +92,52 @@ func (db *DB) GetHosts() ([]Host, error) {
 	return hosts, nil
 }
 
-func (db *DB) UpdateHost(h Host) error {
-	return db.client.UpdateRecord(TableHosts, h.AirtableID, prepFields(h), nil)
+// TODO: Pretty sure I wrote this wrong (the last arg). See CreateMeeting for
+// reference.
+func (db DB) UpdateHost(h *Host) error {
+	return db.client.UpdateRecord(TableHosts, h.AirtableID, prepFields(h), h)
 }
+
+const TableMeetings = "Meetings"
 
 type Meeting struct {
-	AirtableID string    `json:"-"`
-	ZoomID     int       `json:"Zoom ID"`
-	StartTime  time.Time `json:"Start Time"`
-	EndTime    time.Time `json:"End Time"`
-	Timezone   string    `json:"Timezone"`
+	AirtableID  string `json:"-"`
+	ZoomID      int    `json:"Zoom ID,omityempty"`
+	SlackCallID string `json:"Slack Call ID,omitempty"`
+
+	// It actually only supports one host ID. Airtable requires that we send it
+	// an array of record IDs though.
+	LinkedHostIDs []string `json:"Host,omitempty"`
+
+	StartTime *time.Time `json:"Start Time,omitempty"`
+	EndTime   *time.Time `json:"End Time,omitempty"`
+	JoinURL   string     `json:"Join URL,omitempty"`
 }
 
-// TODO
-func (db *DB) CreateMeeting(zoomID string, startTime time.Time, timezone string) (Meeting, error) {
-	return Meeting{}, nil
+// "33333333333" -> "333-3333-3333"
+func (m Meeting) PrettyZoomID() string {
+	strID := strconv.Itoa(m.ZoomID)
+
+	return util.InsertNth(strID, '-', 4, false)
+}
+
+func (db DB) CreateMeeting(m *Meeting) error {
+	contents, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+
+	e := envelope{Object: contents}
+
+	if err := db.client.CreateRecord(TableMeetings, &e); err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(e.Object, &m); err != nil {
+		return err
+	}
+
+	m.AirtableID = e.AirtableID
+
+	return nil
 }

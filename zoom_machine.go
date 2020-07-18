@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -10,56 +9,38 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hackclub/slash-z/db"
 	"github.com/hackclub/slash-z/lib/zoom"
 	"github.com/hackclub/slash-z/util"
 )
 
-type ZoomAccount struct {
-	APIKey    string
-	APISecret string
-	Email     string
-	ID        string
-}
-
-type ZoomMeeting struct {
-	ID  int
-	URL string
-}
-
-// "33333333333" -> "333-3333-3333"
-func (m ZoomMeeting) PrettyID() string {
-	strID := strconv.Itoa(m.ID)
-
-	return util.InsertNth(strID, '-', 4, false)
-}
-
 type ZoomMachine struct {
-	Accounts []ZoomAccount
+	Hosts []db.Host
 }
 
-func (machine ZoomMachine) RandomClient() (*zoom.Client, ZoomAccount, error) {
-	if len(machine.Accounts) == 0 {
-		return nil, ZoomAccount{}, errors.New("ZoomMachine has no Accounts")
-	}
-
+func (machine ZoomMachine) RandomHost() db.Host {
 	randSource := rand.NewSource(time.Now().Unix())
 	rand := rand.New(randSource)
 
-	randAccount := machine.Accounts[rand.Intn(len(machine.Accounts))]
+	randHost := machine.Hosts[rand.Intn(len(machine.Hosts))]
 
-	return zoom.NewClient(randAccount.APIKey, randAccount.APISecret), randAccount, nil
+	return randHost
 }
 
-func (machine *ZoomMachine) CreateJoinableMeeting() (ZoomMeeting, error) {
-	client, account, err := machine.RandomClient()
+func (machine ZoomMachine) HostToClient(h db.Host) *zoom.Client {
+	return zoom.NewClient(h.APIKey, h.APISecret)
+}
+
+func (machine ZoomMachine) CreateJoinableMeeting() (db.Meeting, db.Host, error) {
+	host := machine.RandomHost()
+	client := machine.HostToClient(host)
+
+	user, err := client.GetUser(zoom.GetUserOpts{EmailOrID: host.Email})
 	if err != nil {
-		return ZoomMeeting{}, err
+		return db.Meeting{}, host, err
 	}
 
-	user, err := client.GetUser(zoom.GetUserOpts{EmailOrID: account.Email})
-	if err != nil {
-		return ZoomMeeting{}, err
-	}
+	now := time.Now()
 
 	// Only allowed to call this 100 times per day per Zoom API limits
 	//
@@ -71,7 +52,7 @@ func (machine *ZoomMachine) CreateJoinableMeeting() (ZoomMeeting, error) {
 	rawMeeting, err := client.CreateMeeting(zoom.CreateMeetingOptions{
 		HostID:    user.ID,
 		Type:      zoom.MeetingTypeScheduled,
-		StartTime: &zoom.Time{time.Now()},
+		StartTime: &zoom.Time{now},
 		Settings: zoom.MeetingSettings{
 			HostVideo:        true,
 			ParticipantVideo: true,
@@ -83,22 +64,28 @@ func (machine *ZoomMachine) CreateJoinableMeeting() (ZoomMeeting, error) {
 		},
 	})
 	if err != nil {
-		return ZoomMeeting{}, err
+		return db.Meeting{}, host, err
 	}
 
-	meeting := ZoomMeeting{
-		ID:  rawMeeting.ID,
-		URL: rawMeeting.JoinURL,
+	meeting := db.Meeting{
+		ZoomID:    rawMeeting.ID,
+		JoinURL:   rawMeeting.JoinURL,
+		StartTime: &now,
 	}
 
-	return meeting, nil
+	return meeting, host, nil
 }
 
-func (machine *ZoomMachine) MockJoinableMeeting() (ZoomMeeting, error) {
-	return ZoomMeeting{
-		ID:  98240669677,
-		URL: "https://hackclub.zoom.us/j/98240669677",
-	}, nil
+func (machine ZoomMachine) MockJoinableMeeting() (db.Meeting, db.Host, error) {
+	now := time.Now()
+
+	fmt.Println(machine)
+
+	return db.Meeting{
+		ZoomID:    98240669677,
+		JoinURL:   "https://hackclub.zoom.us/j/98240669677",
+		StartTime: &now,
+	}, machine.Hosts[0], nil
 }
 
 type ZoomWebhookEnvelope struct {
@@ -154,10 +141,8 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 		//
 		// Not sure if this actually makes sense... more of an idea that this might be helpful for now
 
-		client, _, err := machine.RandomClient()
-		if err != nil {
-			return err
-		}
+		host := machine.RandomHost()
+		client := machine.HostToClient(host)
 
 		meetingID, err := strconv.Atoi(obj.MeetingID)
 		if err != nil {

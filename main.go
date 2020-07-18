@@ -10,13 +10,13 @@ import (
 	"os"
 
 	"github.com/gorilla/schema"
-	database "github.com/hackclub/slash-z/db"
+	"github.com/hackclub/slash-z/db"
 	"github.com/hackclub/slash-z/lib/zoom"
 	"github.com/joho/godotenv"
 )
 
 var (
-	db          database.DB
+	dbc         db.DB
 	zoomMachine ZoomMachine
 	slack       SlackClient
 
@@ -30,13 +30,13 @@ func main() {
 		log.Fatal("error loading .env file:", err)
 	}
 
-	db, err := database.NewDB(os.Getenv("AIRTABLE_API_KEY"), os.Getenv("AIRTABLE_BASE"))
+	dbc, err = db.NewDB(os.Getenv("AIRTABLE_API_KEY"), os.Getenv("AIRTABLE_BASE"))
 	if err != nil {
 		fmt.Println("Failed to instantiate DB:", err)
 		os.Exit(1)
 	}
 
-	hosts, err := db.GetHosts()
+	hosts, err := dbc.GetHosts()
 	if err != nil {
 		fmt.Println("Failed to load Zoom host accounts from Airtable:", err)
 		os.Exit(1)
@@ -58,22 +58,13 @@ func main() {
 
 		h.ZoomID = user.ID
 
-		if err := db.UpdateHost(h); err != nil {
+		if err := dbc.UpdateHost(&h); err != nil {
 			fmt.Println("Failed to set Zoom ID for host "+h.Email+":", err)
 			os.Exit(1)
 		}
 	}
 
-	zoomAccounts := make([]ZoomAccount, len(hosts))
-	for i, h := range hosts {
-		zoomAccounts[i] = ZoomAccount{
-			APIKey:    h.APIKey,
-			APISecret: h.APISecret,
-			Email:     h.Email,
-			ID:        h.ZoomID,
-		}
-	}
-	zoomMachine = ZoomMachine{Accounts: zoomAccounts}
+	zoomMachine = ZoomMachine{Hosts: hosts}
 
 	slack = SlackClient{Token: os.Getenv("SLACK_BOT_USER_OAUTH_ACCESS_TOKEN")}
 
@@ -118,7 +109,7 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	meeting, err := zoomMachine.MockJoinableMeeting()
+	meeting, host, err := zoomMachine.CreateJoinableMeeting()
 	if err != nil {
 		fmt.Fprintln(w, "Error creating meeting:", err)
 		return
@@ -128,6 +119,13 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintln(w, "Error turning Zoom meeting into Slack call:", err)
 		return
+	}
+
+	meeting.SlackCallID = call.ID
+	meeting.LinkedHostIDs = []string{host.AirtableID}
+
+	if err := dbc.CreateMeeting(&meeting); err != nil {
+		fmt.Fprintln(w, "Error saving meeting to internal DB:", err)
 	}
 
 	globalCallID = call.ID
