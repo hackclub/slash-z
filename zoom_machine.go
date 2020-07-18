@@ -167,44 +167,6 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 			fmt.Println(err)
 			break
 		}
-
-		// Add every person who joins the meeting as an alternative host. Zoom
-		// meetings can only have 1 active host at a time, which means that the
-		// first host remains the only host - but if they later leave the meeting,
-		// someone else can claim host by quitting and rejoining.
-		//
-		// Not sure if this actually makes sense... more of an idea that this might be helpful for now
-
-		//host, err := dbc.GetHost(obj.HostID)
-		//if err != nil {
-		//	fmt.Println("failed to get host from DB:", err)
-		//	break
-		//}
-
-		//client := machine.HostToClient(host)
-
-		//meetingID, err := strconv.Atoi(obj.MeetingID)
-		//if err != nil {
-		//	return err
-		//}
-
-		//meeting, err := client.GetMeeting(zoom.GetMeetingOptions{MeetingID: meetingID})
-		//if err != nil {
-		//	return err
-		//}
-
-		//altHosts := strings.Split(meeting.Settings.AlternativeHosts, ",")
-		//altHosts = util.AppendIfMissing(altHosts, obj.Participant.ID)
-
-		//err = client.UpdateMeeting(zoom.UpdateMeetingOptions{
-		//	MeetingID: meetingID,
-		//	Settings: zoom.MeetingSettings{
-		//		AlternativeHosts: strings.Join(altHosts, ","),
-		//	},
-		//})
-		//if err != nil {
-		//	return err
-		//}
 	case "meeting.participant_left":
 		var obj ZoomWebhookParticipantLeft
 		if err := json.Unmarshal(rawObj, &obj); err != nil {
