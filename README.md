@@ -1,5 +1,7 @@
 # `/z` - Create a pro Zoom meeting in seconds on the Hack Club Slack
 
+built by @zrl
+
 Goals of project:
 
 - Make it dead simple to create pro Zoom meetings on the Hack Club Slack. Slack as a tool.
