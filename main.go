@@ -23,10 +23,7 @@ var (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("error loading .env file:", err)
-	}
+	godotenv.Load()
 
 	dbc, err = db.NewDB(os.Getenv("AIRTABLE_API_KEY"), os.Getenv("AIRTABLE_BASE"))
 	if err != nil {
