@@ -212,3 +212,37 @@ func (c SlackClient) RemoveParticipantFromCall(callID, perMeetingUserZoomID, use
 		return errors.New("error from Slack API: " + resp.Error)
 	}
 }
+
+// From https://api.slack.com/methods/calls.end
+type callsEndReq struct {
+	ID                string `json:"id"`
+	DurationInSeconds int    `json:"duration,omitempty"`
+}
+
+type callsEndResp struct {
+	OK    bool   `json:"ok"`
+	Error string `json:"error"`
+}
+
+func (c SlackClient) EndCall(slackCallID string, durationInSeconds int) error {
+	req := callsEndReq{
+		ID:                slackCallID,
+		DurationInSeconds: durationInSeconds,
+	}
+
+	res, err := c.req("calls.end", req)
+	if err != nil {
+		return err
+	}
+
+	var resp callsEndResp
+	if err := util.DecodeJSON(res.Body, &resp); err != nil {
+		return err
+	}
+
+	if resp.OK {
+		return nil
+	} else {
+		return errors.New("error from Slack API: " + resp.Error)
+	}
+}

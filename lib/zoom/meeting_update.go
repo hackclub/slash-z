@@ -26,5 +26,6 @@ func (c *Client) UpdateMeeting(opts UpdateMeetingOptions) error {
 		Method:         Patch,
 		Path:           fmt.Sprintf(UpdateMeetingPath, opts.MeetingID),
 		DataParameters: &opts,
+		HeadResponse:   true,
 	})
 }

@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"time"
 
 	"github.com/hackclub/slash-z/db"
@@ -12,16 +12,37 @@ import (
 )
 
 type ZoomMachine struct {
-	Hosts []db.Host
+	dbc   db.DB
+	slack SlackClient
 }
 
-func (machine ZoomMachine) RandomHost() db.Host {
-	randSource := rand.NewSource(time.Now().Unix())
-	rand := rand.New(randSource)
+func NewZoomMachine(c db.DB, s SlackClient) ZoomMachine {
+	return ZoomMachine{dbc: c, slack: s}
+}
 
-	randHost := machine.Hosts[rand.Intn(len(machine.Hosts))]
+type NoAvailableHostsError struct {
+	s string
+}
 
-	return randHost
+func (e *NoAvailableHostsError) Error() string {
+	return "no available Zoom hosts: " + e.s
+}
+
+func NewNoAvailableHostsError(e string) *NoAvailableHostsError {
+	return &NoAvailableHostsError{s: e}
+}
+
+func (machine ZoomMachine) AvailableHost() (db.Host, error) {
+	host, err := dbc.GetAvailableHost()
+	if err != nil {
+		if _, ok := err.(*db.NotFoundError); ok {
+			return db.Host{}, NewNoAvailableHostsError(err.Error())
+		}
+
+		return db.Host{}, err
+	}
+
+	return host, nil
 }
 
 func (machine ZoomMachine) HostToClient(h db.Host) *zoom.Client {
@@ -29,7 +50,11 @@ func (machine ZoomMachine) HostToClient(h db.Host) *zoom.Client {
 }
 
 func (machine ZoomMachine) CreateJoinableMeeting() (db.Meeting, db.Host, error) {
-	host := machine.RandomHost()
+	host, err := machine.AvailableHost()
+	if err != nil {
+		return db.Meeting{}, db.Host{}, err
+	}
+
 	client := machine.HostToClient(host)
 
 	user, err := client.GetUser(zoom.GetUserOpts{EmailOrID: host.Email})
@@ -67,22 +92,161 @@ func (machine ZoomMachine) CreateJoinableMeeting() (db.Meeting, db.Host, error) 
 	meeting := db.Meeting{
 		ZoomID:    rawMeeting.ID,
 		JoinURL:   rawMeeting.JoinURL,
-		StartTime: &now,
+		StartedAt: &now,
 	}
 
 	return meeting, host, nil
 }
 
-func (machine ZoomMachine) MockJoinableMeeting() (db.Meeting, db.Host, error) {
-	now := time.Now()
+func (m ZoomMachine) EndMeeting(meeting db.Meeting) error {
+	if meeting.EndedAt != nil {
+		return errors.New("meeting already ended")
+	}
 
-	fmt.Println(machine)
+	if len(meeting.LinkedHostIDs) == 0 {
+		return errors.New("no linked host ID")
+	} else if len(meeting.LinkedHostIDs) > 1 {
+		return errors.New("too many linked host IDs - there should only be one")
+	}
+
+	hostAirtableID := meeting.LinkedHostIDs[0]
+
+	host, err := m.dbc.GetHostByAirtableID(hostAirtableID)
+	if err != nil {
+		return err
+	}
+
+	client := m.HostToClient(host)
+
+	// Set JoinBeforeHost to false so people can no longer join the meeting.
+	err = client.UpdateMeeting(zoom.UpdateMeetingOptions{
+		MeetingID: meeting.ZoomID,
+		Settings: zoom.MeetingSettings{
+			JoinBeforeHost: false,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	// Set the status of the meeting to "end". Note to future self: If
+	// EnableJoinBeforeHost is set to true, users can still join the meeting
+	// after status is set to end. That's why we manually have to set this above.
+	err = client.UpdateMeetingStatus(zoom.UpdateMeetingStatusOptions{
+		MeetingID: meeting.ZoomID,
+		Action:    "end",
+	})
+	if err != nil {
+		return err
+	}
+
+	callLength := time.Now().Sub(*meeting.StartedAt)
+
+	// Mark the call as ended in Slack
+	if err := slack.EndCall(meeting.SlackCallID, int(callLength.Seconds())); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (machine ZoomMachine) MockJoinableMeeting() (db.Meeting, db.Host, error) {
+	host, err := machine.AvailableHost()
+	if err != nil {
+		return db.Meeting{}, db.Host{}, err
+	}
+
+	current := time.Now()
 
 	return db.Meeting{
 		ZoomID:    98240669677,
 		JoinURL:   "https://hackclub.zoom.us/j/98240669677",
-		StartTime: &now,
-	}, machine.Hosts[0], nil
+		StartedAt: &current,
+	}, host, nil
+}
+
+// On a regular interval, check currently active meetings for the number of
+// participants, increase the IdleTime field if they are inactive, after enough
+// inactivity, end the call.
+func (m ZoomMachine) RunIdleTimer() error {
+	for {
+		meetings, err := m.dbc.GetActiveMeetings()
+		if err != nil {
+			if _, ok := err.(*db.NotFoundError); ok {
+				fmt.Println("no active meetings found, continuing")
+
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			return err
+		}
+
+		for _, meeting := range meetings {
+			// if the meeting has users in it...
+			if meeting.CurrentActiveUsers > 0 {
+				// and it is currently set as an idle meeting..
+				if meeting.IdlingSince != nil {
+					// remove the idle status.
+					meeting.IdlingSince = nil
+
+					if m.dbc.UpdateMeeting(&meeting); err != nil {
+						return err
+					}
+				}
+
+				// and it is not currently idle, then ignore it
+				continue
+			}
+
+			// if meeting does not have users in it..
+
+			// and it's set to idle...
+			if meeting.IdlingSince != nil {
+				elapsed := time.Now().Sub(*meeting.IdlingSince)
+
+				fmt.Println(meeting.ZoomID, "has been idling for", elapsed)
+
+				// if it's been less than one minute, ignore
+				if elapsed.Minutes() < 1 {
+					continue
+				}
+
+				// Actually end the meeting with Zoom's API and update Slack too
+				if err := m.EndMeeting(meeting); err != nil {
+					return err
+				}
+
+				// else end the meeting
+				current := time.Now()
+				meeting.EndedAt = &current
+
+				if m.dbc.UpdateMeeting(&meeting); err != nil {
+					return err
+				}
+
+				continue
+			}
+
+			// and it's not set to idle...
+			if meeting.IdlingSince == nil {
+				// mark it as idle.
+				current := time.Now()
+				meeting.IdlingSince = &current
+
+				if m.dbc.UpdateMeeting(&meeting); err != nil {
+					return err
+				}
+
+				continue
+			}
+
+		}
+
+		time.Sleep(10 * time.Second)
+	}
+
+	return nil
 }
 
 type ZoomWebhookEnvelope struct {
@@ -139,6 +303,12 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 
 		meeting, err := dbc.GetMeeting(obj.MeetingID)
 		if err != nil {
+			// check if db.NotFoundError
+			if _, ok := err.(*db.NotFoundError); ok {
+				fmt.Println("ignoring meeting " + obj.MeetingID + " because it wasn't found in the db")
+				break
+			}
+
 			fmt.Println("failed to get meeting from DB:", err)
 			break
 		}

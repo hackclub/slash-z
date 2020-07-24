@@ -164,9 +164,13 @@ type (
 		// ChinaMeeting host meeting in China
 		ChinaMeeting bool `json:"cn_meeting,omitempty"`
 		// IndiaMeeting host meeting in India
-		IndiaMeeting   bool `json:"in_meeting,omitempty"`
-		JoinBeforeHost bool `json:"join_before_host,omitempty"`
-		MuteUponEntry  bool `json:"mute_upon_entry,omitempty"`
+		IndiaMeeting bool `json:"in_meeting,omitempty"`
+
+		// Removing omitempty so this can later be set to false. Zach making this
+		// change.
+		JoinBeforeHost bool `json:"join_before_host"`
+
+		MuteUponEntry bool `json:"mute_upon_entry,omitempty"`
 		// Watermark add watermark when viewing a shared screen
 		Watermark bool `json:"watermark,omitempty"`
 		// Use Personal Meeting ID. Only used for scheduled meetings and recurring meetings with no

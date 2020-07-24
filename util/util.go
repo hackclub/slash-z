@@ -67,11 +67,19 @@ func InsertNth(s string, r rune, n int, leftToRight bool) string {
 	}
 }
 
-func AppendIfMissing(slice []string, s string) []string {
-	for _, ele := range slice {
-		if ele == s {
-			return slice
+func Contains(slice []string, val string) bool {
+	for _, item := range slice {
+		if item == val {
+			return true
 		}
+	}
+
+	return false
+}
+
+func AppendIfMissing(slice []string, s string) []string {
+	if Contains(slice, s) {
+		return slice
 	}
 	return append(slice, s)
 }

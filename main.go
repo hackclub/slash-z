@@ -19,9 +19,6 @@ var (
 	dbc         db.DB
 	zoomMachine ZoomMachine
 	slack       SlackClient
-
-	// Just for testing... one call at a time
-	globalCallID string
 )
 
 func main() {
@@ -64,7 +61,7 @@ func main() {
 		}
 	}
 
-	zoomMachine = ZoomMachine{Hosts: hosts}
+	zoomMachine = NewZoomMachine(dbc, slack)
 
 	slack = SlackClient{Token: os.Getenv("SLACK_BOT_USER_OAUTH_ACCESS_TOKEN")}
 
@@ -72,6 +69,12 @@ func main() {
 	if port == "" {
 		port = "3000"
 	}
+
+	go func() {
+		if err := zoomMachine.RunIdleTimer(); err != nil {
+			fmt.Println(err)
+		}
+	}()
 
 	http.HandleFunc("/slack/slash-z", slashZHandler)
 	http.HandleFunc("/zoom/webhook", zoomWebhookHandler)
@@ -111,6 +114,18 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 
 	meeting, host, err := zoomMachine.CreateJoinableMeeting()
 	if err != nil {
+		if _, ok := err.(*NoAvailableHostsError); ok {
+			resp := map[string]interface{}{
+				"response_type": "ephemeral",
+				"text":          "_You wander around the house, but are unable to find an available room. Error: All Zoom hosts are in use. Try again in a minute?_",
+			}
+			w.Header().Set("Content-Type", "application/json")
+			if err := json.NewEncoder(w).Encode(resp); err != nil {
+				fmt.Fprintln(w, "Error encoding JSON response to Slack:", err)
+				return
+			}
+		}
+
 		fmt.Fprintln(w, "Error creating meeting:", err)
 		return
 	}
@@ -128,16 +143,28 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Error saving meeting to internal DB:", err)
 	}
 
-	globalCallID = call.ID
-
 	// Follows format of https://api.slack.com/apis/calls#3._post_the_call_to_channel
 	resp := map[string]interface{}{
 		"response_type": "in_channel",
 		"text":          "A new Zoom Pro meeting was started with /z",
 		"blocks": []map[string]interface{}{
 			map[string]interface{}{
+				"type": "section",
+				"text": map[string]interface{}{
+					"type": "mrkdwn",
+					"text": "After running `/z`, you wander the creaky hallways and stumble upon the *" + host.RoomName + "*. You try it and the door is unlocked.",
+				},
+			},
+			map[string]interface{}{
 				"type":    "call",
 				"call_id": call.ID,
+			},
+			map[string]interface{}{
+				"type": "section",
+				"text": map[string]interface{}{
+					"type": "mrkdwn",
+					"text": "_Psst " + meeting.JoinURL + " is the call link._",
+				},
 			},
 		},
 	}
