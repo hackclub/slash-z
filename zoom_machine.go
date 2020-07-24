@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/hackclub/slash-z/db"
@@ -169,13 +168,16 @@ func (machine ZoomMachine) MockJoinableMeeting() (db.Meeting, db.Host, error) {
 // participants, increase the IdleTime field if they are inactive, after enough
 // inactivity, end the call.
 func (m ZoomMachine) RunIdleTimer() error {
+	iterationLength := 10 * time.Second
+
 	for {
 		meetings, err := m.dbc.GetActiveMeetings()
 		if err != nil {
 			if _, ok := err.(*db.NotFoundError); ok {
-				fmt.Println("no active meetings found, continuing")
+				fmt.Println("no active meetings found, waiting until next iteration")
 
-				time.Sleep(10 * time.Second)
+				time.Sleep(iterationLength)
+
 				continue
 			}
 
@@ -243,7 +245,7 @@ func (m ZoomMachine) RunIdleTimer() error {
 
 		}
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(iterationLength)
 	}
 
 	return nil
@@ -305,11 +307,15 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 		if err != nil {
 			// check if db.NotFoundError
 			if _, ok := err.(*db.NotFoundError); ok {
-				fmt.Println("ignoring meeting " + obj.MeetingID + " because it wasn't found in the db")
+				machine.dbc.LogError(
+					errors.New("ignoring meeting " + obj.MeetingID + " because it wasn't found in the db"),
+				)
+
 				break
 			}
 
-			fmt.Println("failed to get meeting from DB:", err)
+			machine.dbc.LogError(errors.New("failed to get meeting from DB: " + err.Error()))
+
 			break
 		}
 
@@ -323,7 +329,7 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 		}
 
 		if err := dbc.CreateParticipantEvent(&pe); err != nil {
-			fmt.Println(err)
+			machine.dbc.LogError(err)
 			break
 		}
 
@@ -334,7 +340,7 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 			pe.ParticipantPerMeetingID,
 			pe.ParticipantName,
 		); err != nil {
-			fmt.Println(err)
+			machine.dbc.LogError(err)
 			break
 		}
 	case "meeting.participant_left":
@@ -346,7 +352,7 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 
 		meeting, err := dbc.GetMeeting(obj.MeetingID)
 		if err != nil {
-			fmt.Println("failed to get meeting from DB:", err)
+			machine.dbc.LogError(errors.New("failed to get meeting from DB: " + err.Error()))
 			break
 		}
 
@@ -360,7 +366,7 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 		}
 
 		if err := dbc.CreateParticipantEvent(&pe); err != nil {
-			fmt.Println(err)
+			machine.dbc.LogError(err)
 			break
 		}
 
@@ -369,10 +375,10 @@ func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
 			pe.ParticipantPerMeetingID,
 			pe.ParticipantName,
 		); err != nil {
-			fmt.Println(err)
+			machine.dbc.LogError(err)
 		}
 	default:
-		log.Println("unknown event type:", webhook.Event)
+		machine.dbc.LogError(errors.New("unknown event type: " + webhook.Event))
 		return nil
 	}
 

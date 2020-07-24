@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -72,7 +73,7 @@ func main() {
 
 	go func() {
 		if err := zoomMachine.RunIdleTimer(); err != nil {
-			fmt.Println(err)
+			dbc.LogError(err)
 		}
 	}()
 
@@ -184,7 +185,7 @@ func zoomWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	io.Copy(&buf, r.Body)
 
 	if err := zoomMachine.ProcessWebhook(buf.Bytes()); err != nil {
-		fmt.Println("error processing Zoom webhook:", err)
+		dbc.LogError(errors.New("error processing Zoom webhook: " + err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
