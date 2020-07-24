@@ -74,6 +74,7 @@ func main() {
 	go func() {
 		if err := zoomMachine.RunIdleTimer(); err != nil {
 			dbc.LogError(err)
+			os.Exit(1)
 		}
 	}()
 
