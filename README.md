@@ -1,4 +1,4 @@
-# `/z` - Create a pro Zoom meeting in seconds on the Hack Club Slack
+# (WIP) `/z` - Create a pro Zoom meeting in seconds on the Hack Club Slack
 
 built by @zrl
 
