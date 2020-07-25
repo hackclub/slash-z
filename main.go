@@ -25,7 +25,8 @@ var (
 func main() {
 	godotenv.Load()
 
-	dbc, err := db.NewDB(os.Getenv("AIRTABLE_API_KEY"), os.Getenv("AIRTABLE_BASE"))
+	var err error
+	dbc, err = db.NewDB(os.Getenv("AIRTABLE_API_KEY"), os.Getenv("AIRTABLE_BASE"))
 	if err != nil {
 		fmt.Println("Failed to instantiate DB:", err)
 		os.Exit(1)

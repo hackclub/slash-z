@@ -32,7 +32,7 @@ func NewNoAvailableHostsError(e string) *NoAvailableHostsError {
 }
 
 func (machine ZoomMachine) AvailableHost() (db.Host, error) {
-	host, err := dbc.GetAvailableHost()
+	host, err := machine.dbc.GetAvailableHost()
 	if err != nil {
 		if _, ok := err.(*db.NotFoundError); ok {
 			return db.Host{}, NewNoAvailableHostsError(err.Error())
