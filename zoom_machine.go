@@ -49,6 +49,10 @@ func (machine ZoomMachine) HostToClient(h db.Host) *zoom.Client {
 }
 
 // If hostEmail is empty, ignore. If set, set the hostEmail as an alternative host to the Zoom meeting
+//
+// TODO: Temporarily disabled tihs because people are getting "[email] is not
+// associated with a Zoom account." as an error. Need to fix. They do have Zoom
+// accounts, I think it's because they're not in the Hack Club org.
 func (machine ZoomMachine) CreateJoinableMeeting(hostEmail string) (db.Meeting, db.Host, error) {
 	host, err := machine.AvailableHost()
 	if err != nil {
@@ -80,7 +84,7 @@ func (machine ZoomMachine) CreateJoinableMeeting(hostEmail string) (db.Meeting, 
 			ParticipantVideo: true,
 			JoinBeforeHost:   true,
 			Audio:            "both",
-			AlternativeHosts: hostEmail, // comma separated array
+			AlternativeHosts: "", // TODO: Fix and add hostEmail back here, comma separated array
 			WaitingRoom:      false,
 			EnforceLogin:     false,
 		},
