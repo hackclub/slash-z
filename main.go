@@ -142,6 +142,10 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	meeting.CreatorSlackID = slackUser.ID
+	meeting.CreatorDisplayName = slackUser.Profile.DisplayName
+	meeting.CreatorEmail = slackUser.Profile.Email
+
 	meeting.SlackCallID = call.ID
 	meeting.LinkedHostIDs = []string{host.AirtableID}
 

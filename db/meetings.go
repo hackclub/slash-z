@@ -34,6 +34,10 @@ type Meeting struct {
 	IdlingSince *time.Time `json:"Idling Since,omitempty"`
 	EndedAt     *time.Time `json:"Ended At,omitempty"`
 
+	CreatorDisplayName string `json:"Creator Display Name,omitempty"`
+	CreatorSlackID     string `json:"Creator Slack ID,omitempty"`
+	CreatorEmail       string `json:"Creator Email,omitempty"`
+
 	JoinURL string `json:"Join URL,omitempty"`
 
 	CurrentActiveUsers int `json:"Current Active Users,formula"`
