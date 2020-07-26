@@ -31,6 +31,7 @@ In **OAuth & Permissions**, add the following scopes:
 - `calls:write`
 - `commands`
 - `users:read`
+- `users:read.email` - This is needed to set the person who runs `/z` as the host of the Zoom meeting
 
 In **Slash Commands**, create a new command called `/dev-[username]-slash-z`. In my case, I'm calling it `/dev-zrl-slash-z`.
 

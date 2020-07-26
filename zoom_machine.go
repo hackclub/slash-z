@@ -48,7 +48,8 @@ func (machine ZoomMachine) HostToClient(h db.Host) *zoom.Client {
 	return zoom.NewClient(h.APIKey, h.APISecret)
 }
 
-func (machine ZoomMachine) CreateJoinableMeeting() (db.Meeting, db.Host, error) {
+// If hostEmail is empty, ignore. If set, set the hostEmail as an alternative host to the Zoom meeting
+func (machine ZoomMachine) CreateJoinableMeeting(hostEmail string) (db.Meeting, db.Host, error) {
 	host, err := machine.AvailableHost()
 	if err != nil {
 		return db.Meeting{}, db.Host{}, err
@@ -79,7 +80,7 @@ func (machine ZoomMachine) CreateJoinableMeeting() (db.Meeting, db.Host, error) 
 			ParticipantVideo: true,
 			JoinBeforeHost:   true,
 			Audio:            "both",
-			AlternativeHosts: "", // comma separated array
+			AlternativeHosts: hostEmail, // comma separated array
 			WaitingRoom:      false,
 			EnforceLogin:     false,
 		},

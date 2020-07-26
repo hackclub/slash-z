@@ -23,6 +23,7 @@ type SlackUser struct {
 	ID      string `json:"id"`
 	Profile struct {
 		DisplayName string `json:"display_name"`
+		Email       string `json:"email"`
 	} `json:"profile"`
 }
 

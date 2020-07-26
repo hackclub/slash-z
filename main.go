@@ -112,7 +112,13 @@ func slashZHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	meeting, host, err := zoomMachine.CreateJoinableMeeting()
+	slackUser, err := slack.UserInfo(req.UserID)
+	if err != nil {
+		fmt.Fprintln(w, "Error getting user profile from Slack:", err)
+		return
+	}
+
+	meeting, host, err := zoomMachine.CreateJoinableMeeting(slackUser.Profile.Email)
 	if err != nil {
 		if _, ok := err.(*NoAvailableHostsError); ok {
 			resp := map[string]interface{}{
