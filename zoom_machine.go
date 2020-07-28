@@ -289,6 +289,9 @@ type ZoomWebhookParticipantLeft struct {
 // Parsing method from "Combining the powers of *json.RawMessage and
 // interface{}" section of https://eagain.net/articles/go-dynamic-json/
 func (machine *ZoomMachine) ProcessWebhook(bytes []byte) error {
+	fmt.Println("Received Zoom webhook:")
+	fmt.Println(string(bytes))
+
 	var rawObj json.RawMessage
 	var webhook ZoomWebhookEnvelope
 
