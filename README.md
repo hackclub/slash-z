@@ -1,5 +1,7 @@
 # (WIP) `/z` - Create a pro Zoom meeting in seconds on the Hack Club Slack
 
+built by @zrl
+
 ## Setup
 
 Following environment variables must be set:
@@ -61,38 +63,13 @@ Enable **Event Subscriptions** and set them up as follows:
 
 ![Screenshot of step 2 of enabling and configuring Event Subscriptions](https://hack.af/cdn-50)
 
-## Body
-
-built by @zrl
+## Main README
 
 Goals of project:
 
 - Make it dead simple to create pro Zoom meetings on the Hack Club Slack. Slack as a tool.
 - Act as example for future Slack projects in Hack Club
   - Easy to get instance up and running locally (<5m)
-
-Scratching down some notes:
-
-- DB. Schema:
-  - Meetings
-    - Started time
-    - Unique ID
-    - Participant Events
-  - Participant Events
-    - Meeting
-    - Time
-    - Type: joined / left
-    - Participant
-  - Participants
-    - ID
-    - Username
-    - Logged into Zoom?
-    - User ID # assigned to everyone - per-meeting unique
-    - ID # assigned to logged in users - globally unique if set
-  - Hosts
-    - Email
-    - API Key
-    - API Secret
 
 Flow:
 
@@ -106,11 +83,9 @@ Flow:
 
 Next steps:
 
+- Return 200 immediately and then hit `response_url` (this will cause it to not show `/z` and just show the call) 
+- Make it stateless
 - First participant to join becomes host
-- Load and dump data to Airtable (assumption is that only one instance of `slash-z` is running at a time, I think)
-
-Before launch:
-
 - Zoom call passwords
 
 Current UX of call (mobile):
