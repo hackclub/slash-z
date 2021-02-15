@@ -1,9 +1,6 @@
 const closeZoomCall = require("../close-zoom-call");
 const AirBridge = require("../airbridge")
 const ensureZoomAuthenticated = require("../ensure-zoom-authenticated");
-const stringToColor = require("../string-to-color");
-const removeSlackParticipant = require("../remove-slack-participant");
-const addSlackParticipant = require("../add-slack-participant");
 const updateSlackCallParticipantList = require("../update-slack-call-participant-list");
 
 module.exports = async (req, res) => {
@@ -35,10 +32,10 @@ module.exports = async (req, res) => {
         closeZoomCall(zoomCallID)
         break
       case 'meeting.participant_joined':
-        await updateSlackCallParticipantList('add', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
+        updateSlackCallParticipantList('add', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
         break
       case 'meeting.participant_left':
-        removeSlackParticipant('remove', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
+        updateSlackCallParticipantList('remove', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
         break
       default:
         console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
