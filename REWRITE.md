@@ -40,3 +40,23 @@ Breakdown, or _the babysteps i will take to prevent me from fighting goliath_
 First step is just regular old `/z`. The slack server should probably be rewritten. This time, I'll create an endpoint for generating zoom links that the slack app will call.
 
 Once I have that working, I'll make scheduling link generation & call routing through scheduling links.
+
+### 2020-02-15
+
+Ok, making progress. I've got a /z command (actually /dev-msw-slash-z b/c i'm dumb) that will start a meeting & auto-end it when all participants leave.
+
+Next step is to build a way to update the "0 people joined" message on slack & add/remove participants on slack. not sure how to do that b/c the zoom webhooks i'm getting just give me user email & zoom id
+
+---
+
+It's weird just how out of order the events from Zoom come in. I'm thinking about adding a couple checks to the zoom webhook handler to prevent the worst cases of delayed/duplicate events:
+- event indempotency using the 'event_ts' zoom is giving us
+  - doing this through airtable could suck (we'd have a bunch of airtable lookups on every zoom endpoint hit)
+    - create webhook event on hit
+    - lookup the meeting record
+    - lookup existing webhook events w/ same timestamp
+  - we could do this just through working memory on the server. I don't care too much about getting an event a day late, more like getting a burst of activity in 5 min after a call of 30 people ends (& I get a bunch of participant leave events out of order or duplicated)
+- ignore webhook events to calls that have already closed
+  - this ignores all the delayed participant activity after a call has ended
+
+On top of that stuff, we could handle the airtable record limit (~50k) by removing all webhook events for meetings that have ended. this doesn't have to happen right after the call ends, but could be a nightly job, or something triggered manually if it's rare enough (idk how long it'll take to reach 50k)
