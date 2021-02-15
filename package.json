@@ -5,8 +5,15 @@
   "repository": "git@github.com:hackclub/slash-z.git",
   "author": "Max Wofford <max@maxwofford.com>",
   "license": "MIT",
+  "scripts": {
+    "dev": "nodemon"
+  },
   "dependencies": {
+    "airtable-plus": "^1.0.4",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.7",
+    "zoomus": "^0.1.4"
   }
 }
