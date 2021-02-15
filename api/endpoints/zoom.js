@@ -1,6 +1,10 @@
 const closeZoomCall = require("../close-zoom-call");
 const AirBridge = require("../airbridge")
-const ensureZoomAuthenticated = require("../ensure-zoom-authenticated")
+const ensureZoomAuthenticated = require("../ensure-zoom-authenticated");
+const stringToColor = require("../string-to-color");
+const removeSlackParticipant = require("../remove-slack-participant");
+const addSlackParticipant = require("../add-slack-participant");
+const updateSlackCallParticipantList = require("../update-slack-call-participant-list");
 
 module.exports = async (req, res) => {
   await ensureZoomAuthenticated(req, res, async () => {
@@ -14,6 +18,11 @@ module.exports = async (req, res) => {
 
     const meeting = await AirBridge.find('Meetings', { filterByFormula: `{Zoom ID}='${zoomCallID}'` })
 
+    if (!meeting) {
+      console.log('Meeting not found, skipping...', zoomCallID)
+      return
+    }
+
     await AirBridge.create('Webhook Events', {
       'Timestamp': req.body.event_ts,
       'Event Type': req.body.event,
@@ -24,6 +33,12 @@ module.exports = async (req, res) => {
       case 'meeting.ended':
         console.log('Attempting to close call w/ ID of', zoomCallID)
         closeZoomCall(zoomCallID)
+        break
+      case 'meeting.participant_joined':
+        await updateSlackCallParticipantList('add', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
+        break
+      case 'meeting.participant_left':
+        removeSlackParticipant('remove', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
         break
       default:
         console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
