@@ -60,3 +60,11 @@ It's weird just how out of order the events from Zoom come in. I'm thinking abou
   - this ignores all the delayed participant activity after a call has ended
 
 On top of that stuff, we could handle the airtable record limit (~50k) by removing all webhook events for meetings that have ended. this doesn't have to happen right after the call ends, but could be a nightly job, or something triggered manually if it's rare enough (idk how long it'll take to reach 50k)
+
+---
+
+Ok, call participant list is done & working. Would be nice to have it show slack profile info instead, but MVP!
+
+I'm worried about how much we're going to hammer airtable but I'll add a queueing system later if it's needed. From the experience working on hackclub/orpheus, queueing will take longer then I think it will.
+
+Next step is to add a scheduling link.
