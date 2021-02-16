@@ -20,14 +20,15 @@ module.exports = async (req, res) => {
     const hostZoom = await zoom.get({ path: `users/${host.fields['Email']}` })
     host = await AirBridge.patch('Hosts', host.id, {'Zoom ID': hostZoom.id})
 
-    // this also probably means this host needs some first-time setup...
-    // let's update the password settings on the account...
-    await zoom.patch({path: `users/${host.fields['Zoom ID']}/settings`, body: {
+    zoomUser = await zoom.patch({path: `users/${host.fields['Zoom ID']}/settings`, body: {
       meeting_security: {
         embed_password_in_join_link: true
       },
     }})
   }
+
+  const hostKey = Math.random().toString().substr(2,6).padEnd(6,0)
+  await zoom.patch({ path: `users/${host.fields['Zoom ID']}`, body: { host_key: hostKey}})
 
   // start a meeting with the zoom client
   const meeting = await zoom.post({
@@ -48,7 +49,7 @@ module.exports = async (req, res) => {
     date_start: Date.now(),
     desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0`,
     external_display_id: meeting.id,
-    title: `Zoom Pro meeting started by ${req.body.user_id}`
+    title: `Zoom Pro meeting started by ${req.body.user_name}`
   }
 
   const slackCallResult = await fetch('https://slack.com/api/calls.add', {
@@ -87,7 +88,7 @@ module.exports = async (req, res) => {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `_Psst ${meeting.join_url} is the call link.`
+        text: `_Psst ${meeting.join_url} is the call link._`
       }
     }]
   }
@@ -98,5 +99,23 @@ module.exports = async (req, res) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(slackPostFields)
+  })
+  await fetch(req.body.response_url, {
+    method: 'post',
+    headers: {
+      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      response_type: 'ephemeral',
+      text: 'You find a golden key',
+      blocks: [{
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `Something shiny catches your eye. You find <${meeting.start_url}|a golden key> you can use to make yourself the administrator of the *${host.fields['Name Displayed to Users']}*.`
+        }
+      }]
+    })
   })
 }

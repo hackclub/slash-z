@@ -72,3 +72,7 @@ Next step is to add a scheduling link.
 ---
 
 Just got a basic schedule link route setup, think a better use of my time right now is to make host transferrable & login to zoom with a personal account so I can dogfood for the rest of my meetings this week.
+
+---
+
+Admin joining is done through the 'start_url', which logs the user in as the host. It's super janky, but i'm happy with it as a way to get admin access for the time being. Will def need to improve the experience in the future.
