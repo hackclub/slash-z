@@ -68,3 +68,7 @@ Ok, call participant list is done & working. Would be nice to have it show slack
 I'm worried about how much we're going to hammer airtable but I'll add a queueing system later if it's needed. From the experience working on hackclub/orpheus, queueing will take longer then I think it will.
 
 Next step is to add a scheduling link.
+
+---
+
+Just got a basic schedule link route setup, think a better use of my time right now is to make host transferrable & login to zoom with a personal account so I can dogfood for the rest of my meetings this week.

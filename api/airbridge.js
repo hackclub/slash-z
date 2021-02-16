@@ -2,7 +2,6 @@ const AirtablePlus = require('airtable-plus')
 
 const get = async (table, options) => {
   try {
-
     const airtable = new AirtablePlus({
       baseID: 'appuEsdMf6hHXibSh',
       apiKey: process.env.AIRBRIDGE_API_KEY,
