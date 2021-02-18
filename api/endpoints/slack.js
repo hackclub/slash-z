@@ -4,7 +4,7 @@ const ensureSlackAuthenticated = require("../ensure-slack-authenticated")
 const ZoomClient = require('../zoom-client')
 
 module.exports = async (req, res) => {
-  ensureSlackAuthenticated(req, res, async () => {
+  return await ensureSlackAuthenticated(req, res, async () => {
     
     // Acknowledge we got the message so Slack doesn't show an error to the user
     res.status(200).send('Working on it!')
