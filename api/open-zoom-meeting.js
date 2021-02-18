@@ -43,8 +43,8 @@ module.exports = async () => {
     }})
   }
 
-  const hostKey = Math.random().toString().substr(2,6).padEnd(6,0)
-  await zoom.patch({ path: `users/${host.fields['Zoom ID']}`, body: { host_key: hostKey}})
+  // const hostKey = Math.random().toString().substr(2,6).padEnd(6,0)
+  // await zoom.patch({ path: `users/${host.fields['Zoom ID']}`, body: { host_key: hostKey}})
 
   // start a meeting with the zoom client
   const meeting = await zoom.post({
