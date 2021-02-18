@@ -76,3 +76,5 @@ Just got a basic schedule link route setup, think a better use of my time right 
 ---
 
 Admin joining is done through the 'start_url', which logs the user in as the host. It's super janky, but i'm happy with it as a way to get admin access for the time being. Will def need to improve the experience in the future.
+
+I think this is the next step: https://developers.google.com/workspace/add-ons/calendar/conferencing/conferencing-sample#add-on-manifest
