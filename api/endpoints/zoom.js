@@ -30,13 +30,13 @@ module.exports = async (req, res) => {
     switch (req.body.event) {
       case 'meeting.ended':
         console.log('Attempting to close call w/ ID of', zoomCallID)
-        closeZoomCall(zoomCallID)
+        return await closeZoomCall(zoomCallID)
         break
       case 'meeting.participant_joined':
-        updateSlackCallParticipantList('add', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
+        return await updateSlackCallParticipantList('add', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
         break
       case 'meeting.participant_left':
-        updateSlackCallParticipantList('remove', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
+        return await updateSlackCallParticipantList('remove', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
         break
       default:
         console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
