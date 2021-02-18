@@ -7,7 +7,9 @@ const get = async (table, options) => {
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
+    console.log(`Airtable GET '${table}' with the following options:`, options)
     const results = await airtable.read(options)
+    console.log(`Found ${results.length} records(s)`)
     return results
   } catch (err) {
     console.log(err)
@@ -21,6 +23,7 @@ const find = async (table, options) => {
 
 const patch = async (table, recordID, fields) => {
   try {
+    console.log(`Airtable PATCH '${table} ID ${recordID}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
       baseID: 'appuEsdMf6hHXibSh',
       apiKey: process.env.AIRBRIDGE_API_KEY,
@@ -35,13 +38,15 @@ const patch = async (table, recordID, fields) => {
 
 const create = async (table, fields) => {
   try {
+    console.log(`Airtable CREATE '${table}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
       baseID: 'appuEsdMf6hHXibSh',
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
     const results = await airtable.create(fields)
-    return results[0]
+    console.log('Airtable created my record with these fields:', {results})
+    return results
   } catch (err) {
     console.log(err)
   }

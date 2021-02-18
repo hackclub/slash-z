@@ -17,17 +17,19 @@ module.exports = async (zoomID, forceClose = false) => {
 
   // ending the meeting happens in X steps...
 
-  // 1) end slack call
-  const startTime = meeting.fields['Started At']
-  const duration = Date.now() - Date.parse(startTime)
-  const _slackPost = await fetch('https://slack.com/api/calls.end', {
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({id: meeting.fields['Slack Call ID'],duration})
-  }).then(r => r.json())
+  // 1) if was posted in slack, end slack call
+  if (meeting.fields['Slack Call ID']) {
+    const startTime = meeting.fields['Started At']
+    const duration = Date.now() - Date.parse(startTime)
+    const _slackPost = await fetch('https://slack.com/api/calls.end', {
+      method: 'post',
+      headers: {
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({id: meeting.fields['Slack Call ID'],duration})
+    }).then(r => r.json())
+  }
 
   // 2) set meeting status in zoom to 'end'
   await zoom.put({path: `meetings/${meeting.fields['Zoom ID']}/status`, body: {action: 'end'}})

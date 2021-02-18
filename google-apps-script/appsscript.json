@@ -1,0 +1,49 @@
+{
+  "timeZone": "America/New_York",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Calendar",
+        "serviceId": "calendar",
+        "version": "v3"
+      }
+    ]
+  },
+  "webapp": {
+    "executeAs": "USER_ACCESSING",
+    "access": "DOMAIN"
+  },
+  "addOns": {
+    "calendar": {
+      "conferenceSolution": [
+        {
+          "id": 1,
+          "name": "My Web Conference",
+          "logoUrl": "http://placekitten.com/200/300",
+          "onCreateFunction": "createConference"
+        }
+      ],
+      "currentEventAccess": "READ_WRITE"
+    },
+    "common": {
+      "homepageTrigger": {
+        "enabled": false
+      },
+      "logoUrl": "http://placekitten.com/200/300",
+      "name": "My Web Conference"
+    }
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/calendar.addons.execute",
+    "https://www.googleapis.com/auth/calendar.events.readonly",
+    "https://www.googleapis.com/auth/calendar.addons.current.event.write",
+    "https://www.googleapis.com/auth/calendar.addons.current.event.read",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/script.scriptapp"
+  ],
+  "urlFetchWhitelist": [
+    "https://hack.af/"
+  ]
+}
