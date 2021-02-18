@@ -4,7 +4,7 @@ const ensureZoomAuthenticated = require("../ensure-zoom-authenticated");
 const updateSlackCallParticipantList = require("../update-slack-call-participant-list");
 
 module.exports = async (req, res) => {
-  await ensureZoomAuthenticated(req, res, async () => {
+  return await ensureZoomAuthenticated(req, res, async () => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
 
     // Zoom will sometimes send duplicate events, drop an event, or send an
