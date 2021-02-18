@@ -2,11 +2,15 @@ const ZoomClient = require('./zoom-client')
 const AirBridge = require("./airbridge")
 const closeZoomCall = require('./close-zoom-call')
 
+function availableHost() {
+  return AirBridge.find('Hosts', {filterByFormula: 'AND({Open Meetings}<2,{Enabled}=TRUE())'})
+}
+
 module.exports = async () => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
   // ¯\_(ツ)_/¯
-  let host = await AirBridge.find('Hosts', {filterByFormula:'{Open Meetings}<2'})
+  let host = await availableHost()
 
   // no free hosts? let's try closing some stale zoom calls
   if (!host) {
@@ -18,7 +22,7 @@ module.exports = async () => {
         closeZoomCall(call.fields['Zoom ID'])
       }))
       console.log("Now let's see if there's another open host...")
-      host = await AirBridge.find('Hosts', {filterByFormula:'{Open Meetings}<2'})
+      host = await availableHost()
     }
   }
 
@@ -59,6 +63,6 @@ module.exports = async () => {
 
   return {
     ...meeting,
-    hostID: host.id
+    host: host
   }
 }
