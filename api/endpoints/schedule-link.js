@@ -12,10 +12,8 @@ module.exports = async (req, res) => {
 
   // Find or create a scheduling link record with the ID we've been given
   let link = await AirBridge.find('Scheduling Links', {filterByFormula: `{Name}='${query.id}'` })
-  console.log({link})
   if (!link) {
     link = await AirBridge.create('Scheduling Links', {Name: query.id})
-    console.log({link})
   }
 
   let airtableMeeting
