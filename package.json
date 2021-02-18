@@ -6,7 +6,7 @@
   "author": "Max Wofford <max@maxwofford.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon"
+    "dev": "NODE_ENV=development nodemon"
   },
   "dependencies": {
     "airtable-plus": "^1.0.4",

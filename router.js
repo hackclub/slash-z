@@ -1,6 +1,8 @@
 const { resolve, relative, extname, basename, dirname } = require('path')
 const { readdir } = require('fs').promises
 
+const recordError = require('./api/record-error')
+
 async function getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true })
   const files = await Promise.all(dirents.map((dirent) => {
@@ -34,6 +36,7 @@ module.exports = async (app) => {
         await route(req, res)
       } catch (err) {
         console.error(err)
+        recordError(err)
       }
     })
   })).then(_ => {
