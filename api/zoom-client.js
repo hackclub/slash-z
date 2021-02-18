@@ -51,7 +51,7 @@ module.exports = class ZoomClient {
       } else if (r.status == 204) {
         return {}
       } else {
-        r.text().then(text => {throw Error(text)})
+        return r.text().then(text => {throw Error(text)})
       }
     }).catch(err => {
       console.error(err)
