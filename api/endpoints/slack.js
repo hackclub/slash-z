@@ -103,23 +103,23 @@ module.exports = async (req, res) => {
     },
     body: JSON.stringify(slackPostFields)
   })
-  await fetch(req.body.response_url, {
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      response_type: 'ephemeral',
-      text: 'You find a golden key',
-      blocks: [{
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `Something shiny catches your eye. You find <${meeting.start_url}|a golden key> you can use to make yourself the administrator of the *${host.fields['Name Displayed to Users']}*.`
-        }
-      }]
-    })
-  })
+  // await fetch(req.body.response_url, {
+  //   method: 'post',
+  //   headers: {
+  //     'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+  //     'Content-Type': 'application/json'
+  //   },
+  //   body: JSON.stringify({
+  //     response_type: 'ephemeral',
+  //     text: 'You find a golden key',
+  //     blocks: [{
+  //       type: 'section',
+  //       text: {
+  //         type: 'mrkdwn',
+  //         text: `Something shiny catches your eye. You find <${meeting.start_url}|a golden key> you can use to make yourself the administrator of the *${meeting.host.fields['Name Displayed to Users']}*.`
+  //       }
+  //     }]
+  //   })
+  // })
 })
 }
