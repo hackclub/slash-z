@@ -38,5 +38,4 @@ module.exports = async (req, res) => {
   }
 
   res.redirect(airtableMeeting.fields['Join URL'])
-
 }
