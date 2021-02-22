@@ -11,7 +11,7 @@ module.exports = async (zoomID, forceClose = false) => {
   // check if zoom meeting still has participants...
   const metrics = await zoom.get({path: `metrics/meetings/${meeting.fields['Zoom ID']}/participants`})
   if (!forceClose && metrics.total_records > 0) {
-    console.log(`This meeting has ${metrics.total_records} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`)
+    console.log(`Meeting ${meeting.fields['Zoom ID']} has ${metrics.total_records} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`)
     return null
   }
 
