@@ -1,7 +1,6 @@
 const { default: fetch } = require("node-fetch")
 const AirBridge = require("../airbridge")
 const ensureSlackAuthenticated = require("../ensure-slack-authenticated")
-const ZoomClient = require('../zoom-client')
 const openZoomMeeting = require('../open-zoom-meeting')
 
 module.exports = async (req, res) => {
