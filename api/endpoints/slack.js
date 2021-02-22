@@ -26,7 +26,22 @@ module.exports = async (req, res) => {
     // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
     // ¯\_(ツ)_/¯
 
-    const meeting = await openZoomMeeting()
+    try {
+      const meeting = await openZoomMeeting()
+    } catch (err) {
+      const errorSlackPost = await fetch(req.body.response_url, {
+        method: 'post',
+        headers: {
+          'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          response_type: 'in_channel',
+          text: 'Out of open hosts!',
+        })
+      })
+      return
+    }
     
     // now register the call on slack
     const slackCallFields = {
