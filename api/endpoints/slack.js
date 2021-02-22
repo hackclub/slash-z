@@ -7,7 +7,20 @@ module.exports = async (req, res) => {
   return await ensureSlackAuthenticated(req, res, async () => {
     
     // Acknowledge we got the message so Slack doesn't show an error to the user
-    res.status(200).send('Working on it!')
+    res.status(200).send()
+
+    const loadingSlackPost = await fetch(req.body.response_url, {
+      method: 'post',
+      headers: {
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        response_type: 'in_channel',
+        text: 'A new Zoom Pro meeting was started with /z',
+      })
+    })
+    console.log({loadingSlackPost})
     
     // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
     // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
