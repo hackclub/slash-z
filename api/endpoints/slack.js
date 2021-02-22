@@ -26,9 +26,9 @@ module.exports = async (req, res) => {
     // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
     // ¯\_(ツ)_/¯
 
-    try {
-      const meeting = await openZoomMeeting()
-    } catch (err) {
+    const meeting = await openZoomMeeting()
+
+    if (!meeting) {
       const errorSlackPost = await fetch(req.body.response_url, {
         method: 'post',
         headers: {
