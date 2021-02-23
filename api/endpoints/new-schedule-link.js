@@ -7,9 +7,11 @@ module.exports = async (req, res) => {
   }
   if (!user.fields['Slack ID']) {
     // No slack ID for this user? they're unauthenticated! Let's return an auth challenge
+    const redirectUrl = 'https://hack.af/z/slack-auth'
+    const authUrl = `https://slack.com/oauth/authorize?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&scope=identity.basic%20identity.team&client_id=2210535565.1711449950551&state=${user.id}`
     return res.json({
       error: 'AUTH',
-      redirectTo: `https://hack.af/z/auth?id${user.id}`
+      authUrl
     })
   }
 
