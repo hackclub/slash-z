@@ -30,7 +30,7 @@ module.exports = async ({creatorSlackID}) => {
     if (staleCalls.length > 0) {
       console.log(`No free hosts! I found ${staleCalls} meeting(s) that might be over, so I'll try closing them & trying again`)
       await Promise.all(staleCalls.map(async (call) => {
-        closeZoomCall(call.fields['Zoom ID'])
+        await closeZoomCall(call.fields['Zoom ID'])
       }))
       console.log("Now let's see if there's another open host...")
       host = await availableHost()
