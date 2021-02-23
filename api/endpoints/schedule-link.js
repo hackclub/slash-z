@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     // add it to the list of scheduled meetings
     const fields = {}
     fields['Zoom ID'] = zoomMeeting.id.toString()
-    fields['Host'] = [zoomMeeting.hostID]
+    fields['Host'] = [zoomMeeting.host.id]
     fields['Started At'] = Date.now()
     fields['Join URL'] = zoomMeeting.join_url
     fields['Scheduling Link'] = [link.id]
