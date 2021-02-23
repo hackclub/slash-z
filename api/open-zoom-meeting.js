@@ -6,7 +6,7 @@ function availableHost() {
   return AirBridge.find('Hosts', {filterByFormula: 'AND({Open Meetings}<2,{Enabled}=TRUE())'})
 }
 
-module.exports = async () => {
+module.exports = async ({creatorSlackID}) => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
   // ¯\_(ツ)_/¯
@@ -15,7 +15,18 @@ module.exports = async () => {
   // no free hosts? let's try closing some stale zoom calls
   if (!host) {
     const cutoff = 60*2 // 2 minutes
-    const staleCalls = await AirBridge.get('Meetings', {filterByFormula: `AND({status}='OPEN', DATETIME_DIFF(NOW(),{Started At})>${cutoff})`})
+    // either the call is open & has been for the last 2 minutes,
+    // OR the call was opened by the person who just initiated the 'new call'
+    const formula = `
+    AND(
+      {status}='OPEN',
+      OR(
+        DATETIME_DIFF(NOW(),{Started At})>${cutoff},
+        {Creator Slack ID}='${creatorSlackID}'
+      )
+    )
+    `
+    const staleCalls = await AirBridge.get('Meetings', {filterByFormula: formula})
     if (staleCalls.length > 0) {
       console.log(`No free hosts! I found ${staleCalls} meeting(s) that might be over, so I'll try closing them & trying again`)
       await Promise.all(staleCalls.map(async (call) => {

@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
 
     let meeting
     try {
-      meeting = await openZoomMeeting()
+      meeting = await openZoomMeeting({creatorSlackID: req.body.user_id})
     } catch (err) {
       const errorSlackPost = await fetch(req.body.response_url, {
         method: 'post',
