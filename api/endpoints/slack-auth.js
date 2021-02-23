@@ -8,7 +8,8 @@ module.exports = async (req, res) => {
     const tokenUrl = 'https://slack.com/api/oauth.v2.access' +
                       `?code=${code}` +
                       `&client_id=${process.env.SLACK_CLIENT_ID}` +
-                      `&client_secret=${process.env.SLACK_CLIENT_SECRET}`
+                      `&client_secret=${process.env.SLACK_CLIENT_SECRET}` +
+                      `&redirect_uri=${encodeURIComponent('https://hack.af/z/slack-auth')}`
                       console.log({tokenUrl})
     const slackToken = await fetch(tokenUrl, {method: 'post'}).then(r => r.json())
     console.log({slackToken})
