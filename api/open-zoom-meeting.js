@@ -6,7 +6,7 @@ function availableHost() {
   return AirBridge.find('Hosts', {filterByFormula: 'AND({Open Meetings}<2,{Enabled}=TRUE())'})
 }
 
-module.exports = async ({creatorSlackID}) => {
+module.exports = async ({creatorSlackID}={}) => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
   // ¯\_(ツ)_/¯
