@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
                       `&client_secret=${process.env.SLACK_CLIENT_SECRET}` +
                       `&redirect_uri=${encodeURIComponent('https://hack.af/z/slack-auth')}`
     const slackData = await fetch(tokenUrl, {method: 'post'}).then(r => r.json())
-    AirBridge.patch('Authed Accounts', recordID, { 'Slack User ID': slackData['authed_user']['id'] })
+    AirBridge.patch('Authed Accounts', recordID, { 'Slack ID': slackData['authed_user']['id'] })
     res.status(200).send('It worked! You can close this tab now')
   } else {
     // oh, we're far off the yellow brick road now...
