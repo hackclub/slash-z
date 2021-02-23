@@ -3,9 +3,14 @@ const AirBridge = require("../airbridge")
 module.exports = async (req, res) => {
   let user = await AirBridge.find('Authed Accounts', { filterByFormula: `{Name}='${req.query.id}'` })
   if (!user) {
-    // in the future, we'll return an oauth challenge if we can't find a user
-    // with this id. for now, let's just give them an account
     user = await AirBridge.create('Authed Accounts', {'Name': req.query.id})
+  }
+  if (!user.fields['Slack ID']) {
+    // No slack ID for this user? they're unauthenticated! Let's return an auth challenge
+    return res.json({
+      error: 'AUTH',
+      redirectTo: `https://hack.af/z/auth?id${user.id}`
+    })
   }
 
   // let's spice this name creation up in the future too
