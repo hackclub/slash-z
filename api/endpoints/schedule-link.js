@@ -24,14 +24,17 @@ module.exports = async (req, res) => {
     const zoomMeeting = await openZoomMeeting()
     console.log(`Created zoom meeting '${zoomMeeting.id}', recording on airtable`)
     // add it to the list of scheduled meetings
-    airtableMeeting = await AirBridge.create('Meetings', {
-      'Zoom ID': '' + zoomMeeting.id,
-      'Creator Slack ID': link.fields['Creator Slack ID'],
-      'Host': [zoomMeeting.hostID],
-      'Started At': Date.now(),
-      'Join URL': zoomMeeting.join_url,
-      'Scheduling Link': [link.id]
-    })
+    const fields = {}
+    fields['Zoom ID'] = zoomMeeting.id.toString()
+    fields['Host'] = [zoomMeeting.hostID]
+    fields['Started At'] = Date.now()
+    fields['Join URL'] = zoomMeeting.join_url
+    fields['Scheduling Link'] = [link.id]
+    if (link.fields['Creator Slack ID']) {
+      fields['Creator Slack ID'] = link.fields['Creator Slack ID']
+    }
+
+    airtableMeeting = await AirBridge.create('Meetings', fields)
   } else {
     console.log(`There's already an open meeting for scheduling link '${link.fields['Name']}'`)
     airtableMeeting = await AirBridge.find('Meetings', {filterByFormula: `AND('${link.fields['Name']}'={Scheduling Link},{Status}='OPEN')`})
