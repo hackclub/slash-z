@@ -21,8 +21,13 @@ module.exports = async (req, res) => {
   if (link.fields['Open Meetings'] == 0) {
     console.log(`No open meetings for scheduling link '${link.fields['Name']}', creating a new one`)
     // start a meeting
-    const zoomMeeting = await openZoomMeeting()
-    console.log(`Created zoom meeting '${zoomMeeting.id}', recording on airtable`)
+    let zoomMeeting
+    try {
+      zoomMeeting = await openZoomMeeting()
+    } catch (err) {
+      res.status.send('No open hosts!')
+      return
+    }
     // add it to the list of scheduled meetings
     const fields = {}
     fields['Zoom ID'] = zoomMeeting.id.toString()
