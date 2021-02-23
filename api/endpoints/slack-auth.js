@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
                       `&client_id=${process.env.SLACK_CLIENT_ID}` +
                       `&client_secret=${process.env.SLACK_CLIENT_SECRET}`
                       console.log({tokenUrl})
-    const slackToken = await fetch(tokenUrl)
+    const slackToken = await fetch(tokenUrl, {method: 'post'}).then(r => r.json())
     console.log({slackToken})
     AirBridge.patch('Authed Accounts', recordID, { 'Slack Auth Code': slackToken })
     const slackUser = await fetch('https://slack.com/api/users.identity', {
