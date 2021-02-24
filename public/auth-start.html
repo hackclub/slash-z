@@ -1,0 +1,403 @@
+<!-- 
+  All of the animation/canvas credit goes to this codepen! https://codepen.io/zadvorsky/pen/PqeJLx
+  I'm using it while prototyping, & I can drop in another eerie background animation once I have time
+ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* don't flash user with bright light before things load in */
+      body {
+        margin: 0;
+        background: #000000;
+        overflow: hidden;
+      }
+
+      #canvas {
+        position: absolute;
+        margin: auto;
+        width: 600px;
+        height: 600px;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #000;
+        animation: fadeinLoad 2s 0.5s forwards;
+        opacity: 0;
+      }
+
+      .message {
+        /* fade in */
+        opacity: 0;
+        animation: fadeinLoad 2s 2s forwards;
+
+        /* centered on page */
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
+
+        border: 0.5px solid white;
+        padding: 1rem;
+        border-radius: 5px;
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .sign-button {
+        border: 0.5px solid white;
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.75);
+        color: black;
+      }
+      .tos-button {
+        border: 0.5px solid white;
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 5px;
+        color: rgba(255, 255, 255, 0.75);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .button-container {
+        margin: 1rem;
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      .message > * {
+        opacity: 0;
+      }
+
+      .message > *:nth-child(1) {
+        animation: fadeinLoad 2s 2.5s forwards;
+      }
+      .message > *:nth-child(2) {
+        animation: fadeinLoad 2s 5s forwards;
+      }
+      .message > *:nth-child(3) {
+        animation: fadeinLoad 2s 7s forwards;
+      }
+      .message > *:nth-child(4) {
+        animation: fadeinLoad 2s 10s forwards;
+      }
+
+      @keyframes fadeinLoad {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="canvas"></canvas>
+    <div class="message">
+      <span>While walking through the woods you come upon a mansion.</span>
+      <!-- intentional non-breaking space -->
+      <span>You&#32;enter.</span>
+      <span>A guest book lies open in the lobby with a fountain pen by it's side.</span>
+      <div class="button-container">
+        <a href="" class="sign-button">Sign the guest book</a>
+        <!-- TODO: Add this link to a page that describes how we use personal details etc. -->
+        <!-- <a href="" class="tos-button">Read the inside cover</a> -->
+      </div>
+    </div>
+  </body>
+
+  <script>
+    // set the signin button to the oauth route
+    document.querySelector('.sign-button').href = 'https://hackclub.slack.com/oauth' + location.search
+
+    // remove the search params from the url
+    history.pushState(null, "", location.href.split("?")[0])
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+  <script>
+    var mViewWidth = 0,
+      mViewHeight = 0,
+      mCanvas = document.getElementById("canvas"),
+      mCtx;
+
+    var mRootDisplayNode;
+    var mTrees = [];
+
+    var mTreeImage = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/tree.png',
+      mMonsterImage = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/monster-01.png';
+
+    var mUrls = [
+      mTreeImage,
+      mMonsterImage
+    ];
+
+    var mImages = {};
+    var mLoadedCount = 0;
+
+    mUrls.forEach(function (url) {
+      var img = mImages[url] = document.createElement('img');
+
+      img.onload = function () {
+        if (++mLoadedCount === mUrls.length) {
+          init();
+        }
+      };
+
+      img.crossOrigin = 'Anonymous';
+      img.src = url;
+    });
+
+    function init() {
+      initCanvas();
+
+      createMist();
+      createTrees(300);
+      createMist();
+      createTrees(250);
+      createMist();
+      createTrees(160);
+      createMist();
+      createTrees(120);
+      createMist();
+      createTrees(90);
+      createMist();
+      createTrees(70);
+
+      requestAnimationFrame(loop);
+    }
+
+    function initCanvas() {
+      mViewWidth = mCanvas.width = mCanvas.clientWidth;
+      mViewHeight = mCanvas.height = mCanvas.clientHeight;
+      mCtx = mCanvas.getContext('2d');
+
+      mRootDisplayNode = new Node();
+    }
+
+    function createMist() {
+      var mist = new Node(new Mist(mViewWidth * 1.2, mViewHeight * 1.2));
+      var range = randomRange(0, 100);
+
+      mist.x = -mViewWidth * 0.1;
+      mist.y = -mViewHeight * 0.1;
+
+      TweenMax.fromTo(mist, randomRange(6, 8), { y: '-=' + range }, { y: '-=' + range, ease: Power1.easeInOut, repeat: -1, yoyo: true });
+
+      mRootDisplayNode.add(mist);
+    }
+
+    // function createMonster() {
+    //   var monster = new Node(new Monster(mImages[mMonsterImage]));
+
+    //   monster.y = 135;
+    //   monster.x = -150;
+
+    //   var stepDeltaX = 30,
+    //     stepDeltaY = 10;
+
+    //   var stepDuration = 1.6,
+    //     startOffset = 0.6;
+
+    //   function step() {
+    //     var tl = new TimelineMax();
+
+    //     if (monster.x > mViewWidth) {
+    //       monster.x = -150;
+    //     }
+
+    //     tl.to(monster, stepDuration * 0.4, { y: '-=' + stepDeltaY, ease: Power2.easeOut }, startOffset);
+    //     tl.to(monster, stepDuration * 0.6, { y: '+=' + stepDeltaY, ease: Power4.easeIn });
+    //     tl.add('shake');
+    //     tl.to(monster, stepDuration, { x: '+=' + stepDeltaX, ease: Power1.easeOut }, startOffset);
+
+    //     tl.addCallback(function () {
+    //       mTrees.forEach(function (t) {
+    //         TweenMax.to(t, randomRange(0.3, 0.4), { y: '+=' + randomRange(4, 16), ease: Back.easeIn, repeat: 1, yoyo: true });
+    //       });
+    //     }, 'shake-=0.25');
+
+    //     tl.eventCallback('onComplete', step);
+    //   }
+
+    //   mRootDisplayNode.add(monster);
+    //   step();
+    // }
+
+    function createTrees(yOffset) {
+      var tree;
+
+      var dx = mViewWidth / 12;
+
+      for (var i = 0; i < 12; i++) {
+        tree = createTree(
+          mImages[mTreeImage],
+          dx * i + 35 * randomRange(0.8, 1.2),
+          (mViewHeight - yOffset) * randomRange(1.0, 1.2)
+        );
+
+        tree._segments.forEach(function (c) {
+          var range = randomRange(0.01, 0.02);
+
+          TweenMax.fromTo(c, randomRange(2, 10),
+            { rotation: -range },
+            { rotation: range, ease: Power1.easeInOut, repeat: -1, yoyo: true }
+          );
+        });
+
+        mRootDisplayNode.add(tree);
+        mTrees.push(tree);
+      }
+    }
+
+
+    function createTree(image, x, y) {
+      var totalWidth = image.naturalWidth,
+        totalHeight = image.naturalHeight;
+
+      var steps = 6,
+        deltaHeight = totalHeight / steps;
+
+      var treeRoot = new Node();
+      var prevSegment = treeRoot;
+
+      treeRoot.x = x;
+      treeRoot.y = y;
+      treeRoot._segments = [];
+
+      for (var i = 0; i < steps; i++) {
+        var sourceX = 0,
+          sourceY = totalHeight - deltaHeight * (i + 1),
+          sourceWidth = totalWidth,
+          sourceHeight = deltaHeight;
+
+        var segment = new Node(new ImageFragment(image, sourceX, sourceY, sourceWidth, sourceHeight));
+
+        if (i === 0) {
+          segment.x = -totalWidth * 0.5;
+        }
+
+        segment.y = -deltaHeight * 0.95;
+        segment.pivotX = totalWidth * 0.5;
+        segment.pivotY = deltaHeight;
+
+        prevSegment.add(segment);
+        prevSegment = segment;
+
+        treeRoot._segments.push(segment);
+      }
+
+      return treeRoot;
+    }
+
+    /////////////////////////////
+    // LOOP
+    /////////////////////////////
+
+    function update() {
+
+    }
+
+    function draw() {
+      mCtx.clearRect(0, 0, mViewWidth, mViewHeight);
+
+      mRootDisplayNode.render();
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    /////////////////////////////
+    // Classes
+    /////////////////////////////
+
+    // function Monster(img) {
+    //   this.img = img;
+    // }
+    // Monster.prototype = {
+    //   draw: function () {
+    //     mCtx.drawImage(this.img, 0, 0);
+    //   }
+    // };
+
+    function Mist(w, h) {
+      this.w = w;
+      this.h = h;
+
+      this.gradient = mCtx.createLinearGradient(w * 0.5, h, w * randomRange(0.6, 0.9), 0);
+      this.gradient.addColorStop(0.25, 'rgba(0,0,0,0)');
+      this.gradient.addColorStop(randomRange(0.5, 0.7), 'rgba(255,255,255,0.3)');
+      this.gradient.addColorStop(0.9, 'rgba(0,0,0,0)');
+    }
+    Mist.prototype = {
+      draw: function () {
+        mCtx.fillStyle = this.gradient;
+        mCtx.fillRect(0, 0, this.w, this.h);
+      }
+    };
+
+    function ImageFragment(img, sx, sy, sw, sh) {
+      this.img = img;
+      this.sx = sx;
+      this.sy = sy;
+      this.sw = sw;
+      this.sh = sh;
+    }
+    ImageFragment.prototype = {
+      draw: function () {
+        mCtx.drawImage(this.img, this.sx, this.sy, this.sw, this.sh, 0, 0, this.sw, this.sh);
+      }
+    };
+
+
+    function Node(graphics) {
+      this.graphics = graphics;
+      this.x = 0;
+      this.y = 0;
+      this.pivotX = 0;
+      this.pivotY = 0;
+      this.scaleX = 1;
+      this.scaleY = 1;
+      this.rotation = 0;
+      this.children = [];
+    }
+    Node.prototype = {
+      add: function (node) {
+        this.children.push(node);
+      },
+      remove: function (node) {
+        var i = this.children.indexOf(node);
+
+        if (i >= 0) {
+          this.children.splice(i, 1);
+        }
+      },
+      render: function () {
+        mCtx.save();
+
+        mCtx.translate(this.pivotX + this.x, this.pivotY + this.y);
+        mCtx.rotate(this.rotation);
+        mCtx.scale(this.scaleX, this.scaleY);
+        mCtx.translate(-this.pivotX, -this.pivotY);
+
+        this.graphics && this.graphics.draw();
+
+        for (var i = 0; i < this.children.length; i++) {
+          this.children[i].render();
+        }
+
+        mCtx.restore();
+      }
+    };
+
+    /////////////////////////////
+    // utils
+    /////////////////////////////
+
+    function randomRange(min, max) {
+      return min + Math.random() * (max - min);
+    }
+  </script>
+
+</html>
