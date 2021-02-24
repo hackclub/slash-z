@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     try {
       zoomMeeting = await openZoomMeeting()
     } catch (err) {
-      res.status.send('No open hosts!')
+      res.status(503).send('No open hosts!')
       return
     }
     // add it to the list of scheduled meetings
