@@ -6,8 +6,7 @@ module.exports = async (req, res) => {
   const user = await AirBridge.find('Authed Accounts', {filterByFormula: `RECORD_ID()='${recordID}'`})
 
   if (user) {
-    // const tokenUrl = 'https://slack.com/api/oauth.v2.access' +
-    const tokenUrl = 'https://js-slash-z.hackclub.com/auth-start.html' +
+    const tokenUrl = 'https://slack.com/api/oauth.v2.access' +
                       `?code=${code}` +
                       `&client_id=${process.env.SLACK_CLIENT_ID}` +
                       `&client_secret=${process.env.SLACK_CLIENT_SECRET}` +
