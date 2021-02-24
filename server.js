@@ -11,6 +11,8 @@ app.get('/ping', (req, res) => {
   res.send('pong!')
 })
 
+app.use(express.static('public'))
+
 require('./router')(app)
 
 const port = process.env.PORT || 0
