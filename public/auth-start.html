@@ -107,7 +107,7 @@
 
   <script>
     // set the signin button to the oauth route
-    document.querySelector('.sign-button').href = 'https://hackclub.slack.com/oauth' + location.search
+    document.querySelector('.sign-button').href = 'https://slack.com/oauth/v2/authorize' + location.search
 
     // remove the search params from the url
     history.pushState(null, "", location.href.split("?")[0])
