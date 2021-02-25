@@ -15,21 +15,42 @@
       html {
         background: black;
       }
+      .toggle {
+        position: absolute;
+        color: white;
+        top: 0;
+        left: 0;
+        font-size: 2rem;
+        font-weight: bold;
+        border: none;
+        background: none;
+      }
+      .hidden {
+        display: none;
+      }
 
       .letter {
-        font-family: 'Calligraffitti', cursive;
+        position: relative;
         background: black;
         border: 1px solid white;
         padding: 1rem;
         border-radius: 5px;
         color: rgba(255, 255, 255, 0.75);
-        max-width: 64em;
+        max-width: 48em;
         margin: 0 auto;
       }
       .header {
-        font-family: 'Friedolin';
         font-size: 4em;
         text-align: center;
+      }
+      .olde {
+        font-family: 'Calligraffitti', cursive;
+      }
+      .olde > .header {
+        font-family: 'Friedolin';
+      }
+      .modern {
+        font-family: Helvetica, Arial, sans-serif;
       }
       .addressee {
         font-size: 2rem;
@@ -39,19 +60,44 @@
 
   <body>
     <div class='letter'>
-      <h2 class='header'>Orpheus Manor</h2>
-      <p class='addressee'>Dear wanderer,</p>
-      <p>You must be soaked to the bone! Heavens, please come in and dry off!</p>
-      <hr>
-      <p>
-        Now that you're getting settled in, I'd like to formally welcome you to
-        <strong>Orpheus Manor</strong>. This manor serves as a meeting place for Hack Clubbers across the world.
-        Although Hack Clubbers are free to invite others onto the grounds through a Calendar Invite, only Hack Clubbers are allowed to open the doors on the manor grounds.
-        To ensure that only Hack Clubbers have access to these doors, you're required to sign the logbook with your Slack account.
-      </p>
-      <p>Sincerely,</p>
-      <p>The Groundskeeper</p>
+      <div class="olde">
+        <h2 class='header'>Guest Book of Orpheus Manor</h2>
+        <p class='addressee'>To Whom It May Concern,</p>
+        <p>If you are about to sign this guest book, make sure you are prepared.</p>
+        <p>You will require, this guestbook & fountain pen, an understanding of the contract you are about to sign, and a sacrifice.</p>
+        <p>
+          While anyone is permitted onto the grounds of Orpheus Manor, only Hack Clubbers are permitted to open rooms up for meetings.
+          Placing your name in this book will create a bond between souls - tethering your Slack User ID to your Gmail address.
+          The binding process is can be undone upon request, but is used to verify you truly are a Hack Clubber before opening a room.
+          You only need to sign here once.
+        </p>
+        <p>Sincerely,</p>
+        <p>The Groundskeeper</p>
+      </div>
+      <div class="modern hidden">
+        <h2 class='header'>OAuth info you're permitting</h2>
+        <p class='addressee'>
+          👋 Hey there whoever-you-are!</p>
+        <p>
+          This sign-in will give us access to your email address & Slack ID.
+          We're only providing /z to Hack Club Slack users, so we link these
+          in our database to ensure only Hack Clubbers can use our calendar integration.
+        </p>
+        <p>
+          I don't use the addresses to send you emails except for admin/debugging tasks (ie. <em>if I need to reach out to you to fix your account</em>).
+        </p>
+        <p>Just reach out over email or Slack if you have any questions,</p>
+        <p>Max Wofford (the developer)</p>
+      </div>
+      <button class="toggle"><span style="font-family: 'Calligraffitti';">A</span>&#8646;<span>A</span></button>
     </div>
   </body>
 
+  <script>
+    document.querySelector('.toggle').onclick = function(e) {
+      e.preventDefault()
+      document.querySelector('.modern').classList.toggle('hidden')
+      document.querySelector('.olde').classList.toggle('hidden')
+    }
+  </script>
 </html>
