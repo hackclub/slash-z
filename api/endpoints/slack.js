@@ -111,12 +111,12 @@ module.exports = async (req, res) => {
     },
     body: JSON.stringify({
       response_type: 'ephemeral',
-      text: 'You find a golden key',
+      text: ':key: You find a golden key',
       blocks: [{
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `Something shiny catches your eye. You find <${meeting.start_url}|a golden key> you can use to make yourself the administrator of the *${meeting.host.fields['Name Displayed to Users']}*.`
+          text: `Something shiny catches your eye. You find <${meeting.start_url}|a golden key> :key: you can use to make yourself the administrator of the *${meeting.host.fields['Name Displayed to Users']}*.`
         }
       }]
     })
