@@ -15,7 +15,7 @@
       html {
         background: black;
       }
-      .toggle {
+      .letter-toggle {
         position: absolute;
         color: white;
         top: 0;
@@ -89,12 +89,12 @@
         <p>Just reach out over email or Slack if you have any questions,</p>
         <p>Max Wofford (the developer)</p>
       </div>
-      <button class="toggle"><span style="font-family: 'Calligraffitti';">A</span>&#8646;<span>A</span></button>
+      <button class="letter-toggle"><span style="font-family: 'Calligraffitti';">A</span>&#8646;<span>A</span></button>
     </div>
   </body>
 
   <script>
-    document.querySelector('.toggle').onclick = function(e) {
+    document.querySelector('.letter-toggle').onclick = function(e) {
       e.preventDefault()
       document.querySelector('.modern').classList.toggle('hidden')
       document.querySelector('.olde').classList.toggle('hidden')

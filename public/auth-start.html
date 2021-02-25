@@ -14,6 +14,15 @@
         overflow: hidden;
       }
 
+      @import url('https://fonts.googleapis.com/css2?family=Calligraffitti&display=swap');
+
+      @font-face {
+        font-family: 'Friedolin';
+        font-style: normal;
+        font-weight: normal;
+        src: local('Friedolin'), url('friedolin_woff/Friedolin.woff') format('woff');
+      }
+
       .canvas:not(.hidden) {
         position: absolute;
         margin: auto;
@@ -96,7 +105,7 @@
       .message>*:nth-child(4) {
         animation: fadeinLoad 2s 10s forwards;
       }
-      
+
       .message>*:nth-child(5) {
         animation: fadeinLoad 2s 15.5s forwards;
       }
@@ -110,6 +119,71 @@
           opacity: 1;
         }
       }
+
+      .letter-closer {
+        position: absolute;
+        color: black;
+        background:rgba(255, 255, 255, 0.35);
+        border: none;
+        border-radius: 5px;
+        top: 0;
+        right: 0;
+        font-size: 2rem;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .letter-toggle {
+        position: absolute;
+        color: white;
+        top: 0;
+        left: 0;
+        font-size: 2rem;
+        font-weight: bold;
+        border: none;
+        background:rgba(255, 255, 255, 0.35);
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .letter-hidden {
+        display: none;
+        pointer-events: none;
+      }
+
+      .letter-modal-background {
+        content: '';
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        cursor: pointer;
+      }
+      .letter {
+        position: relative;
+        background: black;
+        border: 1px solid white;
+        padding: 1rem;
+        border-radius: 5px;
+        color: rgba(255, 255, 255, 0.75);
+        max-width: 48em;
+        margin: 0 auto;
+      }
+      .header {
+        font-size: 4em;
+        text-align: center;
+      }
+      .olde {
+        font-family: 'Calligraffitti', cursive;
+      }
+      .olde > .header {
+        font-family: 'Friedolin';
+      }
+      .modern {
+        font-family: Helvetica, Arial, sans-serif;
+      }
+      .addressee {
+        font-size: 2rem;
+      }
     </style>
   </head>
 
@@ -120,7 +194,7 @@
     </div>
     <canvas class="canvas hidden"></canvas>
     <div class="message hidden">
-      <audio class="audio-player"
+      <audio loop class="audio-player"
         src="https://cloud-r4z1d2t6p-hack-club-bot.vercel.app/1old_runescape_soundtrack_-_spooky-xffoi_ghkeu.mp3"></audio>
       <p style="display: inline-block;">While walking through the woods you come upon a mansion.</p>
       <!-- intentional non-breaking space -->
@@ -131,17 +205,71 @@
         <a href="" class="tos-button">Read the inside cover</a>
       </div>
     </div>
+    <div class='letter-modal-background letter-hidden'></div>
+    <div class='letter letter-hidden'>
+      <div class="olde">
+        <h2 class='header'>Guest Book of Orpheus Manor</h2>
+        <p class='addressee'>To Whom It May Concern,</p>
+        <p>If you are about to sign this guest book, make sure you are prepared.</p>
+        <p>You will require, this guestbook & fountain pen, an understanding of the contract you are about to sign, and
+          a sacrifice.</p>
+        <p>
+          While anyone is permitted onto the grounds of Orpheus Manor, only Hack Clubbers are permitted to open rooms up
+          for meetings.
+          Placing your name in this book will create a bond between souls - tethering your Slack User ID to your Gmail
+          address.
+          The binding process is can be undone upon request, but is used to verify you truly are a Hack Clubber before
+          opening a room.
+          You only need to sign here once.
+        </p>
+        <p>Sincerely,</p>
+        <p>The Groundskeeper</p>
+      </div>
+      <div class="modern letter-hidden">
+        <h2 class='header'>OAuth permissions</h2>
+        <p class='addressee'>
+          👋 Hey there whoever-you-are!</p>
+        <p>
+          This sign-in will give us access to your email address & Slack ID.
+          We're only providing /z to Hack Club Slack users, so we link these
+          in our database to ensure only Hack Clubbers can use our calendar integration.
+        </p>
+        <p>
+          I don't use the addresses to send you emails except for admin/debugging tasks (ie. <em>if I need to reach out
+            to you to fix your account</em>).
+        </p>
+        <p>Just reach out over email or Slack if you have any questions,</p>
+        <p>Max Wofford (the developer)</p>
+      </div>
+      <button class="letter-toggle"><span style="font-family: cursive;">A</span>&#8646;<span>A</span></button>
+      <button class="letter-closer">&times;</button>
+    </div>
   </body>
 
   <script>
     // set the signin button to the oauth route
     document.querySelector('.sign-button').href = 'https://slack.com/oauth/v2/authorize' + location.search
 
-    document.querySelector('.tos-button').href = '/auth-details.html'
-    // todo: add the auth details to this page & set the tos button to not reset the page
-    // document.querySelector('.tos-button').onclick = function (e) {
-    //   e.preventDefault()
-    // }
+    // set the tos button to reveal the tos letter & init interactivity for the letter
+    document.querySelector('.tos-button').onclick = function (e) {
+      e.preventDefault()
+      document.querySelector('.letter').classList.toggle('letter-hidden')
+      document.querySelector('.letter-modal-background').classList.toggle('letter-hidden')
+      document.querySelector('.letter-toggle').onclick = function (e2) {
+        e2.preventDefault()
+        document.querySelector('.modern').classList.toggle('letter-hidden')
+        document.querySelector('.olde').classList.toggle('letter-hidden')
+      }
+
+      function toggleLetterModal() {
+        document.querySelector('.letter').classList.toggle('letter-hidden')
+        document.querySelector('.letter-modal-background').classList.toggle('letter-hidden')
+      }
+      // click anywhere else? close the modal
+      document.querySelector('.letter-modal-background').onclick = toggleLetterModal
+      // click the close button? close the modal
+      document.querySelector('.letter-closer').onclick = toggleLetterModal
+    }
 
     function start(muted) {
       // remove sound options
