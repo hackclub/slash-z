@@ -134,7 +134,7 @@
       }
       .letter-toggle {
         position: absolute;
-        color: white;
+        color: rgba(0,0,0, 0.75);
         top: 0;
         left: 0;
         font-size: 2rem;
@@ -143,6 +143,7 @@
         background:rgba(255, 255, 255, 0.35);
         border-radius: 5px;
         cursor: pointer;
+
       }
       .letter-hidden {
         display: none;
@@ -160,11 +161,15 @@
       }
       .letter {
         position: relative;
-        background: black;
-        border: 1px solid white;
-        padding: 1rem;
+        background: rgb(143,129,93); /* fallback */
+        background: radial-gradient(ellipse at center, #ffeeac 0%, #5b2c15 100%);
+        box-shadow:
+          inset 0px 0px 12px 12px rgba(0,0,0,0.41),
+          inset -10em 0px 60px 24px rgba(0,0,0,0.31)
+          ;
+        padding: 3rem;
         border-radius: 5px;
-        color: rgba(255, 255, 255, 0.75);
+        color: rgba(0,0,0, 0.75);
         max-width: 48em;
         margin: 0 auto;
       }
@@ -174,6 +179,7 @@
       }
       .olde {
         font-family: 'Calligraffitti', cursive;
+        font-weight: bold;
       }
       .olde > .header {
         font-family: 'Friedolin';
