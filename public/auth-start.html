@@ -4,6 +4,7 @@
  -->
 <!DOCTYPE html>
 <html>
+
   <head>
     <style>
       /* don't flash user with bright light before things load in */
@@ -13,7 +14,7 @@
         overflow: hidden;
       }
 
-      #canvas {
+      .canvas:not(.hidden) {
         position: absolute;
         margin: auto;
         width: 600px;
@@ -27,7 +28,11 @@
         opacity: 0;
       }
 
-      .message {
+      .hidden {
+        visibility: hidden;
+      }
+
+      .message:not(.hidden) {
         /* fade in */
         opacity: 0;
         animation: fadeinLoad 2s 2s forwards;
@@ -38,11 +43,12 @@
         top: 50%;
         transform: translateX(-50%) translateY(-50%);
 
-        border: 0.5px solid white;
+        border: 1px solid white;
         padding: 1rem;
         border-radius: 5px;
         color: rgba(255, 255, 255, 0.75);
       }
+
       .sign-button {
         border: 0.5px solid white;
         padding: 1rem;
@@ -51,6 +57,7 @@
         background: rgba(255, 255, 255, 0.75);
         color: black;
       }
+
       .tos-button {
         border: 0.5px solid white;
         padding: 1rem;
@@ -66,41 +73,58 @@
         text-align: center;
       }
 
-      .message > * {
+      .message>* {
         opacity: 0;
       }
 
-      .message > *:nth-child(1) {
+      .message>*:nth-child(1) {
         animation: fadeinLoad 2s 2.5s forwards;
       }
-      .message > *:nth-child(2) {
-        animation: fadeinLoad 2s 5s forwards;
+
+      .message>*:nth-child(2) {
+        animation: fadeinLoad 2s 4.5s forwards;
       }
-      .message > *:nth-child(3) {
-        animation: fadeinLoad 2s 7s forwards;
+
+      .message>*:nth-child(3) {
+        animation: fadeinLoad 2s 8s forwards;
       }
-      .message > *:nth-child(4) {
+
+      .message>*:nth-child(4) {
         animation: fadeinLoad 2s 10s forwards;
+      }
+      
+      .message>*:nth-child(5) {
+        animation: fadeinLoad 2s 15.5s forwards;
       }
 
       @keyframes fadeinLoad {
-        from { opacity: 0; }
-        to { opacity: 1; }
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
       }
     </style>
   </head>
 
   <body>
-    <canvas id="canvas"></canvas>
-    <div class="message">
-      <span>While walking through the woods you come upon a mansion.</span>
+    <div class="sound-choice">
+      <button class="sound-on">Background music</button>
+      <button class="sound-off">No sound</button>
+    </div>
+    <canvas class="canvas hidden"></canvas>
+    <div class="message hidden">
+      <audio class="audio-player"
+        src="https://cloud-r4z1d2t6p-hack-club-bot.vercel.app/1old_runescape_soundtrack_-_spooky-xffoi_ghkeu.mp3"></audio>
+      <p style="display: inline-block;">While walking through the woods you come upon a mansion.</p>
       <!-- intentional non-breaking space -->
-      <span>You&#32;enter.</span>
-      <span>A guest book lies open in the lobby with a fountain pen by it's side.</span>
+      <p style="display: inline-block;">You&#32;enter.</p>
+      <p style="display: inline-block;">A guest book lies open in the lobby with a fountain pen by it's side.</p>
       <div class="button-container">
         <a href="" class="sign-button">Sign the guest book</a>
-        <!-- TODO: Add this link to a page that describes how we use personal details etc. -->
-        <!-- <a href="" class="tos-button">Read the inside cover</a> -->
+        <a href="" class="tos-button">Read the inside cover</a>
       </div>
     </div>
   </body>
@@ -109,295 +133,325 @@
     // set the signin button to the oauth route
     document.querySelector('.sign-button').href = 'https://slack.com/oauth/v2/authorize' + location.search
 
+    // set the tos button to not reset the page
+    document.querySelector('.tos-button').onclick = function (e) {
+      e.preventDefault()
+    }
+
+    function start(muted) {
+      // remove sound options
+      document.querySelector('.sound-choice').remove()
+      // initiate sound element
+      if (!muted) {
+        document.querySelector('.audio-player').play()
+      }
+      // show page
+      document.querySelector('.message').classList.remove('hidden')
+      document.querySelector('.canvas').classList.remove('hidden')
+      // init canvas stuff
+
+      const event = new Event('initialize');
+      document.querySelector('.canvas').dispatchEvent(event);
+    }
+    document.querySelector('.sound-off').onclick = function (e) {
+      start(true)
+    }
+    document.querySelector('.sound-on').onclick = function (e) {
+      start()
+    }
+
     // remove the search params from the url
     history.pushState(null, "", location.href.split("?")[0])
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
   <script>
-    var mViewWidth = 0,
-      mViewHeight = 0,
-      mCanvas = document.getElementById("canvas"),
-      mCtx;
+    document.querySelector('canvas').addEventListener('initialize', function (e) {
 
-    var mRootDisplayNode;
-    var mTrees = [];
+      var mViewWidth = 0,
+        mViewHeight = 0,
+        mCanvas = document.querySelector(".canvas"),
+        mCtx;
 
-    var mTreeImage = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/tree.png',
-      mMonsterImage = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/monster-01.png';
+      var mRootDisplayNode;
+      var mTrees = [];
 
-    var mUrls = [
-      mTreeImage,
-      mMonsterImage
-    ];
+      var mTreeImage = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/tree.png',
+        mMonsterImage = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/monster-01.png';
 
-    var mImages = {};
-    var mLoadedCount = 0;
+      var mUrls = [
+        mTreeImage,
+        mMonsterImage
+      ];
 
-    mUrls.forEach(function (url) {
-      var img = mImages[url] = document.createElement('img');
+      var mImages = {};
+      var mLoadedCount = 0;
 
-      img.onload = function () {
-        if (++mLoadedCount === mUrls.length) {
-          init();
+      mUrls.forEach(function (url) {
+        var img = mImages[url] = document.createElement('img');
+
+        img.onload = function () {
+          if (++mLoadedCount === mUrls.length) {
+            init();
+          }
+        };
+
+        img.crossOrigin = 'Anonymous';
+        img.src = url;
+      });
+
+      function init() {
+        initCanvas();
+
+        createMist();
+        createTrees(300);
+        createMist();
+        createTrees(250);
+        createMist();
+        createTrees(160);
+        createMist();
+        createTrees(120);
+        createMist();
+        createTrees(90);
+        createMist();
+        createTrees(70);
+
+        requestAnimationFrame(loop);
+      }
+
+      function initCanvas() {
+        mViewWidth = mCanvas.width = mCanvas.clientWidth;
+        mViewHeight = mCanvas.height = mCanvas.clientHeight;
+        mCtx = mCanvas.getContext('2d');
+
+        mRootDisplayNode = new Node();
+      }
+
+      function createMist() {
+        var mist = new Node(new Mist(mViewWidth * 1.2, mViewHeight * 1.2));
+        var range = randomRange(0, 100);
+
+        mist.x = -mViewWidth * 0.1;
+        mist.y = -mViewHeight * 0.1;
+
+        TweenMax.fromTo(mist, randomRange(6, 8), { y: '-=' + range }, { y: '-=' + range, ease: Power1.easeInOut, repeat: -1, yoyo: true });
+
+        mRootDisplayNode.add(mist);
+      }
+
+      // function createMonster() {
+      //   var monster = new Node(new Monster(mImages[mMonsterImage]));
+
+      //   monster.y = 135;
+      //   monster.x = -150;
+
+      //   var stepDeltaX = 30,
+      //     stepDeltaY = 10;
+
+      //   var stepDuration = 1.6,
+      //     startOffset = 0.6;
+
+      //   function step() {
+      //     var tl = new TimelineMax();
+
+      //     if (monster.x > mViewWidth) {
+      //       monster.x = -150;
+      //     }
+
+      //     tl.to(monster, stepDuration * 0.4, { y: '-=' + stepDeltaY, ease: Power2.easeOut }, startOffset);
+      //     tl.to(monster, stepDuration * 0.6, { y: '+=' + stepDeltaY, ease: Power4.easeIn });
+      //     tl.add('shake');
+      //     tl.to(monster, stepDuration, { x: '+=' + stepDeltaX, ease: Power1.easeOut }, startOffset);
+
+      //     tl.addCallback(function () {
+      //       mTrees.forEach(function (t) {
+      //         TweenMax.to(t, randomRange(0.3, 0.4), { y: '+=' + randomRange(4, 16), ease: Back.easeIn, repeat: 1, yoyo: true });
+      //       });
+      //     }, 'shake-=0.25');
+
+      //     tl.eventCallback('onComplete', step);
+      //   }
+
+      //   mRootDisplayNode.add(monster);
+      //   step();
+      // }
+
+      function createTrees(yOffset) {
+        var tree;
+
+        var dx = mViewWidth / 12;
+
+        for (var i = 0; i < 12; i++) {
+          tree = createTree(
+            mImages[mTreeImage],
+            dx * i + 35 * randomRange(0.8, 1.2),
+            (mViewHeight - yOffset) * randomRange(1.0, 1.2)
+          );
+
+          tree._segments.forEach(function (c) {
+            var range = randomRange(0.01, 0.02);
+
+            TweenMax.fromTo(c, randomRange(2, 10),
+              { rotation: -range },
+              { rotation: range, ease: Power1.easeInOut, repeat: -1, yoyo: true }
+            );
+          });
+
+          mRootDisplayNode.add(tree);
+          mTrees.push(tree);
+        }
+      }
+
+
+      function createTree(image, x, y) {
+        var totalWidth = image.naturalWidth,
+          totalHeight = image.naturalHeight;
+
+        var steps = 6,
+          deltaHeight = totalHeight / steps;
+
+        var treeRoot = new Node();
+        var prevSegment = treeRoot;
+
+        treeRoot.x = x;
+        treeRoot.y = y;
+        treeRoot._segments = [];
+
+        for (var i = 0; i < steps; i++) {
+          var sourceX = 0,
+            sourceY = totalHeight - deltaHeight * (i + 1),
+            sourceWidth = totalWidth,
+            sourceHeight = deltaHeight;
+
+          var segment = new Node(new ImageFragment(image, sourceX, sourceY, sourceWidth, sourceHeight));
+
+          if (i === 0) {
+            segment.x = -totalWidth * 0.5;
+          }
+
+          segment.y = -deltaHeight * 0.95;
+          segment.pivotX = totalWidth * 0.5;
+          segment.pivotY = deltaHeight;
+
+          prevSegment.add(segment);
+          prevSegment = segment;
+
+          treeRoot._segments.push(segment);
+        }
+
+        return treeRoot;
+      }
+
+      /////////////////////////////
+      // LOOP
+      /////////////////////////////
+
+      function update() {
+
+      }
+
+      function draw() {
+        mCtx.clearRect(0, 0, mViewWidth, mViewHeight);
+
+        mRootDisplayNode.render();
+      }
+
+      function loop() {
+        update();
+        draw();
+        requestAnimationFrame(loop);
+      }
+
+      /////////////////////////////
+      // Classes
+      /////////////////////////////
+
+      // function Monster(img) {
+      //   this.img = img;
+      // }
+      // Monster.prototype = {
+      //   draw: function () {
+      //     mCtx.drawImage(this.img, 0, 0);
+      //   }
+      // };
+
+      function Mist(w, h) {
+        this.w = w;
+        this.h = h;
+
+        this.gradient = mCtx.createLinearGradient(w * 0.5, h, w * randomRange(0.6, 0.9), 0);
+        this.gradient.addColorStop(0.25, 'rgba(0,0,0,0)');
+        this.gradient.addColorStop(randomRange(0.5, 0.7), 'rgba(255,255,255,0.3)');
+        this.gradient.addColorStop(0.9, 'rgba(0,0,0,0)');
+      }
+      Mist.prototype = {
+        draw: function () {
+          mCtx.fillStyle = this.gradient;
+          mCtx.fillRect(0, 0, this.w, this.h);
         }
       };
 
-      img.crossOrigin = 'Anonymous';
-      img.src = url;
-    });
-
-    function init() {
-      initCanvas();
-
-      createMist();
-      createTrees(300);
-      createMist();
-      createTrees(250);
-      createMist();
-      createTrees(160);
-      createMist();
-      createTrees(120);
-      createMist();
-      createTrees(90);
-      createMist();
-      createTrees(70);
-
-      requestAnimationFrame(loop);
-    }
-
-    function initCanvas() {
-      mViewWidth = mCanvas.width = mCanvas.clientWidth;
-      mViewHeight = mCanvas.height = mCanvas.clientHeight;
-      mCtx = mCanvas.getContext('2d');
-
-      mRootDisplayNode = new Node();
-    }
-
-    function createMist() {
-      var mist = new Node(new Mist(mViewWidth * 1.2, mViewHeight * 1.2));
-      var range = randomRange(0, 100);
-
-      mist.x = -mViewWidth * 0.1;
-      mist.y = -mViewHeight * 0.1;
-
-      TweenMax.fromTo(mist, randomRange(6, 8), { y: '-=' + range }, { y: '-=' + range, ease: Power1.easeInOut, repeat: -1, yoyo: true });
-
-      mRootDisplayNode.add(mist);
-    }
-
-    // function createMonster() {
-    //   var monster = new Node(new Monster(mImages[mMonsterImage]));
-
-    //   monster.y = 135;
-    //   monster.x = -150;
-
-    //   var stepDeltaX = 30,
-    //     stepDeltaY = 10;
-
-    //   var stepDuration = 1.6,
-    //     startOffset = 0.6;
-
-    //   function step() {
-    //     var tl = new TimelineMax();
-
-    //     if (monster.x > mViewWidth) {
-    //       monster.x = -150;
-    //     }
-
-    //     tl.to(monster, stepDuration * 0.4, { y: '-=' + stepDeltaY, ease: Power2.easeOut }, startOffset);
-    //     tl.to(monster, stepDuration * 0.6, { y: '+=' + stepDeltaY, ease: Power4.easeIn });
-    //     tl.add('shake');
-    //     tl.to(monster, stepDuration, { x: '+=' + stepDeltaX, ease: Power1.easeOut }, startOffset);
-
-    //     tl.addCallback(function () {
-    //       mTrees.forEach(function (t) {
-    //         TweenMax.to(t, randomRange(0.3, 0.4), { y: '+=' + randomRange(4, 16), ease: Back.easeIn, repeat: 1, yoyo: true });
-    //       });
-    //     }, 'shake-=0.25');
-
-    //     tl.eventCallback('onComplete', step);
-    //   }
-
-    //   mRootDisplayNode.add(monster);
-    //   step();
-    // }
-
-    function createTrees(yOffset) {
-      var tree;
-
-      var dx = mViewWidth / 12;
-
-      for (var i = 0; i < 12; i++) {
-        tree = createTree(
-          mImages[mTreeImage],
-          dx * i + 35 * randomRange(0.8, 1.2),
-          (mViewHeight - yOffset) * randomRange(1.0, 1.2)
-        );
-
-        tree._segments.forEach(function (c) {
-          var range = randomRange(0.01, 0.02);
-
-          TweenMax.fromTo(c, randomRange(2, 10),
-            { rotation: -range },
-            { rotation: range, ease: Power1.easeInOut, repeat: -1, yoyo: true }
-          );
-        });
-
-        mRootDisplayNode.add(tree);
-        mTrees.push(tree);
+      function ImageFragment(img, sx, sy, sw, sh) {
+        this.img = img;
+        this.sx = sx;
+        this.sy = sy;
+        this.sw = sw;
+        this.sh = sh;
       }
-    }
-
-
-    function createTree(image, x, y) {
-      var totalWidth = image.naturalWidth,
-        totalHeight = image.naturalHeight;
-
-      var steps = 6,
-        deltaHeight = totalHeight / steps;
-
-      var treeRoot = new Node();
-      var prevSegment = treeRoot;
-
-      treeRoot.x = x;
-      treeRoot.y = y;
-      treeRoot._segments = [];
-
-      for (var i = 0; i < steps; i++) {
-        var sourceX = 0,
-          sourceY = totalHeight - deltaHeight * (i + 1),
-          sourceWidth = totalWidth,
-          sourceHeight = deltaHeight;
-
-        var segment = new Node(new ImageFragment(image, sourceX, sourceY, sourceWidth, sourceHeight));
-
-        if (i === 0) {
-          segment.x = -totalWidth * 0.5;
+      ImageFragment.prototype = {
+        draw: function () {
+          mCtx.drawImage(this.img, this.sx, this.sy, this.sw, this.sh, 0, 0, this.sw, this.sh);
         }
+      };
 
-        segment.y = -deltaHeight * 0.95;
-        segment.pivotX = totalWidth * 0.5;
-        segment.pivotY = deltaHeight;
 
-        prevSegment.add(segment);
-        prevSegment = segment;
-
-        treeRoot._segments.push(segment);
+      function Node(graphics) {
+        this.graphics = graphics;
+        this.x = 0;
+        this.y = 0;
+        this.pivotX = 0;
+        this.pivotY = 0;
+        this.scaleX = 1;
+        this.scaleY = 1;
+        this.rotation = 0;
+        this.children = [];
       }
+      Node.prototype = {
+        add: function (node) {
+          this.children.push(node);
+        },
+        remove: function (node) {
+          var i = this.children.indexOf(node);
 
-      return treeRoot;
-    }
+          if (i >= 0) {
+            this.children.splice(i, 1);
+          }
+        },
+        render: function () {
+          mCtx.save();
 
-    /////////////////////////////
-    // LOOP
-    /////////////////////////////
+          mCtx.translate(this.pivotX + this.x, this.pivotY + this.y);
+          mCtx.rotate(this.rotation);
+          mCtx.scale(this.scaleX, this.scaleY);
+          mCtx.translate(-this.pivotX, -this.pivotY);
 
-    function update() {
+          this.graphics && this.graphics.draw();
 
-    }
+          for (var i = 0; i < this.children.length; i++) {
+            this.children[i].render();
+          }
 
-    function draw() {
-      mCtx.clearRect(0, 0, mViewWidth, mViewHeight);
-
-      mRootDisplayNode.render();
-    }
-
-    function loop() {
-      update();
-      draw();
-      requestAnimationFrame(loop);
-    }
-
-    /////////////////////////////
-    // Classes
-    /////////////////////////////
-
-    // function Monster(img) {
-    //   this.img = img;
-    // }
-    // Monster.prototype = {
-    //   draw: function () {
-    //     mCtx.drawImage(this.img, 0, 0);
-    //   }
-    // };
-
-    function Mist(w, h) {
-      this.w = w;
-      this.h = h;
-
-      this.gradient = mCtx.createLinearGradient(w * 0.5, h, w * randomRange(0.6, 0.9), 0);
-      this.gradient.addColorStop(0.25, 'rgba(0,0,0,0)');
-      this.gradient.addColorStop(randomRange(0.5, 0.7), 'rgba(255,255,255,0.3)');
-      this.gradient.addColorStop(0.9, 'rgba(0,0,0,0)');
-    }
-    Mist.prototype = {
-      draw: function () {
-        mCtx.fillStyle = this.gradient;
-        mCtx.fillRect(0, 0, this.w, this.h);
-      }
-    };
-
-    function ImageFragment(img, sx, sy, sw, sh) {
-      this.img = img;
-      this.sx = sx;
-      this.sy = sy;
-      this.sw = sw;
-      this.sh = sh;
-    }
-    ImageFragment.prototype = {
-      draw: function () {
-        mCtx.drawImage(this.img, this.sx, this.sy, this.sw, this.sh, 0, 0, this.sw, this.sh);
-      }
-    };
-
-
-    function Node(graphics) {
-      this.graphics = graphics;
-      this.x = 0;
-      this.y = 0;
-      this.pivotX = 0;
-      this.pivotY = 0;
-      this.scaleX = 1;
-      this.scaleY = 1;
-      this.rotation = 0;
-      this.children = [];
-    }
-    Node.prototype = {
-      add: function (node) {
-        this.children.push(node);
-      },
-      remove: function (node) {
-        var i = this.children.indexOf(node);
-
-        if (i >= 0) {
-          this.children.splice(i, 1);
+          mCtx.restore();
         }
-      },
-      render: function () {
-        mCtx.save();
+      };
 
-        mCtx.translate(this.pivotX + this.x, this.pivotY + this.y);
-        mCtx.rotate(this.rotation);
-        mCtx.scale(this.scaleX, this.scaleY);
-        mCtx.translate(-this.pivotX, -this.pivotY);
+      /////////////////////////////
+      // utils
+      /////////////////////////////
 
-        this.graphics && this.graphics.draw();
-
-        for (var i = 0; i < this.children.length; i++) {
-          this.children[i].render();
-        }
-
-        mCtx.restore();
+      function randomRange(min, max) {
+        return min + Math.random() * (max - min);
       }
-    };
-
-    /////////////////////////////
-    // utils
-    /////////////////////////////
-
-    function randomRange(min, max) {
-      return min + Math.random() * (max - min);
-    }
+    }, false);
   </script>
 
 </html>
