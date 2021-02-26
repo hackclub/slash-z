@@ -73,6 +73,7 @@ module.exports = async (req, res) => {
     'Started At': Date.now(),
     'Creator Slack ID': req.body.user_id,
     'Join URL': meeting.join_url,
+    'Host Join URL': meeting.start_url,
   })
   
   const slackPostFields = {
