@@ -53,6 +53,12 @@ module.exports = async ({creatorSlackID}={}) => {
     host = await AirBridge.patch('Hosts', host.id, {'Zoom ID': hostZoom.id})
 
     zoomUser = await zoom.patch({path: `users/${host.fields['Zoom ID']}/settings`, body: {
+      schedule_meeting: {
+        host_video: true,
+        participants_video: true,
+        join_before_host: true,
+        embeded_password_in_join_link: true,
+      },
       meeting_security: {
         embed_password_in_join_link: true
       },
