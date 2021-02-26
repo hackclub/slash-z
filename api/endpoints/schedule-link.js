@@ -10,10 +10,11 @@ module.exports = async (req, res) => {
     return
   }
 
-  // Find or create a scheduling link record with the ID we've been given
+  // Find the scheduling link record with the ID we've been given
   let link = await AirBridge.find('Scheduling Links', {filterByFormula: `{Name}='${query.id}'` })
   if (!link) {
-    link = await AirBridge.create('Scheduling Links', {Name: query.id})
+    res.status(404).send('Scheduled meeting not found!')
+    return
   }
 
   let airtableMeeting
