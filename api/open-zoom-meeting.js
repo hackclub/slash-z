@@ -2,8 +2,9 @@ const ZoomClient = require('./zoom-client')
 const AirBridge = require("./airbridge")
 const closeZoomCall = require('./close-zoom-call')
 
-function availableHost() {
-  return AirBridge.find('Hosts', {filterByFormula: 'AND({Open Meetings}<2,{Enabled}=TRUE())'})
+async function availableHost() {
+  const hosts = AirBridge.get('Hosts', {filterByFormula: 'AND({Open Meetings}<1,{Enabled}=TRUE())'})
+  return hosts[Math.floor(Math.random() * hosts.length)]
 }
 
 module.exports = async ({creatorSlackID}={}) => {
