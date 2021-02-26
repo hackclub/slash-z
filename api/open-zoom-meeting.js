@@ -52,6 +52,10 @@ module.exports = async ({creatorSlackID}={}) => {
     const hostZoom = await zoom.get({ path: `users/${host.fields['Email']}` })
     host = await AirBridge.patch('Hosts', host.id, {'Zoom ID': hostZoom.id})
 
+    // (max@maxwofford.com) This looks super redundant. Why are we also setting
+    // these fields on meeting creation? Zoom's docs don't say it (at time of
+    // writing), but zoom requires both the user's setting "host_video=true" for
+    // the meeting "host_video=true" to work. ¯\_(ツ)_/¯
     zoomUser = await zoom.patch({path: `users/${host.fields['Zoom ID']}/settings`, body: {
       schedule_meeting: {
         host_video: true,
