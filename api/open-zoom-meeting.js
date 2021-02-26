@@ -3,7 +3,7 @@ const AirBridge = require("./airbridge")
 const closeZoomCall = require('./close-zoom-call')
 
 async function availableHost() {
-  const hosts = AirBridge.get('Hosts', {filterByFormula: 'AND({Open Meetings}<1,{Enabled}=TRUE())'})
+  const hosts = await AirBridge.get('Hosts', {filterByFormula: 'AND({Open Meetings}<1,{Enabled}=TRUE())'})
   return hosts[Math.floor(Math.random() * hosts.length)]
 }
 
