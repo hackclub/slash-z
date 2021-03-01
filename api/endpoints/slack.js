@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
           text: 'Out of open hosts!',
         })
       })
-      return
+      throw err
     }
     
     // now register the call on slack
@@ -105,6 +105,7 @@ module.exports = async (req, res) => {
     },
     body: JSON.stringify(slackPostFields)
   })
+
   await fetch(req.body.response_url, {
     method: 'post',
     headers: {
