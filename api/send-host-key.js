@@ -1,3 +1,5 @@
+const { default: fetch } = require("node-fetch")
+
 module.exports = async ({creatorSlackID, hostKey}) => {
   console.log('Posting the Slack DM', {creatorSlackID, hostKey})
   const slackDM = await fetch('https://slack.com/api/chat.postMessage', {
