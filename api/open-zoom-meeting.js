@@ -1,6 +1,7 @@
 const ZoomClient = require('./zoom-client')
 const AirBridge = require("./airbridge")
 const closeZoomCall = require('./close-zoom-call')
+const sendHostKey = require('./send-host-key')
 
 async function availableHost() {
   const hosts = await AirBridge.get('Hosts', {filterByFormula: 'AND({Open Meetings}<1,{Enabled}=TRUE())'})
@@ -82,6 +83,9 @@ module.exports = async ({creatorSlackID}={}) => {
       join_before_host: true,
     }
   })
+
+  // and let the host know
+  sendHostKey({ hostKey, creatorSlackID, hostName: host.fields['Name Displayed to Users'] })
 
   return {
     ...meeting,
