@@ -10,4 +10,5 @@ module.exports = async ({creatorSlackID, hostKey}) => {
       text: `The host key for your newly created call is ${hostKey}.`
     })
   }).then(r => r.json())
+  console.log({slackDM})
 }
