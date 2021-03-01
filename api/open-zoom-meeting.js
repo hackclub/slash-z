@@ -85,7 +85,8 @@ module.exports = async ({creatorSlackID}={}) => {
   })
 
   // and let the host know
-  sendHostKey({ hostKey, creatorSlackID, hostName: host.fields['Name Displayed to Users'] })
+  const slackDM = await sendHostKey({ hostKey, creatorSlackID, hostName: host.fields['Name Displayed to Users'] })
+  console.log(slackDM)
 
   return {
     ...meeting,

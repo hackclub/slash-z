@@ -1,4 +1,5 @@
 module.exports = async ({creatorSlackID, hostKey}) => {
+  console.log('Posting the Slack DM', {creatorSlackID, hostKey})
   const slackDM = await fetch('https://slack.com/api/chat.postMessage', {
     method: 'post',
     headers: {
@@ -10,5 +11,5 @@ module.exports = async ({creatorSlackID, hostKey}) => {
       text: `The host key for your newly created call is ${hostKey}.`
     })
   }).then(r => r.json())
-  console.log({slackDM})
+  return slackDM
 }
