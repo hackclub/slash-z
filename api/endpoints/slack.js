@@ -119,7 +119,7 @@ module.exports = async (req, res) => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `Something shiny catches your eye. You find <${meeting.start_url}|a golden key> :key: you can use to make yourself the administrator of the *${meeting.host.fields['Name Displayed to Users']}*.`
+          text: `You find a hastily scribbled note on the ground. You find the numbers ${meeting.hostKey} you can use to make yourself the host of the *${meeting.host.fields['Name Displayed to Users']}*.`
         }
       }]
     })
