@@ -28,7 +28,7 @@ module.exports = async (zoomID, forceClose = false) => {
         'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({id: meeting.fields['Slack Call ID'],duration})
+      body: JSON.stringify({id: meeting.fields['Slack Call ID'],duration: 1800}) // hard coding duration while debugging
     }).then(r => r.json())
   }
 
