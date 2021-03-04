@@ -1,5 +1,6 @@
 const ensureSlackAuthenticated = require("../../ensure-slack-authenticated")
 const slashZ = require('./slash-z')
+const slashZRooms = require('./slash-z-rooms')
 
 module.exports = async (req, res) => {
   return await ensureSlackAuthenticated(req, res, async () => {
@@ -10,6 +11,9 @@ module.exports = async (req, res) => {
     switch(req.body.command) {
       case '/z':
         await slashZ(req, res)
+        break
+      case '/z-rooms':
+        await slashZRooms(req, res)
         break
       default:
         throw new Error(`Unsupported slash command: '${req.body.command}'`)
