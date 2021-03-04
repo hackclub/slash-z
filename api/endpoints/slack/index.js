@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
         await slashZ(req, res)
         break
       default:
-        throw new Error('Unsupported slash command')
+        throw new Error(`Unsupported slash command: '${req.body.command}'`)
     }
 })
 }
