@@ -1,15 +1,30 @@
 const { default: fetch } = require("node-fetch")
-const AirBridge = require("../airbridge")
-const ensureSlackAuthenticated = require("../ensure-slack-authenticated")
-const openZoomMeeting = require('../open-zoom-meeting')
+const AirBridge = require("../../airbridge")
+const openZoomMeeting = require('../../open-zoom-meeting')
 
 module.exports = async (req, res) => {
-  return await ensureSlackAuthenticated(req, res, async () => {
-    
-    // Acknowledge we got the message so Slack doesn't show an error to the user
-    res.status(200).send()
+  const loadingSlackPost = await fetch(req.body.response_url, {
+    method: 'post',
+    headers: {
+      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      response_type: 'in_channel',
+      text: 'A new Zoom Pro meeting was started with /z',
+    })
+  })
+  console.log({ loadingSlackPost })
 
-    const loadingSlackPost = await fetch(req.body.response_url, {
+  // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
+  // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
+  // ¯\_(ツ)_/¯
+
+  let meeting
+  try {
+    meeting = await openZoomMeeting({ creatorSlackID: req.body.user_id })
+  } catch (err) {
+    const errorSlackPost = await fetch(req.body.response_url, {
       method: 'post',
       headers: {
         'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
@@ -17,45 +32,24 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify({
         response_type: 'in_channel',
-        text: 'A new Zoom Pro meeting was started with /z',
+        text: 'Out of open hosts!',
       })
     })
-    console.log({loadingSlackPost})
-    
-    // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
-    // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
-    // ¯\_(ツ)_/¯
+    throw err
+  }
 
-    let meeting
-    try {
-      meeting = await openZoomMeeting({creatorSlackID: req.body.user_id})
-    } catch (err) {
-      const errorSlackPost = await fetch(req.body.response_url, {
-        method: 'post',
-        headers: {
-          'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          response_type: 'in_channel',
-          text: 'Out of open hosts!',
-        })
-      })
-      throw err
-    }
-    
-    // now register the call on slack
-    const slackCallFields = {
-      external_unique_id: meeting.id,
-      join_url: meeting.join_url,
-      created_by: req.body.user_id,
-      date_start: Date.now(),
-      desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0`,
-      external_display_id: meeting.id,
-      title: `Zoom Pro meeting started by ${req.body.user_name}`
-    }
-    
-    const slackCallResult = await fetch('https://slack.com/api/calls.add', {
+  // now register the call on slack
+  const slackCallFields = {
+    external_unique_id: meeting.id,
+    join_url: meeting.join_url,
+    created_by: req.body.user_id,
+    date_start: Date.now(),
+    desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0`,
+    external_display_id: meeting.id,
+    title: `Zoom Pro meeting started by ${req.body.user_name}`
+  }
+
+  const slackCallResult = await fetch('https://slack.com/api/calls.add', {
     headers: {
       'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
@@ -64,7 +58,7 @@ module.exports = async (req, res) => {
     body: JSON.stringify(slackCallFields)
   }).then(r => r.json())
   const slackCall = slackCallResult.call
-  
+
   // & post to slack + airtable!
   AirBridge.create('Meetings', {
     'Zoom ID': '' + meeting.id,
@@ -76,7 +70,7 @@ module.exports = async (req, res) => {
     'Host Join URL': meeting.start_url,
     'Raw Data': JSON.stringify(meeting, null, 2),
   })
-  
+
   const slackPostFields = {
     response_type: 'in_channel',
     text: 'A new Zoom Pro meeting was started with /z',
@@ -86,10 +80,10 @@ module.exports = async (req, res) => {
         type: 'mrkdwn',
         text: `After running \`/z\`, you wander the creaky hallways and stumble upon the *${meeting.host.fields['Name Displayed to Users']}*. You try it and the door is unlocked.`
       }
-    },{
+    }, {
       type: 'call',
       call_id: slackCall.id
-    },{
+    }, {
       type: 'section',
       text: {
         type: 'mrkdwn',
@@ -124,5 +118,4 @@ module.exports = async (req, res) => {
       }]
     })
   })
-})
 }
