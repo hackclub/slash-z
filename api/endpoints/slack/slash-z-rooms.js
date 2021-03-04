@@ -6,7 +6,7 @@ module.exports = async (req, res) => {
     {Status}='OPEN',
   )
   `
-  const openMeetings = airbridge.get('Meetings', {filterByFormula})
+  const openMeetings = await airbridge.get('Meetings', {filterByFormula})
   const publicMeetings = []
   await Promise.all(openMeetings.forEach(async openMeeting => {
     if (!openMeeting.fields['Slack Channel ID']) {
