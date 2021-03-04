@@ -69,6 +69,7 @@ module.exports = async (req, res) => {
     'Join URL': meeting.join_url,
     'Host Join URL': meeting.start_url,
     'Raw Data': JSON.stringify(meeting, null, 2),
+    'Slack Channel ID': req.body.channel_id
   })
 
   const slackPostFields = {
