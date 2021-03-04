@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     res.status(200).send()
 
     switch(req.body.command) {
-      case 'z':
+      case '/z':
         await slashZ(req, res)
         break
       default:
