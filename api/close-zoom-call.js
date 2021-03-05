@@ -22,7 +22,6 @@ module.exports = async (zoomID, forceClose = false) => {
     const startTime = Date.parse(meeting.fields['Started At'])
     const durationMs = Date.now() - startTime
     const duration = Math.floor(durationMs / 1000)
-    console.log('Closing call', meeting.fields['Slack Call ID'], 'in Slack, start time was', startTime, '& end time was', Date.now(), 'so duration is ', duration)
     const _slackPost = await fetch('https://slack.com/api/calls.end', {
       method: 'post',
       headers: {
