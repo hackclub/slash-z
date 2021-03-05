@@ -16,11 +16,10 @@ async function userToAvatar({name, email}) {
 
 module.exports = async (addOrRemove, callID, zoomParticipant) => {
   const { user_name: name, email, user_id: zoomID } = zoomParticipant
-  const user = { external_id: zoomID }
-  // if (addOrRemove=='add') {
-    user.avatar_url = await userToAvatar({name, email})
-    user.display_name = name
-  // }
+  const user = { }
+  user['external_id'] = name || email || zoomID
+  user['avatar_url'] = await userToAvatar({name, email})
+  user['display_name'] = name
   const result = await fetch(`https://slack.com/api/calls.participants.${addOrRemove}`, {
     method: 'post',
     headers: {
