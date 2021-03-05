@@ -20,7 +20,7 @@ module.exports = async (zoomID, forceClose = false) => {
   // 1) if was posted in slack, end slack call
   if (meeting.fields['Slack Call ID']) {
     const startTime = meeting.fields['Started At']
-    const duration = Date.now() - Date.parse(startTime)
+    const duration = Date.now() - (new Date(0)).setUTCSeconds(startTime)
     console.log('Closing call', meeting.fields['Slack Call ID'] ,'in Slack, start time was', startTime, '& end time was', Date.now(), 'so duration is ', duration)
     const _slackPost = await fetch('https://slack.com/api/calls.end', {
       method: 'post',
