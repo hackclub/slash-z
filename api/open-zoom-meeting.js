@@ -64,6 +64,9 @@ module.exports = async ({creatorSlackID}={}) => {
         join_before_host: true,
         embeded_password_in_join_link: true,
       },
+      in_meeting: {
+        breakout_room: true
+      },
       meeting_security: {
         embed_password_in_join_link: true
       },
