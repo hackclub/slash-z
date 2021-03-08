@@ -27,13 +27,34 @@ module.exports = async (req, res) => {
                   type: "section",
                   text: {
                     type: 'mrkdwn',
-                    text: 'loading...'
+                    text: ":beachball: loading..."
                   }
                 }],
               }
             })
           }).then(r => r.json())
-          console.log(result)
+          await fetch('https://slack.com/api/views.publish', {
+            method: 'post',
+            headers: {
+              'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              user_id: user,
+              view: {
+                type: 'home',
+                blocks: [{
+                  type: 'image',
+                  title: {
+                    type: 'plain_text',
+                    text: ":warning: This part of the mansion is still under construction, please pardon our dust.",
+                    emoji: 'true'
+                  },
+                  image_url: 'https://cloud-oshyn030x-hack-club-bot.vercel.app/0z0q4jqa.gif'
+                }]
+              }
+            })
+          }).then(r => r.json())
           res.status(200).send()
           break
       default:
