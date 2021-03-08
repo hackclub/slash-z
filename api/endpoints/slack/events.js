@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
         case 'app_home_opened':
           // await displaySlackAppHomeFor(user)
           const { user } = req.body
-          await fetch('https://slack.com/api/views.publish', {
+          const result = await fetch('https://slack.com/api/views.publish', {
             method: 'post',
             headers: {
               'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
@@ -32,7 +32,8 @@ module.exports = async (req, res) => {
                 },
               }
             })
-          })
+          }).then(r => r.json())
+          console.log(result)
           res.status(200).send()
           break
       default:
