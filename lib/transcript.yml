@@ -54,6 +54,8 @@ loading:
   - This is going tibia great one
   - Bone-apple-tea!
   - Bone-Appetit!
+  - bone to be wild!
+  - These jokes are very bare bones
 startup: 
   - Haunting on port ${this.port}
   - Port ${this.port} is about to get spooky!
