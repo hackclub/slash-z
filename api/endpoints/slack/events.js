@@ -11,10 +11,11 @@ module.exports = async (req, res) => {
       console.log(`Got event of subtype ${req.body.event.type}`)
       switch (req.body.event.type) {
         case 'app_home_opened':
-          if (req.body.event.view.type === 'home') {
+          console.log(req.body.event)
+          // if (req.body.event.view.type === 'home') {
             const { user } = req.body.event
             const result = await slackAppHomeOpened(user)
-          }
+          // }
           res.status(200).send()
           break
       default:
