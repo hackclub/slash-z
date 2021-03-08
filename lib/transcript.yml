@@ -41,6 +41,16 @@ loading:
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a ton¹ of skele-fun!²_
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a skele-ton¹ of fun!²_
   - loading could take some time... looks like this app is manned by a _skeleton_ crew
+  - If you've got it, haunt it
+  - Shake your boo-ty!
+  - Keep it incorporeal!
+  - Make sure to exorcise regularly!
+  - You feel like you're going to have a good time.
+  - I can't think of anything else humerus.
+  - Don't worry, ulna't tell anyone.
+  - Don't be so sternum.
+  - Are you spine on me?
+  - Loading up the *telebone*
 startup: 
   - Haunting on port ${this.port}
   - Port ${this.port} is about to get spooky!
