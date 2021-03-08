@@ -23,13 +23,13 @@ module.exports = async (req, res) => {
               user_id: user,
               view: {
                 type: 'home',
-                blocks: {
+                blocks: [{
                   type: "section",
                   text: {
                     type: 'mrkdwn',
                     text: 'loading...'
                   }
-                },
+                }],
               }
             })
           }).then(r => r.json())
