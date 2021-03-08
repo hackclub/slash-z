@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
       switch (req.body.event.type) {
         case 'app_home_opened':
           // await displaySlackAppHomeFor(user)
-          const { user } = req.body
+          const { user } = req.body.event
           const result = await fetch('https://slack.com/api/views.publish', {
             method: 'post',
             headers: {
