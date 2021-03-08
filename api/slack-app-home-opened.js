@@ -1,4 +1,4 @@
-const transcript = require('../../transcript')
+const transcript = require('./transcript')
 modules.export = user => {
   return transcript('appHome.loading', {user})
   // await fetch('https://slack.com/api/views.publish', {
