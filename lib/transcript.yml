@@ -20,6 +20,8 @@ loadingGifs:
   - https://cloud-f8eoienmp-hack-club-bot.vercel.app/1boogie-skeleton.gif
   - https://cloud-f8eoienmp-hack-club-bot.vercel.app/2doot-animated.gif
   - https://cloud-f8eoienmp-hack-club-bot.vercel.app/3skelly-dance-large.gif
+errorGifs:
+  - https://cloud-6ijesklkt-hack-club-bot.vercel.app/0giphy.webp
 skeletonVideos:
   - https://www.youtube.com/watch?v=XqVtNjyCQE0
   - https://www.youtube.com/watch?v=-1dSY6ZuXEY
@@ -34,6 +36,22 @@ startup:
   - Port ${this.port} is about to get spooky!
   - Arrrrr! Hard to port ${this.port}!
 appHome:
+  error:
+    user_id: ${this.user}
+    view:
+      type: home
+      blocks:
+      - type: section
+        text:
+          type: mrkdwn
+          text: Hmmm.... that wasn't supposed to happen
+      - type: image
+        image_url: ${this.t('errorGifs')}
+        alt_text: 'skeleton falling apart'
+      - type: section
+        text:
+          type: mrkdwn
+          text: ${this.err}
   loading:
     user_id: ${this.user}
     view:
