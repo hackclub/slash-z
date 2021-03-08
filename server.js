@@ -1,3 +1,4 @@
+const transcript = require('./api/transcript')
 if (process.env.NODE_ENV != 'production') {
   require('dotenv').config()
 }
@@ -17,7 +18,7 @@ require('./router')(app)
 
 const port = process.env.PORT || 0
 const listener = app.listen(port, () => {
-  console.log(`Listening on port ${listener.address().port}`)
+  console.log(transcript('startup', {port: listener.address().port}))
 })
 
 // if running in production, let's queue up some record garbage collection

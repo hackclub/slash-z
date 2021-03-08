@@ -1,0 +1,48 @@
+# the pun list™℠®©
+bones:
+  - skulls
+  - spines
+  - metacarpals
+  - phalanges
+  - scapula
+  - humerous
+  - funny bones
+  - coccyx
+loadingEmoji:
+  - spookytime
+  - doot
+  - skelly-dance
+  - skelly-dance-rainbow
+  - boogie-skeleton
+  - doot-animated
+loadingGifs:
+  - https://cloud-f8eoienmp-hack-club-bot.vercel.app/0skelly-dance-rainbow.gif
+  - https://cloud-f8eoienmp-hack-club-bot.vercel.app/1boogie-skeleton.gif
+  - https://cloud-f8eoienmp-hack-club-bot.vercel.app/2doot-animated.gif
+  - https://cloud-f8eoienmp-hack-club-bot.vercel.app/3skelly-dance-large.gif
+skeletonVideos:
+  - https://www.youtube.com/watch?v=XqVtNjyCQE0
+  - https://www.youtube.com/watch?v=-1dSY6ZuXEY
+  - https://youtu.be/z6WMbV5Op58?t=8
+  - https://www.youtube.com/watch?v=vOGhAV-84iI
+loading:
+  - creep it real!
+  - juggling the ${this.t('bones')}
+  - opening the bone bag
+startup: 
+  - Haunting on port ${this.port}
+  - Port ${this.port} is about to get spooky!
+  - Arrrrr! Hard to port ${this.port}!
+appHome:
+  loading:
+    user_id: ${this.user}
+    view:
+      type: home
+      blocks:
+      - type: section
+        text:
+          type: mrkdwn
+          text: ${this.t('loading')} ':beachball:'
+      - type: image
+        image_url: ${this.t('loadingGifs')}
+        alt_text: 'dancing skeletons'
