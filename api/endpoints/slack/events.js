@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
         case 'app_home_opened':
           const { user } = req.body.event
           const result = await slackAppHomeOpened(user)
-          res.status(200).send(result)
+          res.status(200).send()
           break
       default:
         throw new Error(`Unsupported slack event: '${req.body.type}'`)
