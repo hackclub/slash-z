@@ -15,6 +15,8 @@ module.exports = async (req, res) => {
           if (req.body.event.tab === 'home') {
             const { user } = req.body.event
             const result = await slackAppHomeOpened(user)
+          } else {
+            console.log(`False alarm, this user is opening the '${req.body.event.tab}' tab. I'm ignoring it.`)
           }
           res.status(200).send()
           break
