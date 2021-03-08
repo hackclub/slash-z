@@ -33,6 +33,7 @@ module.exports = async (req, res) => {
               }
             })
           })
+          res.status(200).send()
           break
       default:
         throw new Error(`Unsupported slack event: '${req.body.type}'`)
