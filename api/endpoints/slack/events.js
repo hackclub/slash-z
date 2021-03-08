@@ -36,5 +36,5 @@ module.exports = async (req, res) => {
         throw new Error(`Unsupported slack event: '${req.body.type}'`)
       }
     }
-  }
+  })
 }
