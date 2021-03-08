@@ -31,6 +31,7 @@ loading:
   - creep it real!
   - juggling the ${this.t('bones')}
   - opening the bone bag
+  - loading could take some time... looks like this app is manned by a _skeleton_ crew
 startup: 
   - Haunting on port ${this.port}
   - Port ${this.port} is about to get spooky!
