@@ -51,7 +51,8 @@ loading:
   - Don't be so sternum.
   - Are you spine on me?
   - Loading up the *telebone*
-  - this is going tibia great one
+  - This is going tibia great one
+  - Bone-apple-tea!
 startup: 
   - Haunting on port ${this.port}
   - Port ${this.port} is about to get spooky!
