@@ -1,6 +1,6 @@
 const transcript = require('./transcript')
 module.exports = async user => {
-  await fetch('https://slack.com/api/views.publish', {
+  return await fetch('https://slack.com/api/views.publish', {
     method: 'post',
     headers: {
       'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
