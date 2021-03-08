@@ -1,5 +1,5 @@
 const transcript = require('./transcript')
-module.exports = user => {
+module.exports = async user => {
   await fetch('https://slack.com/api/views.publish', {
     method: 'post',
     headers: {
