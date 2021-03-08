@@ -1,6 +1,6 @@
 const ensureSlackAuthenticated = require("../../ensure-slack-authenticated")
 const { default: fetch } = require("node-fetch")
-const { transcript } = require("../../transcript")
+const transcript = require('../../transcript')
 
 module.exports = async (req, res) => {
   return await ensureSlackAuthenticated(req, res, async () => {
