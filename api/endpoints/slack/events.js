@@ -1,4 +1,5 @@
 const ensureSlackAuthenticated = require("../../ensure-slack-authenticated")
+const { default: fetch } = require("node-fetch")
 
 module.exports = async (req, res) => {
   return await ensureSlackAuthenticated(req, res, async () => {
