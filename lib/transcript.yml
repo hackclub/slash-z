@@ -38,7 +38,6 @@ loading:
   - creep it real!
   - juggling the ${this.t('bones')}
   - opening the bone bag
-  - it's skele-fun!
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a ton¹ of skele-fun!²_
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a skele-ton¹ of fun!²_
   - loading could take some time... looks like this app is manned by a _skeleton_ crew
@@ -71,7 +70,7 @@ appHome:
       - type: section
         text:
           type: mrkdwn
-          text: ${this.t('loading')} ':beachball:'
+          text: ":beachball: ${this.t('loading')}"
       - type: image
         image_url: ${this.t('loadingGifs')}
         alt_text: 'dancing skeletons'
