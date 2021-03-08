@@ -50,7 +50,8 @@ module.exports = async (req, res) => {
                     text: ":warning: This part of the mansion is still under construction, please pardon our dust.",
                     emoji: 'true'
                   },
-                  image_url: 'https://cloud-oshyn030x-hack-club-bot.vercel.app/0z0q4jqa.gif'
+                  image_url: 'https://cloud-oshyn030x-hack-club-bot.vercel.app/0z0q4jqa.gif',
+                  alt_text: 'skeletons dancing'
                 }]
               }
             })
