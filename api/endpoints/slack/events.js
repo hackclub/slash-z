@@ -8,6 +8,7 @@ module.exports = async (req, res) => {
       return res.send({ challenge: req.body.challenge })
     }
     if (req.body.type == 'event_callback') {
+      console.log(`Got event of subtype ${req.body.event.type}`)
       switch (req.body.event.type) {
         case 'app_home_opened':
           // await displaySlackAppHomeFor(user)
