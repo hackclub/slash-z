@@ -53,6 +53,7 @@ loading:
   - Loading up the *telebone*
   - This is going tibia great one
   - Bone-apple-tea!
+  - Bone-Appetit!
 startup: 
   - Haunting on port ${this.port}
   - Port ${this.port} is about to get spooky!
