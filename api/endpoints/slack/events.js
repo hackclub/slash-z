@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
               }
             })
           }).then(r => r.json())
-          await fetch('https://slack.com/api/views.publish', {
+          const secondRequest = await fetch('https://slack.com/api/views.publish', {
             method: 'post',
             headers: {
               'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
@@ -55,6 +55,7 @@ module.exports = async (req, res) => {
               }
             })
           }).then(r => r.json())
+          console.log(secondRequest)
           res.status(200).send()
           break
       default:
