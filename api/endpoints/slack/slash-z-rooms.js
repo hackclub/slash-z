@@ -5,8 +5,6 @@ const transcript = require("../../transcript")
 module.exports = async (req, res) => {
   const meetings = await getPublicMeetings()
 
-  let messageText = 'There are currently no public meetings in the Slack. Why not start one? Just run `/z` in a public channel.'
-
   let messageText = ''
   if (meetings.length > 1) {
     messageText = transcript('publicMeetings.multiple', {meetings})
