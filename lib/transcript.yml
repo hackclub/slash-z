@@ -80,6 +80,10 @@ startup:
   - Haunting on port ${this.port}
   - Port ${this.port} is about to get spooky!
   - Arrrrr! Hard to port ${this.port}!
+currentDay: "${(new Date()).toLocaleDateString('en-US', { weekday: 'long' })}"
+greeting:
+  - Welcome to the Manor <@${this.user}>!
+  - Hello <@${this.user}>, have a good ${this.t('currentDay')}!
 appHome:
   error:
     user_id: ${this.user}
@@ -117,4 +121,7 @@ appHome:
       - type: section
         text:
           type: mrkdwn
-          text: Hi <@${this.user}>! There are public ${this.results.publicMeetings.length} meeting(s) currently open
+          text: >
+            ${this.t('greeting', {user: this.user})}
+            It seems like you ${this.results.user ? 'have' : 'have not' } been approved in the Calendar integration beta.
+            There are ${this.results.publicMeetings.length} public meeting(s) currently open.

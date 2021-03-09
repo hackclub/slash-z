@@ -3,7 +3,7 @@ const fetch = require('node-fetch')
 const getPublicMeetings = require('./get-public-meetings')
 const airbridge = require('./airbridge')
 
-const publishPage = async ({user, body})=> {
+const publishPage = async ({body})=> {
   return await fetch('https://slack.com/api/views.publish', {
     method: 'post',
     headers: {
