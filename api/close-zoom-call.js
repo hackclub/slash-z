@@ -38,4 +38,6 @@ module.exports = async (zoomID, forceClose = false) => {
 
   // 3) end airtable call
   await AirBridge.patch('Meetings', meeting.id, { 'Ended At': Date.now() })
+
+  return meeting.id
 }

@@ -1,7 +1,7 @@
 const ZoomClient = require('./zoom-client')
 const AirBridge = require("./airbridge")
-const closeZoomCall = require('./close-zoom-call')
 const sendHostKey = require('./send-host-key')
+const closeStaleCalls = require('./close-stale-calls')
 
 async function availableHost() {
   const hosts = await AirBridge.get('Hosts', {filterByFormula: 'AND({Open Meetings}<1,{Enabled}=TRUE())'})
@@ -16,25 +16,9 @@ module.exports = async ({creatorSlackID}={}) => {
 
   // no free hosts? let's try closing some stale zoom calls
   if (!host) {
-    const cutoff = 60*2 // 2 minutes
-    // either the call is open & has been for the last 2 minutes,
-    // OR the call was opened by the person who just initiated the 'new call'
-    const formula = `
-    AND(
-      {status}='OPEN',
-      OR(
-        DATETIME_DIFF(NOW(),{Started At})>${cutoff},
-        {Creator Slack ID}='${creatorSlackID}'
-      )
-    )
-    `
-    const staleCalls = await AirBridge.get('Meetings', {filterByFormula: formula})
-    if (staleCalls.length > 0) {
-      console.log(`No free hosts! I found ${staleCalls} meeting(s) that might be over, so I'll try closing them & trying again`)
-      await Promise.all(staleCalls.map(async (call) => {
-        await closeZoomCall(call.fields['Zoom ID'])
-      }))
-      console.log("Now let's see if there's another open host...")
+    console.log("No free hosts! I'm going to try closing stale calls")
+    const closedCalls = await closeStaleCalls({creatorSlackID})
+    if (closedCalls.length > 0) {
       host = await availableHost()
     }
   }

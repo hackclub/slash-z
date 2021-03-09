@@ -21,11 +21,6 @@ const listener = app.listen(port, () => {
   console.log(transcript('startup', {port: listener.address().port}))
 })
 
-// if running in production, let's queue up some record garbage collection
 if (process.env.NODE_ENV == 'production') {
-  // we'll queue it up for a couple minutes later in case we have multiple rebuilds in a row
-  setTimeout(() => {
-    const cleanupAirtableRecords = require('./api/cleanup-airtable-records')
-    cleanupAirtableRecords()
-  }, 1000 * 60 * 10) // 10 minutes in milliseconds
+  require('./jobs')
 }
