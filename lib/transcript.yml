@@ -127,5 +127,5 @@ appHome:
         text:
           type: mrkdwn
           text: >
-            It seems like you ${this.results.user ? 'have' : 'have not' } been approved in the Calendar integration beta.
+            It seems like you ${this.results.user ? ':large_green_circle: have' : ':large_orange_circle: have not' } been approved in the Calendar integration beta.
             There are ${this.results.publicMeetings.length} public meeting(s) currently open.
