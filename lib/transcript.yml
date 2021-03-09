@@ -16,18 +16,15 @@ copyrightSymbols:
   - ℗
   - Ⓜ
 publicMeetings:
-  none:
-    - >
-      https://cloud-rfuqitcwv-hack-club-bot.vercel.app/0510b43.jpg
-      There aren't any calls running in public Slack channels right now. You can start one yourself in any channel by running \`/z\`.
+  none: |
+    https://cloud-rfuqitcwv-hack-club-bot.vercel.app/0510b43.jpg
+    There aren't any calls running in public Slack channels right now. You can start one yourself in any channel by running \`/z\`.
   single:
-    - > 
-      There is <${this.fields['Join URL']}| only one call to join>, but it is precious nonetheless.
-  multiple:
-    - >
-      Here are the public meetings currently running:
-      ${this.meetings.map(m => this.t('publicMeetings.lineItem', { m })).join('\n')}
-  lineItem: "- <${this.m.fields['Join URL']}| Join a call> in <#${this.m.fields['Slack Channel ID']}>"
+    - There is <${this.meeting.joinUrl}| only one call to join>, but it is precious nonetheless. It's in <#${this.meeting.channel}>.
+  multiple: |
+    Here are the public meetings currently running:
+    ${this.meetings.map(m => this.t('publicMeetings.lineItem', { m })).join('\n')}
+  lineItem: "- <${this.m.joinUrl}| Join a call> in <#${this.m.channel}> with ${this.m.participantCount} participant(s)"
 footnoteSymbols:
   - †
   - ‡
@@ -128,13 +125,17 @@ appHome:
           type: mrkdwn
           text: |
             There are ${this.results.publicMeetings.length} public meeting(s) open right now.
+            ${this.t}
             ${this.results.publicMeetings.length > 0 ? this.t('publicMeetings.multiple', {meetings: this.results.publicMeetings}) : ''}
       - type: divider
       - type: section
         text:
           type: mrkdwn
-          text: >
-            ${this.t(`calendarBetaApproval.${this.results.user ? 'approved' : 'notApproved'}`)}
+          text: "${this.t(`calendarBetaApproval.${this.results.user ? 'approved' : 'notApproved'}`)}"
 calendarBetaApproval:
   approved: "You're in the Google Calendar addon beta :large_green_circle:. You can make scheduled calls through Google Calendar."
   notApproved: "You haven't been approved for the Google Calendar addon beta :large_orange_circle:. If you want access you can apply at https://airtable.com/shr62w12txEzUqRrl. If you already requested access, just hang tight."
+publicMeetingFlavor:
+  productivity:
+    - This'll let you be productive
+  
