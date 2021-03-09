@@ -12,10 +12,9 @@ module.exports = async user => {
       body: JSON.stringify(transcript('appHome.loading', {user}))
     }).then(r => r.json())
 
-    setTimeout(() => {
+    await new Promise(resolve => setTimeout(resolve, 1000))
       // TODO: actually load in a page to do stuff with
-      throw new Error('Not yet implemented')
-    }, 1000)
+    throw new Error('Not yet implemented')
   } catch (err) {
     await fetch('https://slack.com/api/views.publish', {
       method: 'post',
