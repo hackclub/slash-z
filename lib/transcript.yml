@@ -26,7 +26,7 @@ publicMeetings:
   multiple:
     - >
       Here are the public meetings currently running:
-      ${this.meetings.map(m => this.t('publicMeetings.lineItem'), { m }).join('\n')}
+      ${this.meetings.map(m => this.t('publicMeetings.lineItem', { m })).join('\n')}
   lineItem: "- <${this.m.fields['Join URL']}| Join a call> in <#${this.m.fields['Slack Channel ID']}>"
 footnoteSymbols:
   - †
