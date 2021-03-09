@@ -126,7 +126,7 @@ appHome:
       - type: section
         text:
           type: mrkdwn
-          text: >
+          text: |
             There are ${this.results.publicMeetings.length} public meeting(s) open right now.
             ${this.results.publicMeetings.length > 0 ? this.t('publicMeetings.multiple', {meetings: this.results.publicMeetings}) : ''}
       - type: divider
