@@ -23,7 +23,7 @@ module.exports = async user => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(transcript('appHome.error', {err}))
-    })
+    }).then(r => r.json()).finally(d => console.log(d))
     throw err
   }
 }
