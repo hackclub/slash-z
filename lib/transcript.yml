@@ -24,7 +24,7 @@ publicMeetings:
   multiple: |
     Here are the public meetings currently running:
     ${this.meetings.map(m => this.t('publicMeetings.lineItem', { m })).join('\n')}
-  lineItem: "- <${this.m.joinUrl}| Join a call> in <#${this.m.channel}> with ${this.m.participantCount} participant(s)"
+  lineItem: "- <${this.m.joinUrl}| Join a call> in <#${this.m.channel}>${this.m.channelFlavor ? `${ _(this.m.channelFlavor)_} : '' } with ${this.m.participantCount} participant(s)"
 footnoteSymbols:
   - †
   - ‡
@@ -134,7 +134,15 @@ appHome:
 calendarBetaApproval:
   approved: "You're in the Google Calendar addon beta :large_green_circle:. You can make scheduled calls through Google Calendar."
   notApproved: "You haven't been approved for the Google Calendar addon beta :large_orange_circle:. If you want access you can apply at https://airtable.com/shr62w12txEzUqRrl. If you already requested access, just hang tight."
-publicMeetingFlavor:
-  productivity:
-    - This'll let you be productive
+publicChannelFlavor:
+  C012YMFQHUG: # productivity
+    - great for productivity
+    - work it!
+    - <@U0C7B14Q3> unite! # @coworking-regulars
+  C0JDWKJVA: # hack-night
+    - great for procrastination
+    - "awoooo! :wolf: :moon:"
+    - open late
+  C01NY9WC4P5: # sunroom
+    - "Tea parties :tea:"
   

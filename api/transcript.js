@@ -15,12 +15,17 @@ const loadTranscript = () => {
     console.error(e)
   }
 }
-const recurseTranscript = (searchArr, transcriptObj) => {
+const recurseTranscript = (searchArr, transcriptObj, fallback) => {
   const searchCursor = searchArr.shift()
   const targetObj = transcriptObj[searchCursor]
 
   if (!targetObj) {
-    return new Error(transcript('errors.transcript'))
+    if (typeof fallback == 'undefined') {
+      return new Error('errors.transcript')
+      // return new Error(transcript('errors.transcript'))
+    } else {
+      return fallback
+    }
   }
   if (searchArr.length > 0) {
     return recurseTranscript(searchArr, targetObj)
@@ -44,7 +49,7 @@ const replaceErrors = (key, value) => {
   return value
 }
 
-const transcript = (search, vars) => {
+const transcript = (search, vars, fallback) => {
   if (vars) {
     console.log(
       `I'm searching for words in my yaml file under "${search}". These variables are set: ${JSON.stringify(
@@ -57,7 +62,7 @@ const transcript = (search, vars) => {
   }
   const searchArr = search.split('.')
   const transcriptObj = loadTranscript()
-  const dehydratedTarget = recurseTranscript(searchArr, transcriptObj)
+  const dehydratedTarget = recurseTranscript(searchArr, transcriptObj, fallback)
   return hydrateObj(dehydratedTarget, vars)
 }
 const hydrateObj = (obj, vars = {}) => {

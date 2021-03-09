@@ -1,5 +1,6 @@
 const { default: fetch } = require("node-fetch")
 const airbridge = require("./airbridge")
+const transcript = require("./transcript")
 
 async function getParticipantCount(slackCallID) {
   const callInfo = await fetch('https://slack.com/api/calls.info', {
@@ -24,6 +25,7 @@ module.exports = async function() {
   const meetingsWithParticipants = await Promise.all(
     meetings.map(async m => ({
       channel: m.fields['Slack Channel ID'],
+      channelFlavor: transcript(`channelFlavor.${m.fields['Slack Channel ID']}`, {}, null),
       joinUrl: m.fields['Join URL'],
       participantCount: await getParticipantCount(m.fields['Slack Call ID'])
     }))
