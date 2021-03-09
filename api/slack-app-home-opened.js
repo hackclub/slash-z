@@ -24,6 +24,5 @@ module.exports = async user => {
       },
       body: JSON.stringify(transcript('appHome.error', {err}))
     }).then(r => r.json()).finally(d => console.log(d))
-    throw err
   }
 }
