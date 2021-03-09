@@ -127,5 +127,8 @@ appHome:
         text:
           type: mrkdwn
           text: >
-            It seems like you ${this.results.user ? ':large_green_circle: have' : ':large_orange_circle: have not' } been approved in the Calendar integration beta.
-            There are ${this.results.publicMeetings.length} public meeting(s) currently open.
+            ${this.t(`calendarBetaApproval.${this.results.user ? 'approved' : 'notApproved'}`)}
+            There are ${this.results.publicMeetings.length} public meeting(s) open right now.
+calendarBetaApproval:
+  approved: "You're in the Google Calendar addon beta :large_green_circle:. You can make scheduled calls through Google Calendar."
+  notApproved: "You haven't been approved for the Google Calendar addon beta :large_orange_circle:. If you want access you can apply at https://airtable.com/shr62w12txEzUqRrl. If you already requested access, just hang tight."
