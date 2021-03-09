@@ -127,8 +127,14 @@ appHome:
         text:
           type: mrkdwn
           text: >
-            ${this.t(`calendarBetaApproval.${this.results.user ? 'approved' : 'notApproved'}`)}
             There are ${this.results.publicMeetings.length} public meeting(s) open right now.
+            ${this.results.publicMeetings.length > 0 ? this.t('publicMeetings.multiple', {meetings: this.results.publicMeetings}) : ''}
+      - type: divider
+      - type: section
+        text:
+          type: mrkdwn
+          text: >
+            ${this.t(`calendarBetaApproval.${this.results.user ? 'approved' : 'notApproved'}`)}
 calendarBetaApproval:
   approved: "You're in the Google Calendar addon beta :large_green_circle:. You can make scheduled calls through Google Calendar."
   notApproved: "You haven't been approved for the Google Calendar addon beta :large_orange_circle:. If you want access you can apply at https://airtable.com/shr62w12txEzUqRrl. If you already requested access, just hang tight."
