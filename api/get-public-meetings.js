@@ -12,6 +12,9 @@ async function getParticipantCount(slackCallID) {
       id: slackCallID
     })
   }).then(r => r.json())
+  if (!callInfo.call.users) {
+    return 0
+  }
   return callInfo.call.users.length
 }
 
