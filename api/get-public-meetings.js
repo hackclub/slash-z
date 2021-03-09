@@ -21,11 +21,12 @@ async function getParticipantCount(slackCallID) {
 module.exports = async function() {
   const filterByFormula = `AND({Status}='OPEN',{Public}=TRUE())`
   const meetings = await airbridge.get('Meetings', {filterByFormula})
-  return await Promise.all(
+  const meetingsWithParticipants = await Promise.all(
     meetings.map(async m => ({
       channel: m.fields['Slack Channel ID'],
       joinUrl: m.fields['Join URL'],
       participantCount: await getParticipantCount(m.fields['Slack Call ID'])
     }))
   )
+  return meetingsWithParticipants.filter(m => m.participantCount > 0)
 }
