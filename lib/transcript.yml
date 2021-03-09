@@ -15,6 +15,19 @@ copyrightSymbols:
   - ©
   - ℗
   - Ⓜ
+publicMeetings:
+  none:
+    - >
+      https://cloud-rfuqitcwv-hack-club-bot.vercel.app/0510b43.jpg
+      There aren't any calls running in public Slack channels right now. You can start one yourself in any channel by running `/z`.
+  single:
+    - > 
+      There is <${this.fields['Join URL']}| only one call to join>, but it is precious nonetheless.
+  multiple:
+    - >
+      Here are the public meetings currently running:
+      ${this.meetings.map(m => this.t('publicMeetings.lineItem'), { m }).join('\n')}
+  lineItem: "- <${this.m.fields['Join URL']}| Join a call> in <#${this.m.fields['Slack Channel ID']}>"
 footnoteSymbols:
   - †
   - ‡
