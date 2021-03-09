@@ -1,5 +1,6 @@
 const { default: fetch } = require("node-fetch")
 const AirBridge = require("../../airbridge")
+const isPublicSlackChannel = require("../../is-public-slack-channel")
 const openZoomMeeting = require('../../open-zoom-meeting')
 
 module.exports = async (req, res) => {
@@ -69,7 +70,8 @@ module.exports = async (req, res) => {
     'Join URL': meeting.join_url,
     'Host Join URL': meeting.start_url,
     'Raw Data': JSON.stringify(meeting, null, 2),
-    'Slack Channel ID': req.body.channel_id
+    'Slack Channel ID': req.body.channel_id,
+    'Public': await isPublicSlackChannel(req.body.channel_id)
   })
 
   const slackPostFields = {
