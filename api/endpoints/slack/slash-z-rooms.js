@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
   if (meetings.length > 1) {
     messageText = transcript('publicMeetings.multiple', {meetings})
   } else if (meetings.length > 0) {
-    messageText = transcript('publicMeetings.single', {meetings})
+    messageText = transcript('publicMeetings.single', {meeting: meetings[0]})
   } else {
     messageText = transcript('publicMeetings.none')
   }
