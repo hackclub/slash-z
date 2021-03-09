@@ -109,3 +109,12 @@ appHome:
       - type: image
         image_url: ${this.t('loadingGifs')}
         alt_text: 'dancing skeletons'
+  page:
+    user_id: ${this.user}
+    view:
+      type: home
+      blocks:
+      - type: section
+        text:
+          type: mrkdwn
+          text: Hi <@${this.user}>! There are public ${this.results.publicMeetings.length} meeting(s) currently open
