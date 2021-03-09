@@ -121,7 +121,11 @@ appHome:
       - type: section
         text:
           type: mrkdwn
+          text: "${this.t('greeting', {user: this.user})}"
+      - type: divider
+      - type: section
+        text:
+          type: mrkdwn
           text: >
-            ${this.t('greeting', {user: this.user})}
             It seems like you ${this.results.user ? 'have' : 'have not' } been approved in the Calendar integration beta.
             There are ${this.results.publicMeetings.length} public meeting(s) currently open.
