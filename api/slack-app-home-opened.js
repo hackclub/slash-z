@@ -15,15 +15,21 @@ const publishPage = async ({body})=> {
 }
 
 const publishLoadingPage = async user => {
-  return await publishPage({user, body: transcript('appHome.loading', {user})})
+  const result = await publishPage({user, body: transcript('appHome.loading', {user})})
+  console.log(result)
+  return result
 }
 
 const publishErrorPage = async ({user,err}) => {
-  return await publishPage({user, body: transcript('appHome.error', {user, err})})
+  const result = await publishPage({user, body: transcript('appHome.error', {user, err})})
+  console.log(result)
+  return result
 }
 
 const publishHomePage = async ({user, results}) => {
-  return await publishPage({user, body: transcript('appHome.page', {user, results})})
+  const result = await publishPage({user, body: transcript('appHome.page', {user, results})})
+  console.log(result)
+  return result
 }
 
 const getUserInfo = async user => {
