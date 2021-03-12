@@ -58,7 +58,6 @@ skeletonVideos:
   - https://www.youtube.com/watch?v=vOGhAV-84iI
 errorViewer: |
   \`\`\`
-  ${this.err}
   ${this.err.stack}
   \`\`\`
 loading:
