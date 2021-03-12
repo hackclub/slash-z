@@ -56,6 +56,11 @@ skeletonVideos:
   - https://www.youtube.com/watch?v=-1dSY6ZuXEY
   - https://youtu.be/z6WMbV5Op58?t=8
   - https://www.youtube.com/watch?v=vOGhAV-84iI
+errorViewer: |
+  \`\`\`
+  ${this.err}
+  ${this.err.stack}
+  \`\`\`
 loading:
   - creep it real!
   - juggling the ${this.t('bones')}
@@ -102,7 +107,7 @@ appHome:
       - type: section
         text:
           type: mrkdwn
-          text: ${this.err}
+          text: "${this.t('errorViewer', {err: this.err})}"
   loading:
     user_id: ${this.user}
     view:
