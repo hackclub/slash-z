@@ -96,10 +96,14 @@ appHome:
     view:
       type: home
       blocks:
+      - type: header
+        text:
+          type: plain_text
+          text: Uh oh...
       - type: section
         text:
           type: mrkdwn
-          text: Hmmm.... that wasn't supposed to happen
+          text: Please send <@U0C7B14Q3> a screenshot of this so he can fix it # <-- Max's Slack ID
       - type: image
         image_url: ${this.t('errorGifs')}
         alt_text: 'skeleton falling apart'
