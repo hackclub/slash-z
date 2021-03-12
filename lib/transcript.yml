@@ -128,7 +128,7 @@ appHome:
         text:
           type: mrkdwn
           text: |
-            There are ${this.pluralize('public meeting', this.results.publicMeetings.length)} open right now.
+            There are ${this.pluralize('public meeting', this.results.publicMeetings.length} open right now.
             ${this.results.publicMeetings.length > 0 ? this.t('publicMeetings.multiple', {meetings: this.results.publicMeetings}) : ''}
       - type: divider
       - type: section
