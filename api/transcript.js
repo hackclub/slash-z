@@ -1,6 +1,18 @@
 const yaml = require('js-yaml')
 const fs = require('fs')
 const path = require('path')
+
+const pluralize = (word, count) => {
+  // want to use this method? make sure to add your word to transcript.yml under 'plurals'
+  if (count == 1) {
+    // singular
+    return `${count} ${transcript('plurals.' + word)}`
+  } else {
+    // plural or zero
+    return `${count} ${word}`
+  }
+}
+
 const sample = (arr) => {
   return arr[Math.floor(Math.random() * arr.length)]
 }
@@ -88,6 +100,7 @@ const evalTranscript = (target, vars = {}) => (
   }.call({
     ...vars,
     t: transcript,
+    pluralize
   })
 )
 
