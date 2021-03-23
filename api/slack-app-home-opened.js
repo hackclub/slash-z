@@ -4,31 +4,58 @@ const getPublicMeetings = require('./get-public-meetings')
 const getScheduledMeetings = require('./get-scheduled-meetings')
 const airbridge = require('./airbridge')
 
-const publishPage = async ({body})=> {
+const publishPage = async ({blocks, user})=> {
   return await fetch('https://slack.com/api/views.publish', {
     method: 'post',
     headers: {
       'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      user_id: user,
+      view: {
+        type: 'home',
+        blocks
+      }
+    })
   }).then(r => r.json())
 }
 
 const publishLoadingPage = async user => {
-  const result = await publishPage({user, body: transcript('appHome.loading', {user})})
+  const result = await publishPage({user,
+    ...transcript('appHome.loading')
+  })
   console.log(result)
   return result
 }
 
 const publishErrorPage = async ({user,err}) => {
-  const result = await publishPage({user, body: transcript('appHome.error', {user, err})})
+  const result = await publishPage({user,
+    ...transcript('appHome.error', {err})
+  })
   console.log(result)
   return result
 }
 
 const publishHomePage = async ({user, results}) => {
-  const result = await publishPage({user, body: transcript('appHome.page', {user, results})})
+  const blocks = []
+  blocks.push(transcript('appHome.greeting', {user}))
+  blocks.push(transcript('appHome.divider'))
+  blocks.push(transcript('appHome.publicMeetings', {publicMeetings: results.publicMeetings}))
+  blocks.push(transcript('appHome.divider'))
+  blocks.push(transcript('appHome.betaAccess.'+Boolean(results.user)))
+  if (results.user) { // has access to the google calendar add-on
+    const sm = results.scheduledMeetings
+    if (sm.length > 1) {
+      blocks.push(transcript('appHome.scheduledHostKeys.multiple', {sm}))
+    } else if (sm.length == 1) {
+      blocks.push(transcript('appHome.scheduledHostKeys.single', {hostKey: sm.fields['Host Key']}))
+    } else {
+      blocks.push(transcript('appHome.scheduledHostKeys.none'))
+    }
+  }
+  blocks.push(transcript('appHome.divider'))
+  const result = await publishPage({user, blocks})
   console.log(result)
   return result
 }
