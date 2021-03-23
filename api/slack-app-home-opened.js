@@ -1,6 +1,7 @@
 const transcript = require('./transcript')
 const fetch = require('node-fetch')
 const getPublicMeetings = require('./get-public-meetings')
+const getScheduledMeetings = require('./get-scheduled-meetings')
 const airbridge = require('./airbridge')
 
 const publishPage = async ({body})=> {
@@ -43,8 +44,9 @@ module.exports = async user => {
     await Promise.all([
       publishLoadingPage(user),
       new Promise(resolve => setTimeout(resolve, 2000)),
-      getPublicMeetings().then(m => results.publicMeetings = m),
-      getUserInfo(user).then(u => results.user = u)
+      getPublicMeetings().then(pm => results.publicMeetings = pm),
+      getUserInfo(user).then(u => results.user = u),
+      getScheduledMeetings().then(sm => results.scheduledMeetings = sm)
     ])
 
     await publishHomePage({user, results})
