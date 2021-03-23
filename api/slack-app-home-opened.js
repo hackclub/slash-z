@@ -46,7 +46,7 @@ module.exports = async user => {
       new Promise(resolve => setTimeout(resolve, 2000)),
       getPublicMeetings().then(pm => results.publicMeetings = pm),
       getUserInfo(user).then(u => results.user = u),
-      getScheduledMeetings().then(sm => results.scheduledMeetings = sm)
+      getScheduledMeetings(user).then(sm => results.scheduledMeetings = sm)
     ])
 
     await publishHomePage({user, results})
