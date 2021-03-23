@@ -71,7 +71,8 @@ module.exports = async (req, res) => {
     'Host Join URL': meeting.start_url,
     'Raw Data': JSON.stringify(meeting, null, 2),
     'Slack Channel ID': req.body.channel_id,
-    'Public': await isPublicSlackChannel(req.body.channel_id)
+    'Public': await isPublicSlackChannel(req.body.channel_id),
+    'Host Key': meeting.hostKey
   })
 
   const slackPostFields = {

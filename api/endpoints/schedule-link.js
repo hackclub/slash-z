@@ -38,6 +38,7 @@ module.exports = async (req, res) => {
     fields['Scheduling Link'] = [link.id]
     fields['Host Join URL'] = zoomMeeting.start_url
     fields['Public'] = false // hard coding this b/c scheduled meetings aren't shown on the public list atm
+    fields['Host Key'] = zoomMeeting.hostKey
     if (link.fields['Creator Slack ID']) {
       fields['Creator Slack ID'] = link.fields['Creator Slack ID']
     }
