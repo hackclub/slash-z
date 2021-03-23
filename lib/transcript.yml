@@ -73,7 +73,7 @@ loading:
   - loading could take some time... looks like this app is run by a _skeleton_ crew
   - ":bone: :clap: :bone: :clap: :bone: :clap: :bone:"
   - ":skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones:"
-  - |
+  - | # This spagetti is the text for "i'm the sheriff of X" memes
     Howdy, i'm the sheriff of ${this.t('sheriffs')}
     :blank: :blank: :face_with_cowboy_hat:
     :blank: :bone: :bone: :bone:
