@@ -60,13 +60,29 @@ errorViewer: |
   \`\`\`
   ${this.err.stack}
   \`\`\`
+sheriffs:
+  - bones
+  - good zoom calls
+  - spook
 loading:
   - creep it real!
   - juggling the ${this.t('bones')}
   - opening the bone bag
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a ton¹ of skele-fun!²_
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a skele-ton¹ of fun!²_
-  - loading could take some time... looks like this app is manned by a _skeleton_ crew
+  - loading could take some time... looks like this app is run by a _skeleton_ crew
+  - ":bone: :clap: :bone: :clap: :bone: :clap: :bone:"
+  - ":skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones:"
+  - |
+    Howdy, i'm the sheriff of ${this.t('sheriffs')}
+    :blank: :blank: :face_with_cowboy_hat:
+    :blank: :bone: :bone: :bone:
+      :bone::blank::bone: :blank: :bone:  
+    :point_down:      :bone::bone:      :point_down:
+               :bone:   :bone:
+          :bone:        :bone:
+           :boot:       :boot:
+  - Let's boogie on down to skelly-town!
   - If you've got it, haunt it
   - Shake your boo-ty!
   - Keep it incorporeal!
