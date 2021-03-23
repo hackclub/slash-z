@@ -167,10 +167,10 @@ appHome:
           Here are your currently running calls:
           ${this.sm.map(m => `- Call _${m.link.fields['Name']}_ has host key **${m.meeting.fields['Host Key']}**`)}
     single:
-      type: section
+      type: header
       text:
-        type: mrkdwn
-        text: "Your host key is **${this.hostKey}**. Have a wonderful meeting!"
+        type: plain_text
+        text: "Your host key is ${this.hostKey}. Have a wonderful meeting!"
     none:
       type: section
       text:
