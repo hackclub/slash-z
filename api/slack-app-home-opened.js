@@ -49,7 +49,7 @@ const publishHomePage = async ({user, results}) => {
     if (sm.length > 1) {
       blocks.push(transcript('appHome.scheduledHostKeys.multiple', {sm}))
     } else if (sm.length == 1) {
-      blocks.push(transcript('appHome.scheduledHostKeys.single', {hostKey: sm.fields['Host Key']}))
+      blocks.push(transcript('appHome.scheduledHostKeys.single', {hostKey: sm[0].fields['Host Key']}))
     } else {
       blocks.push(transcript('appHome.scheduledHostKeys.none'))
     }
