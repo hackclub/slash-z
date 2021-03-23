@@ -13,7 +13,8 @@ module.exports = async function(user) {
     const meetingFilter = `
     AND(
       {Status}='OPEN',
-      {Scheduling Link}
+      NOT({Host Key}=BLANK()),
+      {Scheduling Link}='${link.fields['name']}'
     )
     `
     const meeting = await airbridge.find('Meetings', {filterByFormula: meetingFilter})
