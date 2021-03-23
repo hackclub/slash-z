@@ -175,7 +175,7 @@ appHome:
       type: section
       text:
         type: mrkdwn
-        text: "When you or your guest joins a scheduled Zoom call, you'll see the call's host key show up here."
+        text: "When you join a meeting scheduled on your calendar, your host key will show up here."
 publicChannelFlavor:
   C012YMFQHUG: # productivity
     - great for productivity
