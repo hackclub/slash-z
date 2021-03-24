@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dial in</title>
+  </head>
+  <body>
+    <span class='holder'></span>
+    <span>If you scheduled this call, you can get your host key <a href="https://slack.com/app_redirect?team=T0266FRGM&app=A01LXD7TYG7">in Slack once the call has started</a>.</span>
+    <script>
+      const params = new URLSearchParams(location.search)
+      const meetingID = params.get('meetingID')
+
+      const a = document.createElement('a')
+      // I found this call-in number on Zoom's home page
+      a.href = `tel:+13017158592,,${meetingID}#`
+      a.innerText = `Join this call at +13017158592,,${meetingID}#`
+      document.querySelector('.holder').appendChild(a)
+    </script>
+  </body>
+</html>

@@ -49,5 +49,9 @@ module.exports = async (req, res) => {
     airtableMeeting = await AirBridge.find('Meetings', {filterByFormula: `AND('${link.fields['Name']}'={Scheduling Link},{Status}='OPEN')`})
   }
 
-  res.redirect(airtableMeeting.fields['Join URL'])
+  if (query.phone) {
+    res.redirect('/phone.html?meetingID='+airtableMeeting.fields['Zoom ID'])
+  } else {
+    res.redirect(airtableMeeting.fields['Join URL'])
+  }
 }
