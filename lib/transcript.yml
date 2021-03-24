@@ -107,6 +107,8 @@ currentDay: "${(new Date()).toLocaleDateString('en-US', { weekday: 'long' })}"
 greeting:
   - Welcome to the Manor <@${this.user}>!
   - Hello <@${this.user}>, have a good ${this.t('currentDay')}!
+  - Hello <@${this.user}>, your bones look wonderful today!
+  - Greetings <@${this.user}>, please come in!
 appHome:
   error:
     blocks:
