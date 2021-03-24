@@ -63,6 +63,8 @@ sheriffs:
   - bones
   - good zoom calls
   - spook
+  - stealing your bones
+  - drinking lots of milk
 loading:
   - creep it real!
   - juggling the ${this.t('bones')}
