@@ -6,7 +6,7 @@
     // calls. Now that I'm also using it as the homepage, we should check if the
     // user has an `id` in their URL params-- which indicates they're trying to
     // join a call. If so, let's redirect them
-    const params = URLSearchParams(location.search)
+    const params = new URLSearchParams(location.search)
     if (params.get('id')) {
       window.location.href = `https://hack.af/z-join?id=${id}`
     }
