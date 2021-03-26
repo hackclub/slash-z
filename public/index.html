@@ -8,7 +8,7 @@
     // join a call. If so, let's redirect them
     const params = new URLSearchParams(location.search)
     if (params.get('id')) {
-      window.location.href = `https://hack.af/z-join?id=${id}`
+      window.location.href = `https://hack.af/z-join?id=${params.get('id')}`
     }
   </script>
   <title>Slash Z</title>
