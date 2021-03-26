@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html class="h-100">
 <head>
+  <script>
+    // early on I made the mistake of using hack.af/z as the join link for
+    // calls. Now that I'm also using it as the homepage, we should check if the
+    // user has an `id` in their URL params-- which indicates they're trying to
+    // join a call. If so, let's redirect them
+    const params = UrlSearchParams(location.search)
+    if (params.get('id')) {
+      window.location.href = `https://hack.af/z-join?id=${id}`
+    }
+  </script>
   <title>Slash Z</title>
   <link rel="icon" type="image/png" href="favicon.ico">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
