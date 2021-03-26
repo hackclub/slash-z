@@ -19,8 +19,8 @@ module.exports = async (req, res) => {
   // let's spice this name creation up in the future too
   const id = Math.random().toString(36).substring(7)
   res.json({id,
-    videoUri: `https://hack.af/zvideo?id=${id}`,
-    moreUri: `https://hack.af/zphone?id=${id}`
+    videoUri: `https://hack.af/z-join?id=${id}`,
+    moreUri: `https://hack.af/z-phone?id=${id}`
   })
 
   AirBridge.create('Scheduling Links', {
