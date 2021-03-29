@@ -41,9 +41,11 @@ const publishHomePage = async ({user, results}) => {
   const blocks = []
   blocks.push(transcript('appHome.greeting', {user}))
   blocks.push(transcript('appHome.divider'))
-  blocks.push(transcript('appHome.publicMeetings', {publicMeetings: results.publicMeetings}))
-  blocks.push(transcript('appHome.divider'))
-  blocks.push(transcript('appHome.betaAccess.'+Boolean(results.user)))
+  if (results.publicMeetings.length > 0) {
+    blocks.push(transcript('appHome.publicMeetings', {publicMeetings: results.publicMeetings}))
+    blocks.push(transcript('appHome.divider'))
+  }
+  blocks.push(transcript('appHome.calendarAddon.'+Boolean(results.user)))
   if (results.user) { // has access to the google calendar add-on
     const sm = results.scheduledMeetings
     if (sm.length > 1) {

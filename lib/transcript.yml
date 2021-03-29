@@ -150,17 +150,17 @@ appHome:
       text: |
         There are ${this.pluralize('public meeting', this.publicMeetings.length)} open right now.
         ${this.publicMeetings.length > 0 ? this.t('publicMeetings.multiple', {meetings: this.publicMeetings}) : ''}
-  betaAccess:
+  calendarAddon:
     true:
       type: section
       text:
         type: mrkdwn
-        text: "You're in the Google Calendar add-on beta :large_green_circle:. You can make scheduled calls through Google Calendar."
+        text: "You've installed the Google Calendar add-on. You can make scheduled calls through Google Calendar."
     false:
       type: section
       text:
         type: mrkdwn
-        text: "You haven't been approved for the Google Calendar add-on beta :large_orange_circle:. If you want access you can apply at https://airtable.com/shr62w12txEzUqRrl. If you already requested access, just hang tight."
+        text: "Want to create a scheduled meeting link? You can install the the Google Calendar add-on at https://hack.af/z-addon."
   scheduledHostKeys:
     multiple:
       type: section
