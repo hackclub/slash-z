@@ -10,15 +10,24 @@ const deletionLimiter = new Bottleneck({
   minTime: 3000
 })
 
+const getBaseID = function(baseID = 'Slash-z') {
+  return {
+    'Slash-z': 'appuEsdMf6hHXibSh',
+    'Operations': 'apptEEFG5HTfGQE7h'
+  }[baseID]
+}
+
 const get = async (table, options) => {
+  const {base, ...otherOptions} = options
+  const baseID = getBaseID(base)
   try {
     const airtable = new AirtablePlus({
-      baseID: 'appuEsdMf6hHXibSh',
+      baseID,
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
-    console.log(`Airtable GET '${table}' with the following options:`, options)
-    const results = await airtable.read(options)
+    console.log(`Airtable GET '${table}' with the following options:`, otherOptions)
+    const results = await airtable.read(otherOptions)
     console.log(`Found ${results.length} records(s)`)
     return results
   } catch (err) {
@@ -35,7 +44,7 @@ const patch = async (table, recordID, fields) => {
   try {
     console.log(`Airtable PATCH '${table} ID ${recordID}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
-      baseID: 'appuEsdMf6hHXibSh',
+      baseID: getBaseID('Slash-z'),
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
@@ -50,7 +59,7 @@ const create = async (table, fields) => {
   try {
     console.log(`Airtable CREATE '${table}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
-      baseID: 'appuEsdMf6hHXibSh',
+      baseID: getBaseID('Slash-z'),
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
@@ -64,7 +73,7 @@ const create = async (table, fields) => {
 
 const destroy = async (table, id) => {
   const airtable = new AirtablePlus({
-    baseID: 'appuEsdMf6hHXibSh',
+    baseID: getBaseID('Slash-z'),
     apiKey: process.env.AIRBRIDGE_API_KEY,
     tableName: table,
   })
