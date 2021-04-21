@@ -101,6 +101,10 @@ scheduled meetings](https://hack.af/z-addon).
 
 Your school-issued Gmail account shouldn't interfere with any meetings created in Slack with `/z`.
 
+#### Do you have a Gource?
+
+[Yes](https://www.youtube.com/watch?v=mJb_DeK6g1M)
+
 ## How it works
 
 Zoom has some really cool built-in features for taking over host status of a
