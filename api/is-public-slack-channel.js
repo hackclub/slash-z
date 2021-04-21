@@ -16,11 +16,11 @@ module.exports = async function(channelID) {
         'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`
       }
     }).then(r => r.json()).then(channelInfo => {
-      isPublic *= (channelInfo.ok && !channelInfo.channel['is_private'])
+      isPublic = isPublic && (channelInfo.ok && !channelInfo.channel['is_private'])
     }),
     // check Operations airtable to see if this channel isn't a club channel
     airbridge.find('Clubs', {base: 'Operations', filterByFormula: `{Slack Channel ID}='${channelID}'`}).then(c => {
-      isPublic *= !Boolean(c)
+      isPublic = isPublic && !Boolean(c)
     })
   ])
 
