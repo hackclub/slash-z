@@ -54,6 +54,10 @@ module.exports = async ({creatorSlackID}={}) => {
         co_host: true,
         polling: true,
       },
+      recording: {
+        local_recording: true,
+        cloud_recording: false, // this is turned off for now because I haven't found a good way for users to access cloud recordings hosted in our host Zoom accounts
+      },
       meeting_security: {
         embed_password_in_join_link: true
       },
