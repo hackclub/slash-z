@@ -17,6 +17,7 @@ copyrightSymbols:
 plurals:
   participant: participants
   public meeting: public meetings
+  recording: recordings
 publicMeetings:
   none: |
     https://cloud-rfuqitcwv-hack-club-bot.vercel.app/0510b43.jpg
@@ -150,6 +151,17 @@ appHome:
       text: |
         There are ${this.pluralize('public meeting', this.publicMeetings.length)} open right now.
         ${this.publicMeetings.length > 0 ? this.t('publicMeetings.multiple', {meetings: this.publicMeetings}) : ''}
+  recordedMeetings:
+    processing: 
+      type: section
+      text:
+        type: mrkdwn
+        text: You have ${this.pluralize('recording', this.processingCount)} still processing :beachball:. Zoom usually takes the length of the call to process a video, so come back soon!
+    completed:
+      type: section
+      text:
+        type: mrkdwn
+        text: You have ${this.pluralize('recording', this.completedCount)} ready for download
   calendarAddon:
     true:
       type: section

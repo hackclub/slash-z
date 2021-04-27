@@ -18,3 +18,15 @@ Ok, just tested out the API, I've got new thoughts on this. First, what I found:
 ---
 
 Before I start playing with extra DB tables & columns etc. I'm going to just link files from the app home screen. I'll check how the performance is & build out actual db changes when rate-limits/lag is becoming a problem.
+
+---
+
+![AYYYYYYY](https://cloud-olc8bplu4-hack-club-bot.vercel.app/0screen_shot_2021-04-27_at_16.20.22.png)
+
+https://marketplace.zoom.us/docs/api-reference/webhook-reference/recording-events/recording-started
+
+---
+
+Looks like there are recording events for webhooks. This will be _soooo_ much easier.
+
+I'll add recording.started & recording.completed for now-- then I can have call states ('no recording', 'recording pending call end', 'recording pending transcoding', 'recording completed')

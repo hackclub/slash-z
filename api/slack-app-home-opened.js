@@ -3,6 +3,7 @@ const fetch = require('node-fetch')
 const getPublicMeetings = require('./get-public-meetings')
 const getScheduledMeetings = require('./get-scheduled-meetings')
 const airbridge = require('./airbridge')
+const zoomMeetingToRecording = require('./zoom-meeting-to-recording')
 
 const publishPage = async ({blocks, user})=> {
   return await fetch('https://slack.com/api/views.publish', {
@@ -45,6 +46,11 @@ const publishHomePage = async ({user, results}) => {
     blocks.push(transcript('appHome.publicMeetings', {publicMeetings: results.publicMeetings}))
     blocks.push(transcript('appHome.divider'))
   }
+  if (results.recordings != {}) {
+    blocks.push(transcript('appHome.recordedMeetings.processing', {processingCount: results.recordings.processing.length}))
+    blocks.push(transcript('appHome.recordedMeetings.completed', {completedCount: results.recordings.completed.length}))
+    blocks.push(transcript('appHome.divider'))
+  }
   blocks.push(transcript('appHome.calendarAddon.'+Boolean(results.user)))
   if (results.user) { // has access to the google calendar add-on
     const sm = results.scheduledMeetings
@@ -67,6 +73,27 @@ const getUserInfo = async user => {
   return await airbridge.find('Authed Accounts', {filterByFormula})
 }
 
+const getRecordings = async (user) => {
+  const recordedMeetings = await airbridge.get('Meetings', {
+    filterByFormula: `AND({Creator Slack ID}='${user}',NOT({Recording Events}=BLANK()))`
+  })
+  const completed = recordedMeetings.filter(record => {
+    return record.fields['Recording Events'].includes('recording.completed')
+    // // if Zoom told us the recording is complete, assume it's complete
+    // const markedComplete = record.fields['Recording Events'].includes('recording.completed')
+    // // if Zoom hasn't told us the recording is c
+    // const pastDue = record.fields['']
+    // markedComplete || pastDue
+  }).map(async meeting => {
+    return await zoomMeetingToRecording(meeting.fields['Zoom ID'])
+  })
+  const processing = recordedMeetings.filter(record => {
+    record.fields['Recording Events'].includes('recording.started')
+  })
+
+  return { completed, processing }
+}
+
 module.exports = async user => {
   const results = {}
   try {
@@ -74,6 +101,7 @@ module.exports = async user => {
       publishLoadingPage(user),
       new Promise(resolve => setTimeout(resolve, 2000)),
       getPublicMeetings().then(pm => results.publicMeetings = pm),
+      getRecordings(user).then(r => results.recordings = r),
       getUserInfo(user).then(u => results.user = u),
       getScheduledMeetings(user).then(sm => results.scheduledMeetings = sm)
     ])
