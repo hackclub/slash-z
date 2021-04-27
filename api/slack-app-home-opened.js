@@ -94,17 +94,25 @@ const getRecordings = async (user) => {
   return { completed, processing }
 }
 
-module.exports = async user => {
+module.exports = async (user, loading=true) => {
   const results = {}
   try {
-    await Promise.all([
-      publishLoadingPage(user),
-      new Promise(resolve => setTimeout(resolve, 2000)),
+    const taskArray = [
       getPublicMeetings().then(pm => results.publicMeetings = pm),
       getRecordings(user).then(r => results.recordings = r),
       getUserInfo(user).then(u => results.user = u),
       getScheduledMeetings(user).then(sm => results.scheduledMeetings = sm)
-    ])
+    ]
+
+    // if running with the loading argument, show a loading page & ensure at
+    // least 2 seconds of loading to prevent flashing the user with updates
+
+    if (loading) {
+      taskArray.push(new Promise(resolve => setTimeout(resolve, 2000)))
+      taskArray.push(publishLoadingPage(user))
+    }
+
+    await Promise.all(taskArray)
 
     await publishHomePage({user, results})
   } catch (err) {

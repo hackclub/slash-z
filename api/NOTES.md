@@ -30,3 +30,19 @@ https://marketplace.zoom.us/docs/api-reference/webhook-reference/recording-event
 Looks like there are recording events for webhooks. This will be _soooo_ much easier.
 
 I'll add recording.started & recording.completed for now-- then I can have call states ('no recording', 'recording pending call end', 'recording pending transcoding', 'recording completed')
+
+---
+
+How do we think through the records in Airtable? it's currently built with a rollup, but I'd like to avoid that if possible. sdhskjhadkjashdjksa
+ agh
+
+i'm getting ahead of myself-- first, how do i handle the edge cases. there are simple ones:
+
+- what if the user doesn't have any recordings?
+- what if the user has recordings, but no completed recordings?
+
+and there are harder ones
+
+- what if the user wants to delete a recording?
+- how do we stop showing the record as deleted to the user?
+- when a recording finishes, how do i update the user's app homepage to show the recording as finished?
