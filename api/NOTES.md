@@ -15,3 +15,6 @@ Ok, just tested out the API, I've got new thoughts on this. First, what I found:
 - Most transcoding I tested took about 50-80% of the duration of the call (ie. hour long call took about 40 min to transcode)
 - Transcoding takes a minute minimum (ie. 10 second zoom call takes a minute before recording shows up on API)
 
+---
+
+Before I start playing with extra DB tables & columns etc. I'm going to just link files from the app home screen. I'll check how the performance is & build out actual db changes when rate-limits/lag is becoming a problem.
