@@ -51,8 +51,15 @@ const publishHomePage = async ({user, results}) => {
     if (results.recordings.processing.length > 0) {
       blocks.push(transcript('appHome.recordedMeetings.processing', {processingCount: results.recordings.processing.length}))
     }
+
     if (results.recordings.completed.length > 0) {
-      blocks.push(transcript('appHome.recordedMeetings.completed', {completed: results.recordings.completed}))
+      const completedRecordings = results.recordings.completed.map(c => ({
+        url: c.share_url,
+        meetingID: c.id,
+        duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
+      }))
+      console.log('cake', results.recordings.completed)
+      blocks.push(transcript('appHome.recordedMeetings.completed', {completedRecordings}))
     }
     blocks.push(transcript('appHome.divider'))
   }
@@ -82,7 +89,7 @@ const getRecordings = async (user) => {
   const recordedMeetings = await airbridge.get('Meetings', {
     filterByFormula: `AND({Creator Slack ID}='${user}',NOT({Recording Events}=BLANK()))`
   })
-  const completed = recordedMeetings.filter(record => {
+  const completed = await Promise.all(recordedMeetings.filter(record => {
     return record.fields['Recording Events'].includes('recording.completed')
     // // if Zoom told us the recording is complete, assume it's complete
     // const markedComplete = record.fields['Recording Events'].includes('recording.completed')
@@ -91,7 +98,7 @@ const getRecordings = async (user) => {
     // markedComplete || pastDue
   }).map(async meeting => {
     return await zoomMeetingToRecording(meeting.fields['Zoom ID'])
-  })
+  }))
   const processing = recordedMeetings.filter(record => {
     record.fields['Recording Events'].includes('recording.started')
   })

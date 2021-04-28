@@ -162,9 +162,9 @@ appHome:
       text:
         type: mrkdwn
         text: |
-          You have ${this.pluralize('recording', this.completed.length)} ready for download:
-          ${this.completed.map(m => JSON.stringify(m))}
-          Recorded meetings will automatically by removed after a week.
+          You have ${this.pluralize('recording', this.completedRecordings.length)} ready for download:
+          ${this.completedRecordings.map(m => `- <${m.url}|Meeting ${m.meetingID} _(${m.duration} minutes long)_>`).join('\n')}
+          _Recorded meetings will automatically by removed after a week._
   calendarAddon:
     true:
       type: section
