@@ -195,6 +195,10 @@ appHome:
         type: mrkdwn
         text: "When you join a meeting scheduled on your calendar, your host key will show up here."
 publicChannelFlavor:
+  C0P5NE354: # bot-spam
+    - like <#C012YMFQHUG>, but probably more lonely!
+    - you can ignore this channel-- probably just someone debugging
+    - I don't recommend joining this one-- probably just someone testing new features
   C012YMFQHUG: # productivity
     - great for productivity
     - work it!
