@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
         return await postSlackCallThread(meeting)
         break
       case 'recording.completed':
-        return await slackAppHomeOpened(meeting.fields['Creator Slack ID'])
+        return await slackAppHomeOpened(meeting.fields['Creator Slack ID'], false)
         break
       default:
         console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
