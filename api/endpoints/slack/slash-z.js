@@ -15,7 +15,6 @@ module.exports = async (req, res) => {
       text: 'A new Zoom Pro meeting was started with /z',
     })
   })
-  console.log({ loadingSlackPost })
 
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
@@ -45,7 +44,7 @@ module.exports = async (req, res) => {
     join_url: meeting.join_url,
     created_by: req.body.user_id,
     date_start: Math.floor(Date.now() / 1000), // Slack works in seconds, Date.now gives ms
-    desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0`,
+    desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0&pwd=${meeting.encrypted_password}`,
     external_display_id: meeting.id,
     title: `Zoom Pro meeting started by ${req.body.user_name}`
   }
