@@ -102,9 +102,9 @@ module.exports = async (req, res) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(slackPostFields)
-  }).then(r => r.json())
+  })
 
-  console.log({slackPost})
+  console.log({slackPost: await slackPost.body.text()})
 
   await fetch(req.body.response_url, {
     method: 'post',
