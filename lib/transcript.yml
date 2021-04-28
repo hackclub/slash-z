@@ -193,7 +193,7 @@ appHome:
       type: section
       text:
         type: mrkdwn
-        text: "When you join a meeting scheduled on your calendar, your host key will show up here."
+        text: "Once you join a meeting scheduled on your calendar, your host key will show up here."
 publicChannelFlavor:
   C0P5NE354: # bot-spam
     - like <#C012YMFQHUG>, but probably more lonely!
