@@ -63,7 +63,8 @@ module.exports = async ({creatorSlackID}={}) => {
         save_chat_text: true,
       },
       meeting_security: {
-        embed_password_in_join_link: true
+        embed_password_in_join_link: true,
+        waiting_room: false,
       },
     }})
   }
