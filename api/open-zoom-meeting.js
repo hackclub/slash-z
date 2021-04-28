@@ -80,6 +80,7 @@ module.exports = async ({creatorSlackID}={}) => {
         host_video: true,
         participant_video: true,
         join_before_host: true,
+        waiting_room: false,
       }
     }
   })
