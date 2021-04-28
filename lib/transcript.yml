@@ -161,7 +161,10 @@ appHome:
       type: section
       text:
         type: mrkdwn
-        text: You have ${this.pluralize('recording', this.completedCount)} ready for download
+        text: |
+          You have ${this.pluralize('recording', this.completed.length)} ready for download:
+          ${this.completed.map(m => JSON.stringify(m))}
+          Recorded meetings will automatically by removed after a week.
   calendarAddon:
     true:
       type: section

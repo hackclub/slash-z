@@ -47,8 +47,12 @@ const publishHomePage = async ({user, results}) => {
     blocks.push(transcript('appHome.divider'))
   }
   if (results.recordings != {}) {
-    blocks.push(transcript('appHome.recordedMeetings.processing', {processingCount: results.recordings.processing.length}))
-    blocks.push(transcript('appHome.recordedMeetings.completed', {completedCount: results.recordings.completed.length}))
+    if (results.recordings.processing.length > 0) {
+      blocks.push(transcript('appHome.recordedMeetings.processing', {processingCount: results.recordings.processing.length}))
+    }
+    if (results.recordings.completed.length > 0) {
+      blocks.push(transcript('appHome.recordedMeetings.completed', {completedCount: results.recordings.completed.length}))
+    }
     blocks.push(transcript('appHome.divider'))
   }
   blocks.push(transcript('appHome.calendarAddon.'+Boolean(results.user)))
