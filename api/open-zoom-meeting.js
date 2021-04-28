@@ -76,9 +76,11 @@ module.exports = async ({creatorSlackID}={}) => {
     path: `users/${host.fields['Zoom ID']}/meetings`,
     body: {
       type: 2, // type 2 == scheduled meeting
-      host_video: true,
-      participant_video: true,
-      join_before_host: true,
+      settings: {
+        host_video: true,
+        participant_video: true,
+        join_before_host: true,
+      }
     }
   })
 
