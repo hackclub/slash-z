@@ -39,6 +39,9 @@ module.exports = async (req, res) => {
       case 'meeting.participant_left':
         return await updateSlackCallParticipantList('remove', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
         break
+      case 'recording.started':
+        return await postSlackCallThread(meeting)
+        break
       case 'recording.completed':
         return await slackAppHomeOpened(meeting.fields['Creator Slack ID'])
         break
