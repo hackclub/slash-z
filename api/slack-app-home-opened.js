@@ -46,8 +46,7 @@ const publishHomePage = async ({user, results}) => {
     blocks.push(transcript('appHome.publicMeetings', {publicMeetings: results.publicMeetings}))
     blocks.push(transcript('appHome.divider'))
   }
-  if (false) {
-  // if (results.recordings != {}) {
+  if (results.recordings != {}) {
     if (results.recordings.processing.length > 0) {
       blocks.push(transcript('appHome.recordedMeetings.processing', {processingCount: results.recordings.processing.length}))
     }
