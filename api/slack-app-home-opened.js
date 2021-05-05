@@ -88,7 +88,7 @@ const getRecordings = async (user) => {
   const recordedMeetings = await airbridge.get('Meetings', {
     filterByFormula: `AND({Creator Slack ID}='${user}',NOT({Recording Events}=BLANK()))`
   })
-  const completed = await Promise.all(recordedMeetings.filter(record => {
+  const completed = (await Promise.all(recordedMeetings.filter(record => {
     return record.fields['Recording Events'].includes('recording.completed')
     // // if Zoom told us the recording is complete, assume it's complete
     // const markedComplete = record.fields['Recording Events'].includes('recording.completed')
@@ -96,8 +96,13 @@ const getRecordings = async (user) => {
     // const pastDue = record.fields['']
     // markedComplete || pastDue
   }).map(async meeting => {
-    return await zoomMeetingToRecording(meeting.fields['Zoom ID'])
-  }))
+    try {
+      return await zoomMeetingToRecording(meeting.fields['Zoom ID'])
+    } catch (err) {
+      console.log(err)
+      return null
+    }
+  }))).filter(Boolean)
   const processing = recordedMeetings.filter(record => {
     record.fields['Recording Events'].includes('recording.started')
   })
