@@ -7,6 +7,17 @@ module.exports = async (zoomCallID) => {
 
   const zoom = new ZoomClient({zoomSecret: host.fields['API Secret'], zoomKey: host.fields['API Key']})
 
-  const recording = await zoom.get({ path: `/meetings/${zoomCallID}/recordings`})
-  return recording
+  const password = zoomCallID.toString().substring(0, 8)
+  const results = {}
+  await Promise.all([
+    zoom.get({path: `/meetings/${zoomCallID}/recordings`}).then(r => results.recording = r),
+    zoom.patch({path: `/meetings/${zoomCallID}/recordings/settings`, body: {
+      password
+    }})
+  ])
+  // const recording = await zoom.get({ path: `/meetings/${zoomCallID}/recordings`})
+  // const settings = await zoom.get({ path: `/meetings/${zoomCallID}/recordings/settings`})
+  // console.log({settings})
+  // if ()
+  return { ...results.recording, settings: { password } }
 }
