@@ -94,6 +94,15 @@ module.exports = async (req, res) => {
       }
     }]
   }
+  if (meeting.password) {
+    slackPostFields.blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `_The meeting password is *${meeting.password}*_.`
+      }
+    })
+  }
   const slackPost = await fetch(req.body.response_url, {
     method: 'post',
     headers: {
