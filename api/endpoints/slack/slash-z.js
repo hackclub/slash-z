@@ -9,7 +9,9 @@ const transcript = require('../../transcript')
 module.exports = async (req, res) => {
   console.log({
     user_id: req.body.user_id,
-    restricted: userIsRestricted(req.body.user_id)
+    channel_id: req.body.channel_id,
+    restricted: userIsRestricted(req.body.user_id),
+    forbidden: channelIsForbidden(req.body.channel_id)
   })
 
   if (await userIsRestricted(req.body.user_id)) {
