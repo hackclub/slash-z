@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
     })
   }
 
-  if (channelIsForbidden(req.body.user_id)) {
+  if (channelIsForbidden(req.body.channel_id)) {
     return fetch(req.body.response_url, {
       method: 'post',
       headers: {
