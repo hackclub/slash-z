@@ -7,6 +7,7 @@ const openZoomMeeting = require('../../open-zoom-meeting')
 const transcript = require('../../transcript')
 
 module.exports = async (req, res) => {
+  console.log({user_id: req.body.user_id})
   if (userIsRestricted(req.body.user_id)) {
     return fetch(req.body.response_url, {
       method: 'post',
