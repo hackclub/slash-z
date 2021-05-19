@@ -212,5 +212,5 @@ publicChannelFlavor:
   C0146U2KVUK: # rishi's personal channel
     - ":ferrisbongo:" # https://hackclub.slack.com/archives/C0158NY6QEN/p1615340301017400?thread_ts=1615328097.016700&cid=C0158NY6QEN
 errors:
-  userIsRestricted: Sorry, you need to be a full member of Hack Club in order to run this command.
-  channelIsForbidden: Sorry, you can\'t start a meeting in this channel.
+  userIsRestricted: 'Sorry, you need to be a full member of Hack Club in order to run this command.'
+  channelIsForbidden: 'Sorry, you can`'t start a meeting in this channel.'
