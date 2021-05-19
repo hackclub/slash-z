@@ -1,9 +1,40 @@
 const { default: fetch } = require("node-fetch")
 const AirBridge = require("../../airbridge")
 const isPublicSlackChannel = require("../../is-public-slack-channel")
+const userIsRestricted = require("../../user-is-restricted")
+const channelIsForbidden = require("../../channel-is-forbidden")
 const openZoomMeeting = require('../../open-zoom-meeting')
+const transcript = require('../../transcript')
 
 module.exports = async (req, res) => {
+  if (userIsRestricted(req.body.channel_id)) {
+    return fetch(req.body.response_url, {
+      method: 'post',
+      headers: {
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        response_type: 'ephemeral',
+        text: transcript('errors.userIsRestricted')
+      })
+    })
+  }
+
+  if (channelIsForbidden(req.body.user_id)) {
+    return fetch(req.body.response_url, {
+      method: 'post',
+      headers: {
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        response_type: 'ephemeral',
+        text: transcript('errors.channelIsForbidden')
+      })
+    })
+  }
+
   const loadingSlackPost = await fetch(req.body.response_url, {
     method: 'post',
     headers: {
