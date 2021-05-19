@@ -7,7 +7,11 @@ const openZoomMeeting = require('../../open-zoom-meeting')
 const transcript = require('../../transcript')
 
 module.exports = async (req, res) => {
-  console.log({user_id: req.body.user_id})
+  console.log({
+    user_id: req.body.user_id,
+    restricted: userIsRestricted(req.body.user_id)
+  })
+
   if (userIsRestricted(req.body.user_id)) {
     return fetch(req.body.response_url, {
       method: 'post',
@@ -22,19 +26,19 @@ module.exports = async (req, res) => {
     })
   }
 
-  if (channelIsForbidden(req.body.channel_id)) {
-    return fetch(req.body.response_url, {
-      method: 'post',
-      headers: {
-        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        response_type: 'ephemeral',
-        text: transcript('errors.channelIsForbidden')
-      })
-    })
-  }
+  // if (channelIsForbidden(req.body.channel_id)) {
+  //   return fetch(req.body.response_url, {
+  //     method: 'post',
+  //     headers: {
+  //       'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({
+  //       response_type: 'ephemeral',
+  //       text: transcript('errors.channelIsForbidden')
+  //     })
+  //   })
+  // }
 
   const loadingSlackPost = await fetch(req.body.response_url, {
     method: 'post',
