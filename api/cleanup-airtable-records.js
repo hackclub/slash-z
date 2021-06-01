@@ -70,18 +70,23 @@ module.exports = async () => {
         {Raw Webhook Events Too Long}=FALSE()
       )
     `
-    const packedMeetings = await airbridge.get('Meetings', { filterByFormula: meetingFormula, maxRecords: 1000 })
+    const packedMeetings = await airbridge.get('Meetings', { filterByFormula: meetingFormula, maxRecords: 10 })
     const limitedJobQueue = packedMeetings.map(async packedMeeting =>
       await limiter.schedule(async () => {
         console.log('Deleting webhook events for already archived meeting', packedMeeting.id)
         const eventFormula = `{Meeting}='${packedMeeting.fields['Zoom ID']}'`
         const events = await airbridge.get('Webhook Events', { filterByFormula: eventFormula })
         const joinedEvents = events.map(e => JSON.parse(e.fields['Raw Data']))
+        const rawWebhookEvents = JSON.stringify(joinedEvents, null, 2)
         // Before deleting the events, let's check the values are equal
         try {
-          const meetingRecordEvents = JSON.parse(packedMeeting.fields['Raw Webhook Events'])
-          if (meetingRecordEvents == joinedEvents) {
-            // they're the same, go forward with deletion
+          const meetingRecordEvents = packedMeeting.fields['Raw Webhook Events']
+          if (meetingRecordEvents == rawWebhookEvents) {
+            console.log(`Going forward with deletion for events on meeting '${packedMeeting.fields['Zoom ID']}'`)
+            const eventDeletionJobs = events.map(event => {
+              return airbridge.destroy('Webhook Events', event.id)
+            })
+            await Promise.all(eventDeletionJobs)
           } else {
             throw new Error(`Mismatch in events for meeting '${packedMeeting.fields['Zoom ID']}'`)
           }
