@@ -14,7 +14,7 @@ const limiter = new Bottleneck({
 module.exports = async () => {
   {
     // step 1: if we're at over 40k log records, let's cleanup old webhook events that aren't related to a meeting 
-    const cutoffSeconds = 60 * 60 * 24 * 7 // 7 days, counted in seconds
+    const cutoffSeconds = 60 * 60 * 24 * 3 // 3 days, counted in seconds
     const filterByFormula = `
     AND(
       {Meeting}=BLANK(),
