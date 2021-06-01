@@ -54,6 +54,7 @@ module.exports = async () => {
           console.log('Done updating meeting', closedMeeting.id)
         } else {
           console.log('Not adding webhooks to', closedMeeting.id, '- raw JSON is too long for storing in Airtable')
+          await airbridge.patch('Meetings', closedMeeting.id, { 'Raw Webhook Events Too Long': true })
         }
       })
     )
