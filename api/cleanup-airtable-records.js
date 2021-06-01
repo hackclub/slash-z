@@ -30,7 +30,7 @@ module.exports = async () => {
 
   {
     // step 2: if we have meetings that ended over a month ago, let's cleanup their associated webhook events & pack those into the record itself
-    const cutoffSeconds = 60 * 60 * 24 * 7 * 3 // 3 weeks, counted in seconds
+    const cutoffSeconds = 60 * 60 * 24 * 7 // 7 days, counted in seconds
     const filterByFormula = `
     AND(
       {Raw Webhook Events}=BLANK(),
