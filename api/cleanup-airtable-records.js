@@ -60,4 +60,36 @@ module.exports = async () => {
     )
     await Promise.all(limitedJobQueue)
   }
+
+  {
+    // step 3: if we have webhook events that have already been packed into their meeting records let's clean them up
+    const meetingFormula = `
+      AND(
+        NOT({Raw Webhook Events}=BLANK()),
+        NOT({Webhook Events}=BLANK()),
+        {Raw Webhook Events Too Long}=FALSE()
+      )
+    `
+    const packedMeetings = await airbridge.get('Meetings', { filterByFormula: meetingFormula, maxRecords: 1000 })
+    const limitedJobQueue = packedMeetings.map(async packedMeeting =>
+      await limiter.schedule(async () => {
+        console.log('Deleting webhook events for already archived meeting', packedMeeting.id)
+        const eventFormula = `{Meeting}='${packedMeeting.fields['Zoom ID']}'`
+        const events = await airbridge.get('Webhook Events', { filterByFormula: eventFormula })
+        const joinedEvents = events.map(e => JSON.parse(e.fields['Raw Data']))
+        // Before deleting the events, let's check the values are equal
+        try {
+          const meetingRecordEvents = JSON.parse(packedMeeting.fields['Raw Webhook Events'])
+          if (meetingRecordEvents == joinedEvents) {
+            // they're the same, go forward with deletion
+          } else {
+            throw new Error(`Mismatch in events for meeting '${packedMeeting.fields['Zoom ID']}'`)
+          }
+        } catch (e) {
+          console.error(`Skipping meeting '${packedMeeting.fields['Zoom ID']}'`)
+        }
+      }))
+
+    await Promise.all(limitedJobQueue)
+  }
 }
