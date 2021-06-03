@@ -61,6 +61,9 @@ module.exports = async ({creatorSlackID}={}) => {
         record_gallery_view: true,
         record_speaker_view: true,
         save_chat_text: true,
+        // auto-delete cloud recordings after 60 days (maximum value for this setting)
+        auto_delete_cmr: true,
+        auto_delete_cmr_days: 60, // in days
       },
       meeting_security: {
         embed_password_in_join_link: true,
