@@ -75,7 +75,29 @@ module.exports = async (req, res) => {
     })
     throw err
   }
-
+  
+  let member;
+  try {
+    let member = await (await fetch('https://slack.com/api/users.profile.get', { // get a specific user from Slack
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user: req.body.user_id // fetch the user that called the command
+      })
+    }).json());
+  } catch (err) {
+    console.log(err);
+  }
+  let displayName;
+  if (member && member.ok === true) {
+    displayName = member.profile.real_name || member.profile.display_name || req.body.user_name; // if it doesn't have the name, use the name returned by Slack 
+  } else {
+    displayName = req.body.user_name; // if there was an error getting the user, use the name returned by Slack
+  }
+  
   // now register the call on slack
   const slackCallFields = {
     external_unique_id: meeting.id,
@@ -84,7 +106,7 @@ module.exports = async (req, res) => {
     date_start: Math.floor(Date.now() / 1000), // Slack works in seconds, Date.now gives ms
     desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0&pwd=${meeting.encrypted_password}`,
     external_display_id: meeting.id,
-    title: `Zoom Pro meeting started by ${req.body.user_name}`
+    title: `Zoom Pro meeting started by ${displayName}`
   }
 
   const slackCallResult = await fetch('https://slack.com/api/calls.add', {
