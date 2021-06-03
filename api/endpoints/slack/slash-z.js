@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
     date_start: Math.floor(Date.now() / 1000), // Slack works in seconds, Date.now gives ms
     desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0&pwd=${meeting.encrypted_password}`,
     external_display_id: meeting.id,
-    title: `Zoom Pro meeting started by <@${req.body.user_id}>`
+    title: `Zoom Pro meeting started by ${req.body.user_name}`
   }
 
   const slackCallResult = await fetch('https://slack.com/api/calls.add', {
