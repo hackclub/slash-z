@@ -86,11 +86,12 @@ work/school accounts.
 
 #### Does this work with a school Zoom account?
 
-It should, but every schools puts different restrictions on their student accounts.
+It should, but every school puts different restrictions on their student accounts.
 
 If you run into issues creating or joining meetings while signed into a Zoom
 account provided by your school try signing out of Zoom and create/join your
 meetings from a logged out Zoom client.
+
 #### Does this work with a school Gmail account?
 
 It depends on the settings your school put on your Gmail account.
