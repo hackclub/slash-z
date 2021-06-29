@@ -1,0 +1,38 @@
+_metadata:
+  major_version: 1
+  minor_version: 1
+display_information:
+  name: /z
+  description: "Create a Zoom Pro meeting. Find a bug? Bring it to #slash-z"
+  background_color: "#2d2d38"
+features:
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: false
+  bot_user:
+    display_name: slash-z
+    always_online: true
+  slash_commands:
+    - command: /z
+      url: https://js-slash-z.hackclub.com/api/endpoints/slack
+      description: Start a Zoom Pro meeting
+      should_escape: true
+oauth_config:
+  redirect_urls:
+    - https://hack.af
+  scopes:
+    bot:
+      - calls:read
+      - calls:write
+      - channels:read
+      - chat:write
+      - commands
+      - users:read
+settings:
+  event_subscriptions:
+    request_url: https://js-slash-z.hackclub.com/api/endpoints/slack/events
+    bot_events:
+      - app_home_opened
+  org_deploy_enabled: false
+  socket_mode_enabled: false
