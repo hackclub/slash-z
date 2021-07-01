@@ -12,7 +12,7 @@ const deletionLimiter = new Bottleneck({
 
 const getBaseID = function(baseID = 'Slash-z') {
   return {
-    'Slash-z': 'appuEsdMf6hHXibSh',
+    'Slash-z': 'appILZk0gunMZ1J1i',
     'Operations': 'apptEEFG5HTfGQE7h'
   }[baseID]
 }
@@ -26,12 +26,12 @@ const get = async (table, options) => {
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
-    console.log(`Airtable GET '${table}' with the following options:`, otherOptions)
+   //  console.log(`Airtable GET '${table}' with the following options:`, otherOptions)
     const results = await airtable.read(otherOptions)
-    console.log(`Found ${results.length} records(s)`)
+   //  console.log(`Found ${results.length} records(s)`)
     return results
   } catch (err) {
-    console.log(err)
+   //  console.log(err)
   }
 }
 
@@ -42,7 +42,7 @@ const find = async (table, options) => {
 
 const patch = async (table, recordID, fields) => {
   try {
-    console.log(`Airtable PATCH '${table} ID ${recordID}' with the following fields:`, fields)
+    // console.log(`Airtable PATCH '${table} ID ${recordID}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
       baseID: getBaseID('Slash-z'),
       apiKey: process.env.AIRBRIDGE_API_KEY,
@@ -51,23 +51,23 @@ const patch = async (table, recordID, fields) => {
     const result = await airtable.update(recordID, fields)
     return result
   } catch (err) {
-    console.log(err)
+   //  console.log(err)
   }
 }
 
 const create = async (table, fields) => {
   try {
-    console.log(`Airtable CREATE '${table}' with the following fields:`, fields)
+   //  console.log(`Airtable CREATE '${table}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
       baseID: getBaseID('Slash-z'),
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
     const results = await airtable.create(fields)
-    console.log('Airtable created my record with these fields:', {results})
+   //  console.log('Airtable created my record with these fields:', {results})
     return results
   } catch (err) {
-    console.log(err)
+   //  console.log(err)
   }
 }
 
@@ -78,11 +78,11 @@ const destroy = async (table, id) => {
     tableName: table,
   })
   try {
-    console.log(`Airtable DELETE '${table}' RECORD '${id}'`)
+   //  console.log(`Airtable DELETE '${table}' RECORD '${id}'`)
     const results = await airtable.delete(id)
     return results
   } catch (err) {
-    console.log(err)
+   //  console.log(err)
   }
 }
 
