@@ -1,12 +1,14 @@
-const AirBridge = require("../airbridge")
-const Bottleneck = require('bottleneck')
-const limiter = new Bottleneck({concurrent: 1})
+// const Bottleneck = require('bottleneck')
+const lockfile = require('proper-lockfile')
 
-const openZoomMeeting = require("../open-zoom-meeting")
+const AirBridge = require('./airbridge')
+const openZoomMeeting = require("./open-zoom-meeting")
 
-const findOrCreateMeeting = async ({}) => {
+const main = async ({queryID}) => {
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
   // Find the scheduling link record with the ID we've been given
-  let link = await AirBridge.find('Scheduling Links', {filterByFormula: `{Name}='${queryId}'` })
+  let link = await AirBridge.find('Scheduling Links', {filterByFormula: `{Name}='${queryID}'` })
   if (!link) {
     const err = Error('Scheduling meeting not found!')
     err.statusCode = 404
@@ -48,4 +50,26 @@ const findOrCreateMeeting = async ({}) => {
   return airtableMeeting
 }
 
-module.exports = (...args) => limiter.schedule(() => findOrCreateMeeting(...args))
+ 
+module.exports = async ({queryID}) => {
+  // await lockFile.lock(`.lock`, opts, function (er) {
+  //   // if the er happens, then it failed to acquire a lock.
+  //   // if there was not an error, then the file was created,
+  //   // and won't be deleted until we unlock it.
+  
+  //   await main({queryID})
+  //   // do my stuff, free of interruptions
+  //   // then, some time later, do:
+  //   lockFile.unlock('some-file.lock', function (er) {
+  //     // er means that an error happened, and is probably bad.
+  //   })
+  // })
+  new Promise(async (resolve, reject) => {
+    lockfile.lock(`lock-${queryID}`).then(async release => {
+      await main({queryID})
+      release()
+    }).catch(err => {
+      lockfile.unlock(`lock-${queryID}`)
+    })
+  })
+}
