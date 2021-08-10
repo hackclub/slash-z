@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const airtableMeeting = await findOrCreateMeeting({queryID: query.id})
+    const airtableMeeting = await findOrCreateMeeting(query.id)
     if (query.phone) {
       res.redirect('/phone.html?meetingID='+airtableMeeting.fields['Zoom ID'])
     } else {

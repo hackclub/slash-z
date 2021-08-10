@@ -1,12 +1,9 @@
-// const Bottleneck = require('bottleneck')
-const lockfile = require('proper-lockfile')
+const Bottleneck = require('bottleneck')
 
 const AirBridge = require('./airbridge')
 const openZoomMeeting = require("./open-zoom-meeting")
 
-const main = async ({queryID}) => {
-  await new Promise(resolve => setTimeout(resolve, 1000))
-
+const findOrCreateMeeting = async (queryID) => {
   // Find the scheduling link record with the ID we've been given
   let link = await AirBridge.find('Scheduling Links', {filterByFormula: `{Name}='${queryID}'` })
   if (!link) {
@@ -50,26 +47,13 @@ const main = async ({queryID}) => {
   return airtableMeeting
 }
 
- 
-module.exports = async ({queryID}) => {
-  // await lockFile.lock(`.lock`, opts, function (er) {
-  //   // if the er happens, then it failed to acquire a lock.
-  //   // if there was not an error, then the file was created,
-  //   // and won't be deleted until we unlock it.
-  
-  //   await main({queryID})
-  //   // do my stuff, free of interruptions
-  //   // then, some time later, do:
-  //   lockFile.unlock('some-file.lock', function (er) {
-  //     // er means that an error happened, and is probably bad.
-  //   })
-  // })
-  new Promise(async (resolve, reject) => {
-    lockfile.lock(`lock-${queryID}`).then(async release => {
-      await main({queryID})
-      release()
-    }).catch(err => {
-      lockfile.unlock(`lock-${queryID}`)
-    })
-  })
+const limiters = {}
+const getLimiter = id => {
+  if (!limiters[id]) {
+    limiters[id] = new Bottleneck({ maxConcurrent: 1 })
+  }
+
+  return limiters[id]
 }
+
+module.exports = (queryID) => getLimiter(queryID).schedule(() => findOrCreateMeeting(queryID))
