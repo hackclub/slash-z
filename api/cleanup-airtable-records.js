@@ -21,7 +21,7 @@ module.exports = async () => {
       DATETIME_DIFF(NOW(),CREATED_TIME())>${cutoffSeconds}
     )
     `
-    const events = await airbridge.get('Webhook Events', {filterByFormula, maxRecords: 5000})
+    const events = await airbridge.get('Webhook Events', {filterByFormula, maxRecords: 1000})
     const limitedJobQueue = events.map(async event => (
       await limiter.schedule(() => airbridge.destroy('Webhook Events', event.id))
     ))
@@ -37,7 +37,7 @@ module.exports = async () => {
       {Status}='ENDED'
     )
     `
-    const emptyMeetings = await airbridge.get('Meetings', {filterByFormula, maxRecords: 5000})
+    const emptyMeetings = await airbridge.get('Meetings', {filterByFormula, maxRecords: 1000})
     const limitedJobQueue = emptyMeetings.map(async meeting => (
       await limiter.schedule(async () => {
         await airbridge.destroy('Meetings', meeting.id)
