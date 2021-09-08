@@ -27,9 +27,28 @@ module.exports = async () => {
     ))
     await Promise.all(limitedJobQueue)
   }
+  
+  {
+    // step 2: Lets cleanup old meetings that never had any events
+    const filterByFormula = `
+    AND(
+      {Webhook Events}=BLANK(),
+      {Raw Webhook Events}=BLANK(),
+      {Status}='ENDED'
+    )
+    `
+    const emptyMeetings = await airbridge.get('Meetings', {filterByFormula, maxRecords: 5000})
+    const limitedJobQueue = emptyMeetings.map(async meeting => (
+      await limiter.schedule(async () => {
+        await airbridge.destroy('Meetings', meeting.id)
+      })
+    ))
+
+    await Promise.all(limitedJobQueue)
+  }
 
   {
-    // step 2: if we have meetings that ended, let's cleanup their associated webhook events & pack those into the record itself
+    // step 3: if we have meetings that ended, let's cleanup their associated webhook events & pack those into the record itself
     const cutoffSeconds = 60 * 60 * 24 * 7 // 7 days, counted in seconds
     const filterByFormula = `
     AND(
@@ -63,7 +82,7 @@ module.exports = async () => {
   }
 
   {
-    // step 3: if we have webhook events that have already been packed into their meeting records let's clean them up
+    // step 4: if we have webhook events that have already been packed into their meeting records let's clean them up
     const meetingFormula = `
       AND(
         NOT({Raw Webhook Events}=BLANK()),
