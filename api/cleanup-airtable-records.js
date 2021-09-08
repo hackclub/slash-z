@@ -52,7 +52,8 @@ module.exports = async () => {
     const cutoffSeconds = 60 * 60 * 24 * 7 // 7 days, counted in seconds
     const filterByFormula = `
     AND(
-      NOT({Raw Webhook Events}=BLANK()),
+      {Raw Webhook Events}=BLANK(),
+      NOT({Webhook Events}=BLANK()),
       {Raw Webhook Events Too Long}=BLANK(),
       {Status}='ENDED',
       DATETIME_DIFF(NOW(),{Ended At})>${cutoffSeconds}
