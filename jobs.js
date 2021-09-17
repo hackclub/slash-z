@@ -7,6 +7,7 @@ import closeStaleCalls from './api/close-stale-calls.js'
 
 // we'll queue it up for a couple minutes later in case we have multiple rebuilds in a row
 if (process.env.NODE_ENV == 'production') {
+  console.log('Queueing jobs...')
   setTimeout(() => cleanupAirtableRecords, 1000 * 60 * 10) // after 10 minutes in milliseconds
 
   setTimeout(() => {
