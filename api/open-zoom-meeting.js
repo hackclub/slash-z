@@ -1,14 +1,14 @@
-const ZoomClient = require('./zoom-client')
-const AirBridge = require("./airbridge")
-const sendHostKey = require('./send-host-key')
-const closeStaleCalls = require('./close-stale-calls')
+import ZoomClient from './zoom-client.js'
+import AirBridge from "./airbridge.js"
+import sendHostKey from './send-host-key.js'
+import closeStaleCalls from './close-stale-calls.js'
 
 async function availableHost() {
   const hosts = await AirBridge.get('Hosts', {filterByFormula: 'AND({Open Meetings}<1,{Enabled}=TRUE())'})
   return hosts[Math.floor(Math.random() * hosts.length)]
 }
 
-module.exports = async ({creatorSlackID}={}) => {
+export default async ({creatorSlackID}={}) => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
   // ¯\_(ツ)_/¯

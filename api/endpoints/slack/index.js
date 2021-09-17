@@ -1,8 +1,8 @@
-const ensureSlackAuthenticated = require("../../ensure-slack-authenticated")
-const slashZ = require('./slash-z')
-const slashZRooms = require('./slash-z-rooms')
+import ensureSlackAuthenticated from "../../ensure-slack-authenticated.js"
+import slashZ from './slash-z.js'
+import slashZRooms from './slash-z-rooms.js'
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   return await ensureSlackAuthenticated(req, res, async () => {
     
     // Acknowledge we got the message so Slack doesn't show an error to the user
