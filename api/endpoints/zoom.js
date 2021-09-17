@@ -3,6 +3,7 @@ import AirBridge from "../airbridge.js"
 import ensureZoomAuthenticated from "../ensure-zoom-authenticated.js"
 import updateSlackCallParticipantList from "../update-slack-call-participant-list.js"
 import slackAppHomeOpened from "../slack-app-home-opened.js"
+import postSlackCallThread from "../post-slack-call-thread.js"
 
 export default async (req, res) => {
   return await ensureZoomAuthenticated(req, res, async () => {
