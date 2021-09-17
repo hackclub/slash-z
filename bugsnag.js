@@ -1,11 +1,15 @@
-const Bugsnag = require('@bugsnag/js')
-const BugsnagPluginExpress = require('@bugsnag/plugin-express')
+import Bugsnag from '@bugsnag/js'
+import BugsnagPluginExpress from '@bugsnag/plugin-express'
 
-if (process.env.BUGSNAG_API_KEY) {
-  Bugsnag.start({
-    apiKey: process.env.BUGSNAG_API_KEY,
-    plugins: [BugsnagPluginExpress],
-  })
+let started = false
+
+export default () => {
+  if (!started) {
+    Bugsnag.start({
+      apiKey: process.env.BUGSNAG_API_KEY,
+      plugins: [BugsnagPluginExpress],
+    })
+    started = true
+  }
+  return Bugsnag.getPlugin('express')
 }
-
-module.exports = Bugsnag.getPlugin('express')

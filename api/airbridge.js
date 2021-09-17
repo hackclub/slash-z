@@ -1,5 +1,5 @@
-const AirtablePlus = require('airtable-plus')
-const Bottleneck = require('bottleneck')
+import AirtablePlus from 'airtable-plus'
+import Bottleneck from 'bottleneck'
 const limiter = new Bottleneck({
   maxConcurrent: 2,
   // minTime: 5000
@@ -92,7 +92,7 @@ const destroy = async (table, id) => {
   }
 }
 
-module.exports = {
+export default {
   get: (...args) => limiter.schedule(() => get(...args)),
   find,
   patch: (...args) => limiter.schedule(() => patch(...args)),

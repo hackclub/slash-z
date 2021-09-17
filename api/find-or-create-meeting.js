@@ -1,7 +1,7 @@
-const Bottleneck = require('bottleneck')
+import Bottleneck from 'bottleneck'
 
-const AirBridge = require('./airbridge')
-const openZoomMeeting = require("./open-zoom-meeting")
+import AirBridge from './airbridge.js'
+import openZoomMeeting from "./open-zoom-meeting.js"
 
 const findOrCreateMeeting = async (queryID) => {
   // Find the scheduling link record with the ID we've been given
@@ -56,4 +56,4 @@ const getLimiter = id => {
   return limiters[id]
 }
 
-module.exports = (queryID) => getLimiter(queryID).schedule(() => findOrCreateMeeting(queryID))
+export default (queryID) => getLimiter(queryID).schedule(() => findOrCreateMeeting(queryID))

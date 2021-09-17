@@ -1,12 +1,11 @@
-const { default: fetch } = require("node-fetch")
-const AirBridge = require("../../airbridge")
-const isPublicSlackChannel = require("../../is-public-slack-channel")
-const userIsRestricted = require("../../user-is-restricted")
-const channelIsForbidden = require("../../channel-is-forbidden")
-const openZoomMeeting = require('../../open-zoom-meeting')
-const transcript = require('../../transcript')
+import AirBridge from "../../airbridge.js"
+import isPublicSlackChannel from "../../is-public-slack-channel.js"
+import userIsRestricted from "../../user-is-restricted.js"
+import channelIsForbidden from "../../channel-is-forbidden.js"
+import openZoomMeeting from '../../open-zoom-meeting.js'
+import transcript from '../../transcript.js'
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   console.log({
     user_id: req.body.user_id,
     channel_id: req.body.channel_id,
