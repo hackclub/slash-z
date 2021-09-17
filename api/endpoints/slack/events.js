@@ -1,7 +1,7 @@
-import ensureSlackAuthenticated from "../../ensure-slack-authenticated.js"
-import slackAppHomeOpened from '../../slack-app-home-opened.js'
+const ensureSlackAuthenticated = require("../../ensure-slack-authenticated")
+const slackAppHomeOpened = require('../../slack-app-home-opened')
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   return await ensureSlackAuthenticated(req, res, async () => {
     console.log(`Got verified Slack event of type '${req.body.type}'`)
     if (req.body.type == 'url_verification') {

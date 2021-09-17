@@ -1,9 +1,6 @@
-export default (channelID) => {
-  const forbiddenChannels = [
-    'C74HZS5A5', // #lobby
-    'C75M7C0SY', // # welcome
-    'C01504DCLVD', // #scrapbook
-    'C0M8PUPU6', // #ship
-  ]
+const { default: fetch } = require("node-fetch")
+
+module.exports = function(channelID) {
+  const forbiddenChannels = ['C74HZS5A5', 'C75M7C0SY', 'C01504DCLVD', 'C0M8PUPU6'] // lobby, welcome scrapbook, ship
   return forbiddenChannels.includes(channelID)
 }

@@ -7,5 +7,3 @@ Couple things on my plate:
   - would be nice to have something more performant anyways
 - [x] better bug tracking
 - [ ] log tracking(?)
-- [ ] review apps on PRs
-- [ ] basic CI GH actions

@@ -1,6 +1,7 @@
-import AirBridge from '../airbridge.js'
+const { default: fetch } = require('node-fetch')
+const AirBridge = require('../airbridge')
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   const {code, state: recordID} = req.query
   const user = await AirBridge.find('Authed Accounts', {filterByFormula: `RECORD_ID()='${recordID}'`})
 

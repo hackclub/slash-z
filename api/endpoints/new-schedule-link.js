@@ -1,6 +1,6 @@
-import AirBridge from "../airbridge.js"
+const AirBridge = require("../airbridge")
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   let user = await AirBridge.find('Authed Accounts', { filterByFormula: `{Name}='${req.query.id}'` })
   if (!user) {
     user = await AirBridge.create('Authed Accounts', {'Name': req.query.id})

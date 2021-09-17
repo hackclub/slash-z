@@ -1,7 +1,7 @@
-import airbridge from "./airbridge.js"
-import closeZoomCall from "./close-zoom-call.js"
+const airbridge = require("./airbridge")
+const closeZoomCall = require("./close-zoom-call")
 
-export default async ({creatorSlackID} = {}) => {
+module.exports = async ({creatorSlackID} = {}) => {
   const startTS = Date.now()
   console.log(`Starting to close stale calls at ${startTS}`)
 

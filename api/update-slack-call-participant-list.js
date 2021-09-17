@@ -1,6 +1,6 @@
-import fetch from "node-fetch"
-import md5 from "md5"
-import stringToColor from "./string-to-color.js"
+const { default: fetch } = require("node-fetch")
+const md5 = require("md5")
+const stringToColor = require("./string-to-color")
 
 async function userToAvatar({name, email}) {
   const gravatarUrl = `https://gravatar.com/avatar/${md5(email.trim().toLowerCase())}?d=404`
@@ -14,7 +14,7 @@ async function userToAvatar({name, email}) {
   })
 }
 
-export default async (addOrRemove, callID, zoomParticipant) => {
+module.exports = async (addOrRemove, callID, zoomParticipant) => {
   const { user_name: name, email, user_id: zoomID } = zoomParticipant
   const user = { }
   // Why uniquify by name instead of zoomID? the ID zoom gives us changes per join for users under a non-hackclub account.

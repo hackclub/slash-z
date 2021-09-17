@@ -1,6 +1,7 @@
-import airbridge from "./airbridge.js"
+const { default: fetch } = require("node-fetch")
+const airbridge = require("./airbridge")
 
-export default async function(channelID) {
+module.exports = async function(channelID) {
   if (channelID[0].toLowerCase() != 'c') {
     // slack channels start with 'c'
     // this is probably a group 'g', dm 'd' or something else

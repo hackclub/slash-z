@@ -1,7 +1,7 @@
-import ZoomClient from "./zoom-client.js"
-import AirBridge from './airbridge.js'
+const ZoomClient = require("./zoom-client")
+const AirBridge = require('./airbridge')
 
-export default async (zoomCallID) => {
+module.exports = async (zoomCallID) => {
   const meeting = await AirBridge.find('Meetings', { filterByFormula: `{Zoom ID}='${zoomCallID}'`})
   const host = await AirBridge.find('Hosts', { filterByFormula: `RECORD_ID()='${meeting.fields['Host'][0]}'` })
 

@@ -1,7 +1,8 @@
-import getPublicMeetings from "../../get-public-meetings.js"
-import transcript from "../../transcript.js"
+const { default: fetch } = require("node-fetch")
+const getPublicMeetings = require("../../get-public-meetings")
+const transcript = require("../../transcript")
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   const meetings = await getPublicMeetings()
 
   let messageText = ''

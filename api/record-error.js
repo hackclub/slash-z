@@ -1,6 +1,6 @@
-import AirBridge from "./airbridge.js"
+const AirBridge = require("./airbridge")
 
-export default (err) => {
+module.exports = (err) => {
   const errorFields = {
     'Time': Date.now(),
     'Text': `${err.name} ${err.message}`,
