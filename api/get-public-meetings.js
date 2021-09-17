@@ -1,5 +1,6 @@
 import airbridge from "./airbridge.js"
 import transcript from "./transcript.js"
+import fetch from 'node-fetch'
 
 async function getParticipantCount(slackCallID) {
   const callInfo = await fetch('https://slack.com/api/calls.info', {

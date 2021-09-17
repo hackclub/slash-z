@@ -4,6 +4,7 @@ import userIsRestricted from "../../user-is-restricted.js"
 import channelIsForbidden from "../../channel-is-forbidden.js"
 import openZoomMeeting from '../../open-zoom-meeting.js'
 import transcript from '../../transcript.js'
+import fetch from 'node-fetch'
 
 export default async (req, res) => {
   console.log({

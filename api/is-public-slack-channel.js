@@ -1,4 +1,5 @@
 import airbridge from "./airbridge.js"
+import fetch from 'node-fetch'
 
 export default async function(channelID) {
   if (channelID[0].toLowerCase() != 'c') {
