@@ -37,7 +37,7 @@ export default async (app) => {
         routePath = `${routePath}/${basename(file, extname(file))}`
       }
 
-      const route = await import(file) // just to test we can load the file
+      const route = (await import(file)).default // just to test we can load the file
 
       app.all('/' + routePath, async (req, res) => {
         try {
