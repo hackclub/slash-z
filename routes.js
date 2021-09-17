@@ -1,9 +1,7 @@
 import { resolve, relative, extname, basename, dirname } from 'path'
-// const { readdir } = require('fs').promises
 import { readdir } from 'fs/promises'
 
 import recordError from './api/record-error.js'
-// const recordError = require('./api/record-error')
 
 async function getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true })
