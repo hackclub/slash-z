@@ -5,7 +5,6 @@ if (process.env.BUGSNAG_API_KEY) {
   Bugsnag.start({
     apiKey: process.env.BUGSNAG_API_KEY,
     plugins: [BugsnagPluginExpress],
-    otherOptions: value
   })
 }
 
