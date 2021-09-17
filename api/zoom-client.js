@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken'
-
 export default class ZoomClient {
   constructor(props) {
     this.zoomKey = props.zoomKey
@@ -59,6 +58,7 @@ export default class ZoomClient {
   }
 
   token() {
+    // const jwt = require('jsonwebtoken')
     const payload = {
       iss: this.zoomKey,
       exp: new Date().getTime() + 5000,
