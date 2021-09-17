@@ -3,15 +3,15 @@
 
 // deletion logic here is kinda arbitrary, i'm just trying it out and we'll see if it works...
 
-const airbridge = require("./airbridge")
-const Bottleneck = require("bottleneck")
+import airbridge from "./airbridge.js"
+import Bottleneck from "bottleneck"
 
 const limiter = new Bottleneck({
   maxConcurrent: 1,
   minTime: 2000
 });
 
-module.exports = async () => {
+export default async () => {
   {
     // step 1: let's cleanup old webhook events that aren't related to a meeting 
     const cutoffSeconds = 60 * 60 * 24 * 1 // 1 days, counted in seconds

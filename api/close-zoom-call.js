@@ -1,8 +1,8 @@
-const ZoomClient = require("./zoom-client");
-const AirBridge = require("./airbridge");
-const { default: fetch } = require("node-fetch");
+import ZoomClient from "./zoom-client.js";
+import AirBridge from "./airbridge.js";
+import fetch from "node-fetch";
 
-module.exports = async (zoomID, forceClose = false) => {
+export default async (zoomID, forceClose = false) => {
   const meeting = await AirBridge.find("Meetings", {
     filterByFormula: `{Zoom ID}='${zoomID}'`,
   });

@@ -1,10 +1,10 @@
-const closeZoomCall = require("../close-zoom-call");
-const AirBridge = require("../airbridge")
-const ensureZoomAuthenticated = require("../ensure-zoom-authenticated");
-const updateSlackCallParticipantList = require("../update-slack-call-participant-list");
-const slackAppHomeOpened = require("../slack-app-home-opened");
+import closeZoomCall from "../close-zoom-call.js"
+import AirBridge from "../airbridge.js"
+import ensureZoomAuthenticated from "../ensure-zoom-authenticated.js"
+import updateSlackCallParticipantList from "../update-slack-call-participant-list.js"
+import slackAppHomeOpened from "../slack-app-home-opened.js"
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   return await ensureZoomAuthenticated(req, res, async () => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
 

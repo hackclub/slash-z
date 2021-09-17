@@ -1,6 +1,6 @@
-const yaml = require('js-yaml')
-const fs = require('fs')
-const path = require('path')
+import yaml from 'js-yaml'
+import { readFileSync } from 'fs'
+import path from 'path'
 
 const pluralize = (word, count) => {
   // want to use this method? make sure to add your word to transcript.yml under 'plurals'
@@ -18,9 +18,12 @@ const sample = (arr) => {
 }
 
 const loadTranscript = () => {
+  const moduleURL = new URL(import.meta.url);
+  const __dirname = decodeURIComponent(path.dirname(moduleURL.pathname));
+
   try {
     const doc = yaml.load(
-      fs.readFileSync(path.resolve(__dirname, '../lib/transcript.yml'), 'utf8')
+      readFileSync(path.join(__dirname, '..', 'lib', 'transcript.yml'), 'utf8')
     )
     return doc
   } catch (e) {
@@ -104,4 +107,4 @@ const evalTranscript = (target, vars = {}) => (
   })
 )
 
-module.exports = transcript
+export default transcript;

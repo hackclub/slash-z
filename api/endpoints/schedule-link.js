@@ -1,6 +1,6 @@
-const findOrCreateMeeting = require("../find-or-create-meeting")
+import findOrCreateMeeting from "../find-or-create-meeting.js"
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   const { query } = req
 
   // No scheduling link ID? Let's redirect the user to get a new one
