@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import fetch from 'node-fetch'
 
 export default class ZoomClient {
   constructor(props) {

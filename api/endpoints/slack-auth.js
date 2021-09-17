@@ -1,4 +1,5 @@
 import AirBridge from '../airbridge.js'
+import fetch from 'node-fetch'
 
 export default async (req, res) => {
   const {code, state: recordID} = req.query

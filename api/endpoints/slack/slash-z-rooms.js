@@ -1,5 +1,6 @@
 import getPublicMeetings from "../../get-public-meetings.js"
 import transcript from "../../transcript.js"
+import fetch from 'node-fetch'
 
 export default async (req, res) => {
   const meetings = await getPublicMeetings()
