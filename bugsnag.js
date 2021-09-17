@@ -9,4 +9,4 @@ if (process.env.BUGSNAG_API_KEY) {
   })
 }
 
-export default () => Bugsnag.getPlugin('express')
+module.exports = () => Bugsnag.getPlugin('express')
