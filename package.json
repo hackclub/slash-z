@@ -6,7 +6,8 @@
   "author": "Max Wofford <max@maxwofford.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon"
+    "dev": "NODE_ENV=development nodemon",
+    "start": "node server.js"
   },
   "dependencies": {
     "@bugsnag/js": "^7.11.0",
