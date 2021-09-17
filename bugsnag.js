@@ -1,5 +1,5 @@
-import Bugsnag from '@bugsnag/js'
-import BugsnagPluginExpress from '@bugsnag/plugin-express'
+const Bugsnag = require('@bugsnag/js')
+const BugsnagPluginExpress = require('@bugsnag/plugin-express')
 
 if (process.env.BUGSNAG_API_KEY) {
   Bugsnag.start({
