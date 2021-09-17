@@ -67,9 +67,9 @@ const create = async (table, fields) => {
       apiKey: process.env.AIRBRIDGE_API_KEY,
       tableName: table,
     })
-    const results = await airtable.create(fields)
-    console.log(`[${ts}] Airtable created my record with these fields: ${{results}}`)
-    return results
+    const result = await airtable.create(fields)
+    console.log(`[${ts}] Airtable created my record with id: ${result.id}`)
+    return result
   } catch (err) {
     console.log(err)
   }
