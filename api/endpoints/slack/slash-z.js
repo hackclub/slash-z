@@ -109,6 +109,8 @@ export default async (req, res) => {
     title: `Zoom Pro meeting started by ${displayName}`
   }
 
+  const isMeetingPublic = await isPublicSlackChannel(req.body.channel_id)
+
   const slackCallResult = await fetch('https://slack.com/api/calls.add', {
     headers: {
       'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
@@ -130,7 +132,7 @@ export default async (req, res) => {
     'Host Join URL': meeting.start_url,
     'Raw Data': JSON.stringify(meeting, null, 2),
     'Slack Channel ID': req.body.channel_id,
-    'Public': await isPublicSlackChannel(req.body.channel_id),
+    'Public': isMeetingPublic,
     'Host Key': meeting.hostKey
   })
 
@@ -190,4 +192,31 @@ export default async (req, res) => {
       }]
     })
   })
+  await fetch('https://slack.com/api/chat.postMessage', {
+    method: 'post',
+    headers: {
+      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "channel": process.env.LOGS_CHANNEL_ID,
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": `*New Zoom Meeting*\nSlack User ID: <@${req.body.user_id}>\nSlack Channel ID: ${req.body.channel_id}\nPublic Meeting? ${isMeetingPublic}\nZoom ID: ${meeting.id}`
+          },
+          "accessory": {
+            "type": "image",
+            "image_url": "https://cloud-nz8prdq79-hack-club-bot.vercel.app/0image.png",
+            "alt_text": "slashz logo"
+          }
+        },
+        {
+          "type": "divider"
+        }
+      ]
+    })
+  });
 }
