@@ -78,7 +78,7 @@ export default async (req, res) => {
   
   let member;
   try {
-    let member = await (await fetch('https://slack.com/api/users.profile.get', { // get a specific user from Slack
+    member = await (await fetch('https://slack.com/api/users.profile.get', { // get a specific user from Slack
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
@@ -93,7 +93,7 @@ export default async (req, res) => {
   }
   let displayName;
   if (member && member.ok === true) {
-    displayName = member.profile.real_name || member.profile.display_name || req.body.user_name; // if it doesn't have the name, use the name returned by Slack 
+    displayName = member.profile.display_name || member.profile.real_name || req.body.user_name; // if it doesn't have the name, use the name returned by Slack 
   } else {
     displayName = req.body.user_name; // if there was an error getting the user, use the name returned by Slack
   }
