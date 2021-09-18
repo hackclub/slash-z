@@ -76,27 +76,7 @@ export default async (req, res) => {
     throw err
   }
   
-  let member;
-  try {
-    member = await (await fetch('https://slack.com/api/users.profile.get', { // get a specific user from Slack
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user: req.body.user_id // fetch the user that called the command
-      })
-    }).json());
-  } catch (err) {
-    console.log(err);
-  }
-  let displayName;
-  if (member && member.ok === true) {
-    displayName = member.profile.display_name || member.profile.real_name || req.body.user_name; // if it doesn't have the name, use the name returned by Slack 
-  } else {
-    displayName = req.body.user_name; // if there was an error getting the user, use the name returned by Slack
-  }
+  let displayName = req.body.user_name
   
   // now register the call on slack
   const slackCallFields = {
@@ -192,6 +172,7 @@ export default async (req, res) => {
       }]
     })
   })
+
   await fetch('https://slack.com/api/chat.postMessage', {
     method: 'post',
     headers: {
@@ -218,5 +199,5 @@ export default async (req, res) => {
         }
       ]
     })
-  });
+  })
 }
