@@ -205,7 +205,7 @@ export default async (req, res) => {
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": `*New Zoom Meeting*\nSlack User ID: <@${req.body.user_id}>\nSlack Channel ID: ${req.body.channel_id}\nPublic Meeting? ${isMeetingPublic}\nZoom ID: ${meeting.id}`
+            "text": `*New Zoom Meeting*\nUser: <@${req.body.user_id}> (${req.body.user_id})\nChannel: <#${req.body.channel_id}> (${req.body.channel_id})\nPublic Meeting? ${isMeetingPublic}\nZoom ID: ${meeting.id}`
           },
           "accessory": {
             "type": "image",
