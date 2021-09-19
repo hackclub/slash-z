@@ -172,32 +172,39 @@ export default async (req, res) => {
       }]
     })
   })
+  
+  try {
 
-  await fetch('https://slack.com/api/chat.postMessage', {
-    method: 'post',
-    headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      "channel": process.env.LOGS_CHANNEL_ID,
-      "blocks": [
-        {
-          "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": `*New Zoom Meeting*\nUser: <@${req.body.user_id}> (${req.body.user_id})\nChannel: <#${req.body.channel_id}> (${req.body.channel_id})\nPublic Meeting? ${isMeetingPublic}\nZoom ID: ${meeting.id}`
+    await fetch('https://slack.com/api/chat.postMessage', {
+      method: 'post',
+      headers: {
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "channel": "C02FAFA2JTT", // hardcode channel ID
+        "blocks": [
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": `*New Zoom Meeting*\nUser: <@${req.body.user_id}> (${req.body.user_id})\nChannel: <#${req.body.channel_id}> (${req.body.channel_id})\nPublic Meeting? ${isMeetingPublic}\nZoom ID: ${meeting.id}`
+            },
+            "accessory": {
+              "type": "image",
+              "image_url": "https://cloud-nz8prdq79-hack-club-bot.vercel.app/0image.png",
+              "alt_text": "slashz logo"
+            }
           },
-          "accessory": {
-            "type": "image",
-            "image_url": "https://cloud-nz8prdq79-hack-club-bot.vercel.app/0image.png",
-            "alt_text": "slashz logo"
+          {
+            "type": "divider"
           }
-        },
-        {
-          "type": "divider"
-        }
-      ]
+        ]
+      })
     })
-  })
+    
+  } catch (error) { // just in case I completely break /z
+    console.error(error);
+    
+  }
 }
