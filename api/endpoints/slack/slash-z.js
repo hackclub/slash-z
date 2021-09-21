@@ -10,11 +10,11 @@ module.exports = async (req, res, radio) => {
   console.log({
     user_id: req.body.user_id,
     channel_id: req.body.channel_id,
-    // restricted: userIsRestricted(req.body.user_id),
+    restricted: userIsRestricted(req.body.user_id),
     forbidden: channelIsForbidden(req.body.channel_id),
   });
 
-  /* if (await userIsRestricted(req.body.user_id)) {
+  if (await userIsRestricted(req.body.user_id)) {
     return fetch(req.body.response_url, {
       method: 'post',
       headers: {
@@ -26,7 +26,7 @@ module.exports = async (req, res, radio) => {
         text: transcript('errors.userIsRestricted')
       })
     })
-  } */
+  }
 
   if (channelIsForbidden(req.body.channel_id)) {
     return fetch(req.body.response_url, {
