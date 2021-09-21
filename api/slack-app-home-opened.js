@@ -1,9 +1,9 @@
-const transcript = require('./transcript')
-const fetch = require('node-fetch')
-const getPublicMeetings = require('./get-public-meetings')
-const getScheduledMeetings = require('./get-scheduled-meetings')
-const airbridge = require('./airbridge')
-const zoomMeetingToRecording = require('./zoom-meeting-to-recording')
+import transcript from './transcript.js'
+import fetch from 'node-fetch'
+import getPublicMeetings from './get-public-meetings.js'
+import getScheduledMeetings from './get-scheduled-meetings.js'
+import airbridge from './airbridge.js'
+import zoomMeetingToRecording from './zoom-meeting-to-recording.js'
 
 const publishPage = async ({blocks, user})=> {
   return await fetch('https://slack.com/api/views.publish', {
@@ -111,7 +111,7 @@ const getRecordings = async (user) => {
   return { completed, processing }
 }
 
-module.exports = async (user, loading=true) => {
+export default async (user, loading=true) => {
   const results = {}
   try {
     const taskArray = [

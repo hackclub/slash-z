@@ -1,10 +1,13 @@
-const transcript = require('./api/transcript')
-if (process.env.NODE_ENV != 'production') {
-  require('dotenv').config()
-}
+import './env.js'
+import './jobs.js'
+import transcript from './api/transcript.js'
 
-const express = require('express')
+import express from 'express'
 const app = express()
+
+import bugsnag from './bugsnag.js'
+app.use(bugsnag().requestHandler)
+
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
@@ -14,13 +17,12 @@ app.get('/ping', (req, res) => {
 
 app.use(express.static('public'))
 
-require('./router')(app)
+import routes from './routes.js'
+routes(app)
+
+app.use(bugsnag().errorHandler)
 
 const port = process.env.PORT || 0
 const listener = app.listen(port, () => {
   console.log(transcript('startup', {port: listener.address().port}))
 })
-
-if (process.env.NODE_ENV == 'production') {
-  require('./jobs')
-}

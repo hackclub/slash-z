@@ -5,10 +5,14 @@
   "repository": "git@github.com:hackclub/slash-z.git",
   "author": "Max Wofford <max@maxwofford.com>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon"
+    "dev": "NODE_ENV=development nodemon",
+    "start": "node server.js"
   },
   "dependencies": {
+    "@bugsnag/js": "^7.11.0",
+    "@bugsnag/plugin-express": "^7.11.0",
     "airtable-plus": "^1.0.4",
     "bottleneck": "^2.19.5",
     "dotenv": "^8.2.0",
