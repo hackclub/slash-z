@@ -1,6 +1,7 @@
-const { default: fetch } = require('node-fetch')
+import jwt from 'jsonwebtoken'
+import fetch from 'node-fetch'
 
-module.exports = class ZoomClient {
+export default class ZoomClient {
   constructor(props) {
     this.zoomKey = props.zoomKey
     this.zoomSecret = props.zoomSecret
@@ -59,7 +60,6 @@ module.exports = class ZoomClient {
   }
 
   token() {
-    const jwt = require('jsonwebtoken')
     const payload = {
       iss: this.zoomKey,
       exp: new Date().getTime() + 5000,

@@ -1,6 +1,7 @@
 // this is a helper method to make sure the slack request we get is authentic
-const crypto = require('crypto')
-module.exports = async (req, res, callback) => {
+import crypto from 'crypto'
+
+export default async (req, res, callback) => {
   const secret = process.env.SLACK_SIGNING_SECRET
   // if there is no signing secret in the config, just skip
   if (!secret) {

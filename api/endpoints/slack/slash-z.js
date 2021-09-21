@@ -1,12 +1,12 @@
-const { default: fetch } = require("node-fetch");
-const AirBridge = require("../../airbridge");
-const isPublicSlackChannel = require("../../is-public-slack-channel");
-const userIsRestricted = require("../../user-is-restricted");
-const channelIsForbidden = require("../../channel-is-forbidden");
-const openZoomMeeting = require("../../open-zoom-meeting");
-const transcript = require("../../transcript");
+import AirBridge from "../../airbridge.js"
+import isPublicSlackChannel from "../../is-public-slack-channel.js"
+import userIsRestricted from "../../user-is-restricted.js"
+import channelIsForbidden from "../../channel-is-forbidden.js"
+import openZoomMeeting from '../../open-zoom-meeting.js'
+import transcript from '../../transcript.js'
+import fetch from 'node-fetch'
 
-module.exports = async (req, res, radio) => {
+export default async (req, res) => {
   console.log({
     user_id: req.body.user_id,
     channel_id: req.body.channel_id,
@@ -79,33 +79,9 @@ module.exports = async (req, res, radio) => {
     });
     throw err;
   }
-
-  let member;
-  try {
-    let member = await await fetch("https://slack.com/api/users.profile.get", {
-      // get a specific user from Slack
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user: req.body.user_id, // fetch the user that called the command
-      }),
-    }).json();
-  } catch (err) {
-    console.log(err);
-  }
-  let displayName;
-  if (member && member.ok === true) {
-    displayName =
-      member.profile.real_name ||
-      member.profile.display_name ||
-      req.body.user_name; // if it doesn't have the name, use the name returned by Slack
-  } else {
-    displayName = req.body.user_name; // if there was an error getting the user, use the name returned by Slack
-  }
-
+  
+  let displayName = req.body.user_name
+  
   // now register the call on slack
   const slackCallFields = {
     external_unique_id: meeting.id,
@@ -117,7 +93,9 @@ module.exports = async (req, res, radio) => {
     title: `Zoom Pro meeting started by ${displayName}`,
   };
 
-  const slackCallResult = await fetch("https://slack.com/api/calls.add", {
+  const isMeetingPublic = await isPublicSlackChannel(req.body.channel_id)
+
+  const slackCallResult = await fetch('https://slack.com/api/calls.add', {
     headers: {
       Authorization: `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
@@ -128,19 +106,19 @@ module.exports = async (req, res, radio) => {
   const slackCall = slackCallResult.call;
 
   // & post to slack + airtable!
-  AirBridge.create("Meetings", {
-    "Zoom ID": "" + meeting.id,
-    "Slack Call ID": slackCall.id,
-    Host: [meeting.host.id],
-    "Started At": Date.now(),
-    "Creator Slack ID": req.body.user_id,
-    "Join URL": meeting.join_url,
-    "Host Join URL": meeting.start_url,
-    "Raw Data": JSON.stringify(meeting, null, 2),
-    "Slack Channel ID": req.body.channel_id,
-    Public: await isPublicSlackChannel(req.body.channel_id),
-    "Host Key": meeting.hostKey,
-  });
+  AirBridge.create('Meetings', {
+    'Zoom ID': '' + meeting.id,
+    'Slack Call ID': slackCall.id,
+    'Host': [meeting.host.id],
+    'Started At': Date.now(),
+    'Creator Slack ID': req.body.user_id,
+    'Join URL': meeting.join_url,
+    'Host Join URL': meeting.start_url,
+    'Raw Data': JSON.stringify(meeting, null, 2),
+    'Slack Channel ID': req.body.channel_id,
+    'Public': isMeetingPublic,
+    'Host Key': meeting.hostKey
+  })
 
   const slackPostFields = {
     response_type: "in_channel",
@@ -228,3 +206,56 @@ module.exports = async (req, res, radio) => {
     });
   }
 };
+  await fetch(req.body.response_url, {
+    method: 'post',
+    headers: {
+      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      response_type: 'ephemeral',
+      text: ':key: You find a golden key',
+      blocks: [{
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `You find a hastily scribbled note on the ground. You find the numbers *${meeting.hostKey}* you can use to <https://support.zoom.us/hc/en-us/articles/115001315866-Host-Key-Control-For-Zoom-Rooms|make yourself the host> of the *${meeting.host.fields['Name Displayed to Users']}*.`
+        }
+      }]
+    })
+  })
+  
+  try {
+    await fetch('https://slack.com/api/chat.postMessage', {
+      method: 'post',
+      headers: {
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "channel": "C02FAFA2JTT", // hardcode channel ID
+        "blocks": [
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": `*New Zoom Meeting*\nUser: <@${req.body.user_id}> (${req.body.user_id})\nChannel: <#${req.body.channel_id}> (${req.body.channel_id})\nPublic Meeting? ${isMeetingPublic}\nZoom ID: ${meeting.id}`
+            },
+            "accessory": {
+              "type": "image",
+              "image_url": "https://cloud-nz8prdq79-hack-club-bot.vercel.app/0image.png",
+              "alt_text": "slashz logo"
+            }
+          },
+          {
+            "type": "divider"
+          }
+        ]
+      })
+    })
+    
+  } catch (error) { // just in case I completely break /z
+    console.error(error);
+    
+  }
+}

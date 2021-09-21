@@ -1,7 +1,7 @@
-const { default: fetch } = require("node-fetch")
+import fetch from 'node-fetch'
 
 // THIS IS A WIP
-module.exports = async (meeting) => {
+export default async (meeting) => {
   if (!meeting.fields['channel']) {
     // this isn't a message to post in the slack
     return null

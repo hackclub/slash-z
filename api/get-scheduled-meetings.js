@@ -1,6 +1,6 @@
-const airbridge = require("./airbridge")
+import airbridge from "./airbridge.js"
 
-module.exports = async function(user) {
+export default async function(user) {
   const scheduleLinkFilter = `
   AND(
     {Creator Slack ID}='${user}',

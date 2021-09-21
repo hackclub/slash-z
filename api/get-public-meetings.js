@@ -1,6 +1,6 @@
-const { default: fetch } = require("node-fetch")
-const airbridge = require("./airbridge")
-const transcript = require("./transcript")
+import airbridge from "./airbridge.js"
+import transcript from "./transcript.js"
+import fetch from 'node-fetch'
 
 async function getParticipantCount(slackCallID) {
   const callInfo = await fetch('https://slack.com/api/calls.info', {
@@ -19,7 +19,7 @@ async function getParticipantCount(slackCallID) {
   return callInfo.call.users.length
 }
 
-module.exports = async function() {
+export default async function() {
   const filterByFormula = `AND({Status}='OPEN',{Public}=TRUE())`
   const meetings = await airbridge.get('Meetings', {filterByFormula})
   const meetingsWithParticipants = await Promise.all(
