@@ -11,7 +11,7 @@ export default async (req, res) => {
       case "/z":
         await slashZ(req, res);
         break;
-      case "/join-radio":
+      case "/ztream":
         await slashZ(req, res, true);
         break;
       case "/z-rooms":
