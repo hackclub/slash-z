@@ -50,9 +50,7 @@ module.exports = async (req, res, radio) => {
     },
     body: JSON.stringify({
       response_type: "in_channel",
-      text: !radio
-        ? "A new Zoom Pro meeting was started with /z"
-        : ":radio: Welcome to Hack Club Radio!",
+      text: "A new Zoom Pro meeting was started with /z"
     }),
   });
 
@@ -116,7 +114,7 @@ module.exports = async (req, res, radio) => {
     date_start: Math.floor(Date.now() / 1000), // Slack works in seconds, Date.now gives ms
     desktop_app_join_url: `zoommtg://zoom.us/join?confno=${meeting.id}&zc=0&pwd=${meeting.encrypted_password}`,
     external_display_id: meeting.id,
-    title: !radio ?  `Zoom Pro meeting started by ${displayName}` : 'The Hack Club Radio Studio',
+    title: `Zoom Pro meeting started by ${displayName}`,
   };
 
   const slackCallResult = await fetch("https://slack.com/api/calls.add", {
@@ -152,9 +150,7 @@ module.exports = async (req, res, radio) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: !radio
-            ? `After running \`/z\`, you wander the creaky hallways and stumble upon the *${meeting.host.fields["Name Displayed to Users"]}*. You try it and the door is unlocked.`
-            : `It's time to join me in the studio, hope you're ready!`,
+          text: `After running \`/z\`, you wander the creaky hallways and stumble upon the *${meeting.host.fields["Name Displayed to Users"]}*. You try it and the door is unlocked.`
         },
       },
       {
@@ -203,7 +199,7 @@ module.exports = async (req, res, radio) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `When you're ready to go live, click <https://71a289fd64b5.ngrok.io/api/endpoints/live?id=${meeting.id}|here> we'll get you onto YouTube. This must be done before claiming host, which you can redeem with \`${meeting.hostKey}\`.`,
+              text: `To go live, click <https://71a289fd64b5.ngrok.io/api/endpoints/live?id=${meeting.id}&user_id=${req.body.user_id}|here>. This must be done before claiming host, which you can redeem with \`${meeting.hostKey}\`.`,
             },
           },
         ],
