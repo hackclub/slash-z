@@ -9,7 +9,7 @@ import bugsnag from './bugsnag.js'
 app.use(bugsnag().requestHandler)
 
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/ping', (req, res) => {
   res.send('pong!')
@@ -24,5 +24,5 @@ app.use(bugsnag().errorHandler)
 
 const port = process.env.PORT || 0
 const listener = app.listen(port, () => {
-  console.log(transcript('startup', {port: listener.address().port}))
+  console.log(transcript('startup', { port: listener.address().port }))
 })

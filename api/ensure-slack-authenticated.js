@@ -10,7 +10,10 @@ export default async (req, res, callback) => {
   const timestamp = req.header('X-Slack-Request-Timestamp')
   const body = req.body
   const sigBasestring = `v0:${timestamp}:${body}`
-  const mySig = `v0=${crypto.createHmac('sha256', secret).update(sigBasestring).digest('hex')}`
+  const mySig = `v0=${crypto
+    .createHmac('sha256', secret)
+    .update(sigBasestring)
+    .digest('hex')}`
   console.log({
     slackSig: req.header('X-Slack-Signature'),
     mySig

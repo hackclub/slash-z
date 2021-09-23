@@ -1,9 +1,9 @@
-import AirBridge from "./airbridge.js"
+import AirBridge from './airbridge.js'
 
-export default (err) => {
+export default err => {
   const errorFields = {
-    'Time': Date.now(),
-    'Text': `${err.name} ${err.message}`,
+    Time: Date.now(),
+    Text: `${err.name} ${err.message}`,
     'Stack Trace': err.stack,
     'Production?': process.env.NODE_ENV === 'production'
   }
