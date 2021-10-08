@@ -66,7 +66,7 @@ export default async () => {
         const eventFormula = `{Meeting}='${closedMeeting.fields['Zoom ID']}'`
         const events = await airbridge.get('Webhook Events', { filterByFormula: eventFormula })
         const joinedEvents = events.map(e => JSON.parse(e.fields['Raw Data']))
-        const rawWebhookEvents = JSON.stringify(joinedEvents, null, 2)
+        const rawWebhookEvents = JSON.stringify(joinedEvents)
         // https://community.airtable.com/t/what-is-the-long-text-character-limit/1780/4
         // Airtable only supports lengths of 100,000 characters
         if (rawWebhookEvents.length <= 100000) {
@@ -98,7 +98,7 @@ export default async () => {
         const eventFormula = `{Meeting}='${packedMeeting.fields['Zoom ID']}'`
         const events = await airbridge.get('Webhook Events', { filterByFormula: eventFormula })
         const joinedEvents = events.map(e => JSON.parse(e.fields['Raw Data']))
-        const rawWebhookEvents = JSON.stringify(joinedEvents, null, 2)
+        const rawWebhookEvents = JSON.stringify(joinedEvents)
         // Before deleting the events, let's check the values are equal
         try {
           const meetingRecordEvents = packedMeeting.fields['Raw Webhook Events']
