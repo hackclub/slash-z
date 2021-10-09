@@ -11,7 +11,7 @@ const limiter = new Bottleneck({
   minTime: 2000
 });
 
-export default async () => {
+const cleanupAirtableRecords = async (repeat=false) => {
   {
     // step 1: let's cleanup old webhook events that aren't related to a meeting 
     const cutoffSeconds = 60 * 60 * 24 * 1 // 1 days, counted in seconds
@@ -118,4 +118,10 @@ export default async () => {
 
     await Promise.all(limitedJobQueue)
   }
+  if (repeat) {
+    setTimeout(() => {
+      await cleanupAirtableRecords(true)
+    }, 1000 * 60 * 3) // 3 minutes
+  }
 }
+export default cleanupAirtableRecords
