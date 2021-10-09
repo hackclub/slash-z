@@ -119,9 +119,15 @@ const cleanupAirtableRecords = async (repeat=false) => {
     await Promise.all(limitedJobQueue)
   }
   if (repeat) {
-    setTimeout(() => {
-      await cleanupAirtableRecords(true)
-    }, 1000 * 60 * 3) // 3 minutes
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          resolve(await cleanupAirtableRecords(true))
+        } catch (e) {
+          console.error(e)
+        }
+      }, 1000 * 60 * 3) // 3 minutes
+    })
   }
 }
 export default cleanupAirtableRecords
