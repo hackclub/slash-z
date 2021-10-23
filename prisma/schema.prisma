@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Host {
+  email       String
+  enabled     Boolean
+  displayName String
+  apiKey      String
+  apiSecret   String
+  zoomID      String    @unique
+  meetings    Meeting[]
+  errors      String[]
+}
+
+model Meeting {
+  id          Int      @id @default(autoincrement())
+  zoomID      String
+  slackCallID String
+  host        Host     @relation(fields: [hostZoomID], references: [zoomID])
+  hostZoomID  String
+  startedAt   DateTime
+  endedAt     DateTime
+  creatorSlackID String
+  joinURL String
+  rawWebhookEvents String[]
+}
