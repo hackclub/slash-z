@@ -17,26 +17,10 @@ export default async (zoomID, forceClose = false) => {
 
   // check if zoom meeting still has participants...
   const metrics = await zoom.get({
-    path: `metrics/meetings/${meeting.fields['Zoom ID']}/participants`
-  })
-  if (metrics === undefined) {
-    // 1) if was posted in slack, end slack call
-    if (meeting.fields['Slack Call ID']) {
-      const startTime = Date.parse(meeting.fields['Started At'])
-      const durationMs = Date.now() - startTime
-      const duration = Math.floor(durationMs / 1000)
-      const _slackPost = await fetch('https://slack.com/api/calls.end', {
-        method: 'post',
-        headers: {
-          Authorization: `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id: meeting.fields['Slack Call ID'], duration }) // hard coding duration while debugging
-      }).then(r => r.json())
-    }
-    await AirBridge.patch('Meetings', meeting.id, { 'Ended At': Date.now() })
-  }
-  if (!forceClose && metrics.total_records > 0) {
+    path: `metrics/meetings/${meeting.fields["Zoom ID"]}/participants`,
+  });
+
+  if (!forceClose && metrics && metrics.total_records > 0) {
     console.log(
       `Meeting ${meeting.fields['Zoom ID']} has ${metrics.total_records} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
     )
