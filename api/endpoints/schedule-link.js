@@ -1,4 +1,4 @@
-import findOrCreateMeeting from "../find-or-create-meeting.js"
+import findOrCreateMeeting from '../find-or-create-meeting.js'
 
 export default async (req, res) => {
   const { query } = req
@@ -17,7 +17,7 @@ export default async (req, res) => {
   try {
     const airtableMeeting = await findOrCreateMeeting(query.id)
     if (query.phone) {
-      res.redirect('/phone.html?meetingID='+airtableMeeting.fields['Zoom ID'])
+      res.redirect('/phone.html?meetingID=' + airtableMeeting.fields['Zoom ID'])
     } else {
       res.redirect(airtableMeeting.fields['Join URL'])
     }

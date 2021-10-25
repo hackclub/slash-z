@@ -1,11 +1,13 @@
 import Bottleneck from 'bottleneck'
 
 import AirBridge from './airbridge.js'
-import openZoomMeeting from "./open-zoom-meeting.js"
+import openZoomMeeting from './open-zoom-meeting.js'
 
-const findOrCreateMeeting = async (queryID) => {
+const findOrCreateMeeting = async queryID => {
   // Find the scheduling link record with the ID we've been given
-  let link = await AirBridge.find('Scheduling Links', {filterByFormula: `{Name}='${queryID}'` })
+  let link = await AirBridge.find('Scheduling Links', {
+    filterByFormula: `{Name}='${queryID}'`
+  })
   if (!link) {
     const err = Error('Scheduling meeting not found!')
     err.statusCode = 404
@@ -15,7 +17,9 @@ const findOrCreateMeeting = async (queryID) => {
   let airtableMeeting
   // if no OPEN meeting for the schedule link, let's create one now!
   if (link.fields['Open Meetings'] == 0) {
-    console.log(`No open meetings for scheduling link '${link.fields['Name']}', creating a new one`)
+    console.log(
+      `No open meetings for scheduling link '${link.fields['Name']}', creating a new one`
+    )
     // start a meeting
     let zoomMeeting
     try {
@@ -40,8 +44,12 @@ const findOrCreateMeeting = async (queryID) => {
 
     airtableMeeting = await AirBridge.create('Meetings', fields)
   } else {
-    console.log(`There's already an open meeting for scheduling link '${link.fields['Name']}'`)
-    airtableMeeting = await AirBridge.find('Meetings', {filterByFormula: `AND('${link.fields['Name']}'={Scheduling Link},{Status}='OPEN')`})
+    console.log(
+      `There's already an open meeting for scheduling link '${link.fields['Name']}'`
+    )
+    airtableMeeting = await AirBridge.find('Meetings', {
+      filterByFormula: `AND('${link.fields['Name']}'={Scheduling Link},{Status}='OPEN')`
+    })
   }
 
   return airtableMeeting
@@ -56,4 +64,5 @@ const getLimiter = id => {
   return limiters[id]
 }
 
-export default (queryID) => getLimiter(queryID).schedule(() => findOrCreateMeeting(queryID))
+export default queryID =>
+  getLimiter(queryID).schedule(() => findOrCreateMeeting(queryID))

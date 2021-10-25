@@ -7,7 +7,7 @@ export default () => {
   if (!started) {
     Bugsnag.start({
       apiKey: process.env.BUGSNAG_API_KEY,
-      plugins: [BugsnagPluginExpress],
+      plugins: [BugsnagPluginExpress]
     })
     started = true
   }
