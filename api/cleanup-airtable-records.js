@@ -3,17 +3,17 @@
 
 // deletion logic here is kinda arbitrary, i'm just trying it out and we'll see if it works...
 
-import airbridge from './airbridge.js'
-import Bottleneck from 'bottleneck'
+import airbridge from "./airbridge.js"
+import Bottleneck from "bottleneck"
 
 const limiter = new Bottleneck({
   maxConcurrent: 1,
   minTime: 2000
-})
+});
 
 const cleanupAirtableRecords = async (repeat=false) => {
   {
-    // step 1: let's cleanup old webhook events that aren't related to a meeting
+    // step 1: let's cleanup old webhook events that aren't related to a meeting 
     const cutoffSeconds = 60 * 60 * 24 * 1 // 1 days, counted in seconds
     const filterByFormula = `
     AND(
@@ -21,19 +21,13 @@ const cleanupAirtableRecords = async (repeat=false) => {
       DATETIME_DIFF(NOW(),CREATED_TIME())>${cutoffSeconds}
     )
     `
-    const events = await airbridge.get('Webhook Events', {
-      filterByFormula,
-      maxRecords: 1000
-    })
-    const limitedJobQueue = events.map(
-      async event =>
-        await limiter.schedule(() =>
-          airbridge.destroy('Webhook Events', event.id)
-        )
-    )
+    const events = await airbridge.get('Webhook Events', {filterByFormula, maxRecords: 1000})
+    const limitedJobQueue = events.map(async event => (
+      await limiter.schedule(() => airbridge.destroy('Webhook Events', event.id))
+    ))
     await Promise.all(limitedJobQueue)
   }
-
+  
   {
     // step 2: Lets cleanup old meetings that never had any events
     const filterByFormula = `
@@ -43,16 +37,12 @@ const cleanupAirtableRecords = async (repeat=false) => {
       {Status}='ENDED'
     )
     `
-    const emptyMeetings = await airbridge.get('Meetings', {
-      filterByFormula,
-      maxRecords: 1000
-    })
-    const limitedJobQueue = emptyMeetings.map(
-      async meeting =>
-        await limiter.schedule(async () => {
-          await airbridge.destroy('Meetings', meeting.id)
-        })
-    )
+    const emptyMeetings = await airbridge.get('Meetings', {filterByFormula, maxRecords: 1000})
+    const limitedJobQueue = emptyMeetings.map(async meeting => (
+      await limiter.schedule(async () => {
+        await airbridge.destroy('Meetings', meeting.id)
+      })
+    ))
 
     await Promise.all(limitedJobQueue)
   }
@@ -121,8 +111,10 @@ const cleanupAirtableRecords = async (repeat=false) => {
           } else {
             throw new Error(`Mismatch in events for meeting '${packedMeeting.fields['Zoom ID']}'`)
           }
-        })
-    )
+        } catch (e) {
+          console.error(`Skipping meeting '${packedMeeting.fields['Zoom ID']}'`)
+        }
+      }))
 
     await Promise.all(limitedJobQueue)
   }

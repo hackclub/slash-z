@@ -8,8 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development nodemon",
-    "start": "node server.js",
-    "fmt": "npx prettier \"**.js\" --write"
+    "start": "node server.js"
   },
   "dependencies": {
     "@bugsnag/js": "^7.11.0",

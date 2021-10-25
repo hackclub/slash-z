@@ -1,7 +1,7 @@
-import airbridge from './airbridge.js'
+import airbridge from "./airbridge.js"
 import fetch from 'node-fetch'
 
-export default async function (channelID) {
+export default async function(channelID) {
   if (channelID[0].toLowerCase() != 'c') {
     // slack channels start with 'c'
     // this is probably a group 'g', dm 'd' or something else
@@ -13,23 +13,15 @@ export default async function (channelID) {
     // check Slack to see if this channel is public
     fetch(`https://slack.com/api/conversations.info?channel=${channelID}`, {
       headers: {
-        Authorization: `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`
+        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`
       }
-    })
-      .then(r => r.json())
-      .then(channelInfo => {
-        isPublic =
-          isPublic && channelInfo.ok && !channelInfo.channel['is_private']
-      }),
+    }).then(r => r.json()).then(channelInfo => {
+      isPublic = isPublic && (channelInfo.ok && !channelInfo.channel['is_private'])
+    }),
     // check Operations airtable to see if this channel isn't a club channel
-    airbridge
-      .find('Clubs', {
-        base: 'Operations',
-        filterByFormula: `{Slack Channel ID}='${channelID}'`
-      })
-      .then(c => {
-        isPublic = isPublic && !Boolean(c)
-      })
+    airbridge.find('Clubs', {base: 'Operations', filterByFormula: `{Slack Channel ID}='${channelID}'`}).then(c => {
+      isPublic = isPublic && !Boolean(c)
+    })
   ])
 
   return isPublic

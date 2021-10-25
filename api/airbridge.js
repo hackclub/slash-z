@@ -1,7 +1,7 @@
 import AirtablePlus from 'airtable-plus'
 import Bottleneck from 'bottleneck'
 const limiter = new Bottleneck({
-  maxConcurrent: 2
+  maxConcurrent: 2,
   // minTime: 5000
 })
 
@@ -10,27 +10,24 @@ const deletionLimiter = new Bottleneck({
   minTime: 3000
 })
 
-const getBaseID = function (baseID = 'Slash-z') {
+const getBaseID = function(baseID = 'Slash-z') {
   return {
     'Slash-z': 'appuEsdMf6hHXibSh',
-    Operations: 'apptEEFG5HTfGQE7h'
+    'Operations': 'apptEEFG5HTfGQE7h'
   }[baseID]
 }
 
 const get = async (table, options) => {
   const ts = Date.now()
-  const { base, ...otherOptions } = options
+  const {base, ...otherOptions} = options
   const baseID = getBaseID(base)
   try {
     const airtable = new AirtablePlus({
       baseID,
       apiKey: process.env.AIRBRIDGE_API_KEY,
-      tableName: table
+      tableName: table,
     })
-    console.log(
-      `[${ts}] Airtable GET '${table}' with the following options:`,
-      otherOptions
-    )
+    console.log(`[${ts}] Airtable GET '${table}' with the following options:`, otherOptions)
     const results = await airtable.read(otherOptions)
     console.log(`[${ts}] Found ${results.length} records(s)`)
     return results
@@ -40,21 +37,18 @@ const get = async (table, options) => {
 }
 
 const find = async (table, options) => {
-  const results = await get(table, { ...options, maxRecords: 1 })
+  const results = await get(table, {...options, maxRecords: 1})
   return results[0]
 }
 
 const patch = async (table, recordID, fields) => {
   const ts = Date.now()
   try {
-    console.log(
-      `[${ts}] Airtable PATCH '${table} ID ${recordID}' with the following fields:`,
-      fields
-    )
+    console.log(`[${ts}] Airtable PATCH '${table} ID ${recordID}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
       baseID: getBaseID('Slash-z'),
       apiKey: process.env.AIRBRIDGE_API_KEY,
-      tableName: table
+      tableName: table,
     })
     const result = await airtable.update(recordID, fields)
     console.log(`[${ts}] Airtable PATCH successful!`)
@@ -67,14 +61,11 @@ const patch = async (table, recordID, fields) => {
 const create = async (table, fields) => {
   const ts = Date.now()
   try {
-    console.log(
-      `[${ts}] Airtable CREATE '${table}' with the following fields:`,
-      fields
-    )
+    console.log(`[${ts}] Airtable CREATE '${table}' with the following fields:`, fields)
     const airtable = new AirtablePlus({
       baseID: getBaseID('Slash-z'),
       apiKey: process.env.AIRBRIDGE_API_KEY,
-      tableName: table
+      tableName: table,
     })
     const result = await airtable.create(fields)
     console.log(`[${ts}] Airtable created my record with id: ${result.id}`)
@@ -89,14 +80,12 @@ const destroy = async (table, id) => {
   const airtable = new AirtablePlus({
     baseID: getBaseID('Slash-z'),
     apiKey: process.env.AIRBRIDGE_API_KEY,
-    tableName: table
+    tableName: table,
   })
   try {
     console.log(`[${ts}] Airtable DELETE '${table}' RECORD '${id}'`)
     const results = await airtable.delete(id)
-    console.log(
-      `[${ts}] Airtable deletion successful on '${table}' table, record '${id}'!`
-    )
+    console.log(`[${ts}] Airtable deletion successful on '${table}' table, record '${id}'!`)
     return results
   } catch (err) {
     console.log(err)
@@ -108,5 +97,5 @@ export default {
   find,
   patch: (...args) => limiter.schedule(() => patch(...args)),
   create: (...args) => limiter.schedule(() => create(...args)),
-  destroy: (...args) => deletionLimiter.schedule(() => destroy(...args))
+  destroy: (...args) => deletionLimiter.schedule(() => destroy(...args)),
 }

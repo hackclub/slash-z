@@ -13,13 +13,13 @@ const pluralize = (word, count) => {
   }
 }
 
-const sample = arr => {
+const sample = (arr) => {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
 const loadTranscript = () => {
-  const moduleURL = new URL(import.meta.url)
-  const __dirname = decodeURIComponent(path.dirname(moduleURL.pathname))
+  const moduleURL = new URL(import.meta.url);
+  const __dirname = decodeURIComponent(path.dirname(moduleURL.pathname));
 
   try {
     const doc = yaml.load(
@@ -97,7 +97,7 @@ const hydrateObj = (obj, vars = {}) => {
     return obj
   }
 }
-const evalTranscript = (target, vars = {}) =>
+const evalTranscript = (target, vars = {}) => (
   function () {
     return eval('`' + target + '`')
   }.call({
@@ -105,5 +105,6 @@ const evalTranscript = (target, vars = {}) =>
     t: transcript,
     pluralize
   })
+)
 
-export default transcript
+export default transcript;
