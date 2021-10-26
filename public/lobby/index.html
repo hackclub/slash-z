@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Virtual Lobby</title>
+        <link rel="stylesheet" href="style.css" type="text/css">
+    </head>
+    <body>
+        <section class="main">
+            <section>
+                <div class="pill">Slash Z</div>
+                <h1 class="title">Virtual Lobby</h1>
+                <p class="lead">This meeting will start soon.</p>
+                <center>
+                    <h3 class="eyebrow">STARTS AT 3:00pm</h3>
+                </center>
+                <button class="outline-btn-small corner bg-white" id="hostkey-button">Enter Host Key</button>
+                <div id="enter-hostkey" class="">
+                    <input class="outline-input-small" placeholder="Your Host Key" required oninput="validate()" onkeypress="validate()" onkeydown="validate()">
+                    <button class="cta-btn-small" id="enter-meeting">Enter Meeting</button>
+                    <button class="outline-btn-small" id="cancel-hostkey">Cancel</button>
+                </div>
+            </section>
+        </section>
+        <script src="script.js" type="text/javascript"></script>
+    </body>
+</html>
