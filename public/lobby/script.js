@@ -26,8 +26,10 @@ $`button#enter-meeting`.onclick = async () => {
     }).then(response => response.json()).then(json => {
         if (json.success) window.location.href = json.callLink;
         else {
-            $`div#enter-hostkey > input`.value = 'Error';
+            $`div#enter-hostkey > input`.value = 'Invalid Host Key';
         }
+    }).catch(() => {
+        $`div#enter-hostkey > input`.value = 'Error';
     });
     window.location.href = link;
 }
