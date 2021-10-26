@@ -14,6 +14,14 @@ export default async (req, res) => {
     return
   }
 
+  /*
+    Working on VirtualLobby
+   */
+  const virtualLobbyEnabled = false; // Somehow fetch this value from AirTable
+  if (virtualLobbyEnabled) {
+    return res.redirect('/lobby/index.html?meetingID='+airtableMeeting.fields['Zoom ID']);
+  }
+  
   try {
     const airtableMeeting = await findOrCreateMeeting(query.id)
     if (query.phone) {
