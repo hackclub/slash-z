@@ -1,5 +1,8 @@
 const $ = document.querySelector.bind(document);
-const $$ = document.querySelectorAll.bind(document)
+const $$ = document.querySelectorAll.bind(document);
+
+const urlParams = new URLSearchParams(window.location.search);
+const meetingID = urlParams.get('meetingID');
 
 $`div#enter-hostkey`.style.display = 'none'
 $`button#hostkey-button`.onclick = () => {
@@ -17,9 +20,14 @@ $`button#enter-meeting`.onclick = async () => {
             'content-type': 'application/json'
         },
         body: JSON.stringify({
-            hostkey: '123456',
-            meeting
+            hostkey: $`div#enter-hostkey > input`.value,
+            meetingID: meetingID
         })
+    }).then(response => response.json()).then(json => {
+        if (json.success) window.location.href = json.callLink;
+        else {
+            $`div#enter-hostkey > input`.value = 'Error';
+        }
     });
     window.location.href = link;
 }
