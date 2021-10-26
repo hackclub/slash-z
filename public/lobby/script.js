@@ -31,7 +31,6 @@ $`button#enter-meeting`.onclick = async () => {
     }).catch(() => {
         $`div#enter-hostkey > input`.value = 'Error';
     });
-    window.location.href = link;
 }
 
 const validate = () => {
