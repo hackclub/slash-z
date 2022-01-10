@@ -19,5 +19,8 @@ export default async (zoomCallID) => {
   // const settings = await zoom.get({ path: `/meetings/${zoomCallID}/recordings/settings`})
   // console.log({settings})
   // if ()
+  if (!results.recording) {
+    throw new Error('Recording not found!')
+  }
   return { ...results.recording, settings: { password } }
 }
