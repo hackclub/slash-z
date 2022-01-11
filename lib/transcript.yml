@@ -183,7 +183,7 @@ appHome:
         type: mrkdwn
         text: |
           Here are your currently running calls:
-          ${this.sm.map(m => `- Call _${m.link.fields['Name']}_ has host key *${m.meeting.fields['Host Key']}*`)}
+          ${this.sm.map(m => `- Call _${m.link.name}_ has host key *${m.meeting.hostKey}*`)}
     single:
       type: header
       text:

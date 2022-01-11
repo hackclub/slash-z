@@ -24,10 +24,10 @@ export default async function() {
   const meetings = await airbridge.get('Meetings', {filterByFormula})
   const meetingsWithParticipants = await Promise.all(
     meetings.map(async m => ({
-      channel: m.fields['Slack Channel ID'],
-      channelFlavor: transcript(`channelFlavor.${m.fields['Slack Channel ID']}`, {}, null),
-      joinUrl: m.fields['Join URL'],
-      participantCount: await getParticipantCount(m.fields['Slack Call ID'])
+      channel: m.slackChannelId,
+      channelFlavor: transcript(`channelFlavor.${m.slackChannelId}`, {}, null),
+      joinUrl: m.joinUrl,
+      participantCount: await getParticipantCount(m.slackCallID)
     }))
   )
   return meetingsWithParticipants.filter(m => m.participantCount > 0)

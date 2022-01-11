@@ -1,11 +1,11 @@
-import AirBridge from "../airbridge.js"
+import Prisma from "../prisma.js"
 
 export default async (req, res) => {
   let user = await AirBridge.find('Authed Accounts', { filterByFormula: `{Name}='${req.query.id}'` })
   if (!user) {
     user = await AirBridge.create('Authed Accounts', {'Name': req.query.id})
   }
-  if (!user.fields['Slack ID']) {
+  if (!user.slackId) {
     // No slack ID for this user? they're unauthenticated! Let's return an auth challenge
     const redirectUrl = 'https://hack.af/z/slack-auth'
     // const authUrl = `https://slack.com/oauth/v2/authorize?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&user_scope=identify&client_id=2210535565.1711449950551&state=${user.id}`
@@ -23,9 +23,9 @@ export default async (req, res) => {
     moreUri: `https://hack.af/z-phone?id=${id}`
   })
 
-  AirBridge.create('Scheduling Links', {
-    'Name': id,
-    'Creator Slack ID': user.fields['Slack ID'],
-    'Authed Account': [user.id],
+  Prisma.create('SchedulingLink', {
+    name: id,
+    creatorSlackID: user.slackID,
+    authedAccount: user.id,
   })
 }

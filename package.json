@@ -8,11 +8,13 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development nodemon",
-    "start": "node server.js"
+    "start": "node server.js",
+    "fmt": "npx prettier"
   },
   "dependencies": {
     "@bugsnag/js": "^7.11.0",
     "@bugsnag/plugin-express": "^7.11.0",
+    "@prisma/client": "3.3.0",
     "airtable-plus": "^1.0.4",
     "bottleneck": "^2.19.5",
     "dotenv": "^8.2.0",
@@ -22,7 +24,7 @@
     "md5": "^2.3.0",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.7",
-    "prisma": "^3.3.0",
+    "prisma": "3.3.0",
     "zoomus": "^0.1.4"
   }
 }

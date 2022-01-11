@@ -1,4 +1,4 @@
-import AirBridge from "../../airbridge.js"
+import Prisma from "../../prisma.js"
 import isPublicSlackChannel from "../../is-public-slack-channel.js"
 import userIsRestricted from "../../user-is-restricted.js"
 import channelIsForbidden from "../../channel-is-forbidden.js"
@@ -101,19 +101,19 @@ export default async (req, res) => {
   }).then(r => r.json())
   const slackCall = slackCallResult.call
 
-  // & post to slack + airtable!
-  AirBridge.create('Meetings', {
-    'Zoom ID': '' + meeting.id,
-    'Slack Call ID': slackCall.id,
-    'Host': [meeting.host.id],
-    'Started At': Date.now(),
-    'Creator Slack ID': req.body.user_id,
-    'Join URL': meeting.join_url,
-    'Host Join URL': meeting.start_url,
-    'Raw Data': JSON.stringify(meeting, null, 2),
-    'Slack Channel ID': req.body.channel_id,
-    'Public': isMeetingPublic,
-    'Host Key': meeting.hostKey
+  // & post to slack + db!
+  await Prisma.create('Meeting', {
+    zoomID: '' + meeting.id,
+    slackCallID: slackCall.id,
+    hostZoomID: meeting.host.id,
+    startedAt: Date.now(),
+    creatorSlackID: req.body.user_id,
+    joinURL: meeting.join_url,
+    hostJoinURL: meeting.start_url,
+    rawData: JSON.stringify(meeting, null, 2),
+    slackChannelID: req.body.channel_id,
+    public: isMeetingPublic,
+    hostKey: meeting.hostKey
   })
 
   const slackPostFields = {
@@ -123,7 +123,7 @@ export default async (req, res) => {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `After running \`/z\`, you wander the creaky hallways and stumble upon the *${meeting.host.fields['Name Displayed to Users']}*. You try it and the door is unlocked.`
+        text: `After running \`/z\`, you wander the creaky hallways and stumble upon the *${meeting.displayName}*. You try it and the door is unlocked.`
       }
     }, {
       type: 'call',
@@ -167,7 +167,7 @@ export default async (req, res) => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `You find a hastily scribbled note on the ground. You find the numbers *${meeting.hostKey}* you can use to <https://support.zoom.us/hc/en-us/articles/115001315866-Host-Key-Control-For-Zoom-Rooms|make yourself the host> of the *${meeting.host.fields['Name Displayed to Users']}*.`
+          text: `You find a hastily scribbled note on the ground. You find the numbers *${meeting.hostKey}* you can use to <https://support.zoom.us/hc/en-us/articles/115001315866-Host-Key-Control-For-Zoom-Rooms|make yourself the host> of the *${meeting.displayName}*.`
         }
       }]
     })

@@ -1,10 +1,21 @@
 import ZoomClient from './zoom-client.js'
-import AirBridge from "./airbridge.js"
+import Prisma from "./prisma.js"
 import sendHostKey from './send-host-key.js'
 import closeStaleCalls from './close-stale-calls.js'
 
 async function availableHost() {
-  const hosts = await AirBridge.get('Hosts', {filterByFormula: 'AND({Open Meetings}<1,{Enabled}=TRUE())'})
+  const hosts = await Prisma.get("Host", {
+    where: {
+      enabled: true,
+      meetings: {
+        every: {
+          endedAt: {
+            equals: null,
+          },
+        },
+      },
+    },
+  });
   return hosts[Math.floor(Math.random() * hosts.length)]
 }
 
@@ -29,19 +40,19 @@ export default async ({creatorSlackID}={}) => {
   }
 
   // make a zoom client for the open host
-  const zoom = new ZoomClient({zoomSecret: host.fields['API Secret'], zoomKey: host.fields['API Key']})
+  const zoom = new ZoomClient({zoomSecret: host.apiSecret, zoomKey: host.apiKey})
 
   // no zoom id? no problem! let's figure it out and cache it for next time
-  if (!host.fields['Zoom ID'] || host.fields['Zoom ID'] == '') {
+  if (!host.zoomId || host.zoomId == '') {
     // get the user's zoom id
-    const hostZoom = await zoom.get({ path: `users/${host.fields['Email']}` })
-    host = await AirBridge.patch('Hosts', host.id, {'Zoom ID': hostZoom.id})
+    const hostZoom = await zoom.get({ path: `users/${host.email}` })
+    host = await Prisma.patch('Host', host.id, { where: { zoomId: hostZoom.id } })
 
     // (max@maxwofford.com) This looks super redundant. Why are we also setting
     // these fields on meeting creation? Zoom's docs don't say it (at time of
     // writing), but zoom requires both the user's setting "host_video=true" for
     // the meeting "host_video=true" to work. ¯\_(ツ)_/¯
-    zoomUser = await zoom.patch({path: `users/${host.fields['Zoom ID']}/settings`, body: {
+    zoomUser = await zoom.patch({path: `users/${host.zoomId}/settings`, body: {
       schedule_meeting: {
         host_video: true,
         participants_video: true,
@@ -73,11 +84,11 @@ export default async ({creatorSlackID}={}) => {
   }
 
   const hostKey = Math.random().toString().substr(2,6).padEnd(6,0)
-  await zoom.patch({ path: `users/${host.fields['Zoom ID']}`, body: { host_key: hostKey}})
+  await zoom.patch({ path: `users/${host.zoomId}`, body: { host_key: hostKey}})
 
   // start a meeting with the zoom client
   const meeting = await zoom.post({
-    path: `users/${host.fields['Zoom ID']}/meetings`,
+    path: `users/${host.zoomId}/meetings`,
     body: {
       type: 2, // type 2 == scheduled meeting
       settings: {

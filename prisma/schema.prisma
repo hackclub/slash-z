@@ -11,25 +11,77 @@ datasource db {
 }
 
 model Host {
+  id          String     @id @default(cuid())
   email       String
   enabled     Boolean
+  testing     Boolean
   displayName String
   apiKey      String
   apiSecret   String
-  zoomID      String    @unique
+  zoomID      String     @unique
   meetings    Meeting[]
   errors      String[]
+  ErrorLog    ErrorLog[]
 }
 
 model Meeting {
-  id          Int      @id @default(autoincrement())
-  zoomID      String
-  slackCallID String
-  host        Host     @relation(fields: [hostZoomID], references: [zoomID])
-  hostZoomID  String
-  startedAt   DateTime
-  endedAt     DateTime
-  creatorSlackID String
-  joinURL String
-  rawWebhookEvents String[]
+  id                      String          @id @default(cuid())
+  zoomID                  String
+  slackCallID             String?
+  host                    Host            @relation(fields: [hostZoomID], references: [zoomID])
+  hostZoomID              String
+  startedAt               DateTime?
+  endedAt                 DateTime?
+  creatorSlackID          String
+  joinURL                 String
+  hostJoinURL             String
+  webhookEvents           WebhookEvent[]
+  rawWebhookEvents        Json?
+  rawData                 Json?
+  slackChannelID          String
+  public                  Boolean
+  hostKey                 String
+  rawWebhookEventsTooLong Boolean         @default(false)
+  schedulingLink          SchedulingLink? @relation(fields: [schedulingLinkId], references: [id])
+  schedulingLinkId        String
+  ErrorLog                ErrorLog[]
+}
+
+model WebhookEvent {
+  id        String   @id @default(cuid())
+  callId    String
+  meeting   Meeting  @relation(fields: [callId], references: [id])
+  timestamp DateTime
+  eventType String
+  rawData   Json
+}
+
+model SchedulingLink {
+  id              String          @id @default(cuid())
+  name            String
+  meetings        Meeting[]
+  meetingsIds     String[]
+  creatorSlackID  String
+  authedAccount   AuthedAccount[] @relation(fields: [authedAccountID], references: [id])
+  authedAccountID String
+}
+
+// Previously "Error" in the airtable version
+model ErrorLog {
+  id         String   @id @default(cuid())
+  timestamp  DateTime
+  production Boolean
+  text       String
+  stackTrace String
+  meeting    Meeting? @relation(fields: [meetingId], references: [id])
+  host       Host?    @relation(fields: [hostZoomID], references: [zoomID])
+  meetingId  String?
+  hostZoomID String?
+}
+
+model AuthedAccount {
+  id              String           @id @default(cuid())
+  name            String?
+  schedulingLinks SchedulingLink[]
+  slackID         String?
 }
