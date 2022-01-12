@@ -17,7 +17,7 @@ export default async (req, res) => {
   try {
     const airtableMeeting = await findOrCreateMeeting(query.id)
     if (query.phone) {
-      res.redirect('/phone.html?meetingID='+airtableMeeting.zoomId)
+      res.redirect('/phone.html?meetingID='+airtableMeeting.zoomID)
     } else {
       res.redirect(airtableMeeting.joinURL)
     }

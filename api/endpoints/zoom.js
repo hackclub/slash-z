@@ -16,10 +16,10 @@ export default async (req, res) => {
     const zoomCallID = req.body.payload.object.id
 
     // const meeting = await AirBridge.find('Meetings', { filterByFormula: `{Zoom ID}='${zoomCallID}'` })
-    const meeting = await Prisma.find('Meeting', { where: { zoomID: zoomCallID } })
+    const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallID } })
 
     await Prisma.create('webhookEvent', {
-      timestamp: req.body.event_ts,
+      timestamp: new Date(req.body.event_ts),
       eventType: req.body.event,
       rawData: JSON.stringify(req.body, null, 2),
       meeting: meeting?.id

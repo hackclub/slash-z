@@ -3,24 +3,25 @@ import Prisma from "./prisma.js";
 import fetch from "node-fetch";
 
 export default async (zoomID, forceClose = false) => {
-  const meeting = await Prisma.find("Meeting", {
+  const meeting = await Prisma.find("meeting", {
     where: { zoomID },
     include: { host: true }
   })
+  const host = meeting.host
 
   const zoom = new ZoomClient({
     zoomSecret: host.apiSecret,
-    zoomKey: host.apiKey,
+    zoomKey: host.apiKey, 
   });
 
   // check if zoom meeting still has participants...
   const metrics = await zoom.get({
-    path: `metrics/meetings/${meeting.zoomId}/participants`,
+    path: `metrics/meetings/${meeting.zoomID}/participants`,
   });
 
   if (!forceClose && metrics && metrics.total_records > 0) {
     console.log(
-      `Meeting ${meeting.zoomId} has ${metrics.total_records} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
+      `Meeting ${meeting.zoomID} has ${metrics.total_records} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
     );
     return null;
   }
@@ -44,16 +45,16 @@ export default async (zoomID, forceClose = false) => {
 
   // 2) set meeting status in zoom to 'end'
   await zoom.put({
-    path: `meetings/${meeting.zoomId}/status`,
+    path: `meetings/${meeting.zoomID}/status`,
     body: { action: "end" },
   });
   await zoom.patch({
-    path: `meetings/${meeting.zoomId}`,
+    path: `meetings/${meeting.zoomID}`,
     body: { settings: { join_before_host: false } },
   });
 
   // 3) end airtable call
-  await Prisma.patch("Meeting", meeting.id, { endedAt: Date.now() })
+  await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
 
   return meeting.id;
 };

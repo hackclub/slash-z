@@ -23,7 +23,7 @@ export default async (req, res) => {
     moreUri: `https://hack.af/z-phone?id=${id}`
   })
 
-  Prisma.create('SchedulingLink', {
+  Prisma.create('schedulingLink', {
     name: id,
     creatorSlackID: user.slackID,
     authedAccount: user.id,

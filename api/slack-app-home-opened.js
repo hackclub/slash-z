@@ -81,11 +81,11 @@ const publishHomePage = async ({user, results}) => {
 }
 
 const getUserInfo = async user => {
-  return await Prisma.find('AuthedAccount', { where: { slackId: user } })
+  return await Prisma.find('authedAccount', { where: { slackId: user } })
 }
 
 const getRecordings = async (user) => {
-  const completedRecordingMeetings = await Prisma.get("Meeting", {
+  const completedRecordingMeetings = await Prisma.get("meeting", {
     where: {
       creatorSlackID: user,
       webhookEvents: {
@@ -97,7 +97,7 @@ const getRecordings = async (user) => {
       },
     },
   });
-  const processingRecordingMeetings = await Prisma.get("Meeting", {
+  const processingRecordingMeetings = await Prisma.get("meeting", {
     where: {
       creatorSlackID: user,
       webhookEvents: {
@@ -120,7 +120,7 @@ const getRecordings = async (user) => {
   });
   const completed = completedRecordingMeetings.map(async meeting => {
     try {
-      return await zoomMeetingToRecording(meeting.zoomId)
+      return await zoomMeetingToRecording(meeting.zoomID)
     } catch (err) {
       console.log(err)
       return null

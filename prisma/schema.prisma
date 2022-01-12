@@ -15,7 +15,7 @@ model Host {
   email       String
   enabled     Boolean
   testing     Boolean
-  displayName String
+  displayName String // previously "Name Displayed to Users"
   apiKey      String
   apiSecret   String
   zoomID      String     @unique
@@ -28,32 +28,32 @@ model Meeting {
   id                      String          @id @default(cuid())
   zoomID                  String
   slackCallID             String?
-  host                    Host            @relation(fields: [hostZoomID], references: [zoomID])
-  hostZoomID              String
+  host                    Host            @relation(fields: [hostID], references: [id])
+  hostID                  String
   startedAt               DateTime?
   endedAt                 DateTime?
-  creatorSlackID          String
-  joinURL                 String
-  hostJoinURL             String
+  creatorSlackID          String?
+  joinURL                 String?
+  hostJoinURL             String?
   webhookEvents           WebhookEvent[]
-  rawWebhookEvents        Json?
-  rawData                 Json?
-  slackChannelID          String
+  rawWebhookEvents        String?
+  rawData                 String?
+  slackChannelID          String?
   public                  Boolean
-  hostKey                 String
+  hostKey                 String?
   rawWebhookEventsTooLong Boolean         @default(false)
   schedulingLink          SchedulingLink? @relation(fields: [schedulingLinkId], references: [id])
-  schedulingLinkId        String
+  schedulingLinkId        String?
   ErrorLog                ErrorLog[]
 }
 
 model WebhookEvent {
   id        String   @id @default(cuid())
-  callId    String
-  meeting   Meeting  @relation(fields: [callId], references: [id])
+  meetingId String
+  meeting   Meeting  @relation(fields: [meetingId], references: [id])
   timestamp DateTime
   eventType String
-  rawData   Json
+  rawData   String
 }
 
 model SchedulingLink {
@@ -61,9 +61,9 @@ model SchedulingLink {
   name            String
   meetings        Meeting[]
   meetingsIds     String[]
-  creatorSlackID  String
+  creatorSlackID  String?
   authedAccount   AuthedAccount[] @relation(fields: [authedAccountID], references: [id])
-  authedAccountID String
+  authedAccountID String?
 }
 
 // Previously "Error" in the airtable version

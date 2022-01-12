@@ -20,7 +20,7 @@ export default async function(user) {
       hostKey: {isEmpty: false},
       schedulingLinkId: link.id
     }
-    const meeting = await prisma.find('Meeting', {where: meetingWhere})
+    const meeting = await prisma.find('meeting', {where: meetingWhere})
     return { meeting, link }
   }))
   

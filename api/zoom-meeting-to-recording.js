@@ -2,8 +2,8 @@ import ZoomClient from "./zoom-client.js"
 import Prisma from './prisma.js'
 
 export default async (zoomCallID) => {
-  const meeting = await Prisma.find('Meetings', { where: {zoomID: zoomCallID }})
-  const host = await Prisma.find('Hosts', meeting.hostZoomID )
+  const meeting = await Prisma.find('meetings', { where: {zoomID: zoomCallID }})
+  const host = await Prisma.find('hosts', meeting.hostZoomID )
 
   const zoom = new ZoomClient({zoomSecret: host.apiSecret, zoomKey: host.apiKey})
 

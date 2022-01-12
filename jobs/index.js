@@ -1,5 +1,7 @@
-import cleanupAirtableRecords from './api/cleanup-airtable-records.js'
-import closeStaleCalls from './api/close-stale-calls.js'
+import cleanupAirtableRecords from '../api/cleanup-airtable-records.js'
+import closeStaleCalls from '../api/close-stale-calls.js'
+
+import './migrate-airtable-to-prisma.js'
 
 // this file should run in production-- it queues a bunch of tasks that are meant to run in production
 
@@ -13,4 +15,9 @@ if (process.env.NODE_ENV == 'production') {
   setTimeout(() => {
     setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
   }, 1000 * 60) // after 1 minute in milliseconds
+} else {
+  // closeStaleCalls()
+  // setTimeout(() => {
+  //   setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
+  // }, 1000 * 60) // after 1 minute in milliseconds
 }

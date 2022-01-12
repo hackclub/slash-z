@@ -5,7 +5,7 @@ import openZoomMeeting from "./open-zoom-meeting.js"
 
 const findOrCreateMeeting = async (queryID) => {
   // Find the scheduling link record with the ID we've been given
-  let link = await Prisma.find('SchedulingLink', {
+  let link = await Prisma.find('schedulingLink', {
     where: {name: queryID}
   })
   if (!link) {
@@ -14,7 +14,7 @@ const findOrCreateMeeting = async (queryID) => {
     throw err
   }
 
-  let openMeetingsCount = await Prisma.count('Meeting', { where: { endedAt: {
+  let openMeetingsCount = await Prisma.count('meeting', { where: { endedAt: {
     equals: null,
   }, schedulingLinkId: link.id } })
 
@@ -33,10 +33,12 @@ const findOrCreateMeeting = async (queryID) => {
     // add it to the list of scheduled meetings
     const fields = {}
     fields.zoomID = zoomMeeting.id.toString()
-    fields.hostZoomID = [zoomMeeting.host.id]
+    fields.host = {connect: {
+      zoomID: zoomMeeting.host.id
+    }}
     fields.startedAt = Date.now()
     fields.joinURL = zoomMeeting.join_url
-    fields.schedulingLinkId = [link.id]
+    fields.schedulingLinkId = link.id
     fields.hostJoinURl = zoomMeeting.start_url
     fields.public = false // hard coding this b/c scheduled meetings aren't shown on the public list atm
     fields.hostKey = zoomMeeting.hostKey
@@ -44,11 +46,10 @@ const findOrCreateMeeting = async (queryID) => {
       fields.creatorSlackID = link.creatorSlackID
     }
 
-    airtableMeeting = await Prisma.create("Meeting", fields)
+    airtableMeeting = await Prisma.create("meeting", fields)
   } else {
     console.log(`There's already an open meeting for scheduling link '${link.name}'`)
-    // airtableMeeting = await Prisma.find('Meeting', {filterByFormula: `AND('${link.fields['Name']}'={Scheduling Link},{Status}='OPEN')`})
-    airtableMeeting = await Prisma.find('Meeting', {
+    airtableMeeting = await Prisma.find('meeting', {
       where: {
         schedulingLinkId: link.id,
         endedAt: {

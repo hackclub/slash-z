@@ -1,7 +1,7 @@
 import Prisma from "./prisma.js"
 import closeZoomCall from "./close-zoom-call.js"
 
-export default async () => {
+export default async ({creatorSlackID} = {}) => {
   const startTS = Date.now()
   console.log(`Starting to close stale calls at ${startTS}`)
 
@@ -12,17 +12,17 @@ export default async () => {
       equals: null,
     },
     startedAt: {
-      lt: new Date() - cutoff
+      lt: new Date(new Date() - cutoff)
     }
   }
 
-  const staleCalls = await Prisma.get('Meeting', { where })
+  const staleCalls = await Prisma.get('meeting', { where })
 
   if (staleCalls.length == 0) { return 0 }
 
   const closedCalls = []
   await Promise.all(staleCalls.map(async call => {
-    const closedCall = await closeZoomCall(call.zoomId)
+    const closedCall = await closeZoomCall(call.zoomID)
     if (closedCall) {
       closedCalls.push(closedCall)
     }
