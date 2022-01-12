@@ -1,4 +1,4 @@
-import airbridge from "../api/airbridge"
+import airbridge from "../api/airbridge.js"
 import prisma from "../api/prisma.js"
 import removeTable from "./remove-table.js"
 
