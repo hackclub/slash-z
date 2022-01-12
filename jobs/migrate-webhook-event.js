@@ -10,7 +10,7 @@ export default async ({ reset = false }) => {
     await removeTable('webhookEvent', {startTS})
   }
 
-  const events = await airbridge.get('Webhook Events', { maxRecords: 10 })
+  const events = await airbridge.get('Webhook Events')
   const results = await prisma.client.webhookEvent.createMany({
     data: events.map(event => ({
       id: event.id,
