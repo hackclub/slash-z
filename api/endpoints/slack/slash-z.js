@@ -102,11 +102,13 @@ export default async (req, res) => {
   const slackCall = slackCallResult.call
 
   // & post to slack + db!
-  await Prisma.create('Meeting', {
+  await Prisma.create('meeting', {
     zoomID: '' + meeting.id,
     slackCallID: slackCall.id,
-    hostZoomID: meeting.host.id,
-    startedAt: Date.now(),
+    host: {connect: {
+      id: meeting.host.id
+    }},
+    startedAt: new Date(),
     creatorSlackID: req.body.user_id,
     joinURL: meeting.join_url,
     hostJoinURL: meeting.start_url,
