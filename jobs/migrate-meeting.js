@@ -1,6 +1,6 @@
-import prisma from "../api/prisma.js"
 import airbridge from "../api/airbridge.js"
 import removeTable from "./remove-table.js"
+import batchUpload from "./batch-upload.js"
 
 export default async ({ reset = false }) => {
   const startTS = Date.now()
@@ -11,8 +11,11 @@ export default async ({ reset = false }) => {
   }
 
   const meetings = await airbridge.get('Meetings')
-  const results = await prisma.client.meeting.createMany({
-    data: meetings.map(meeting => ({
+  const count = await batchUpload({
+    startTS,
+    table: 'meeting',
+    airtableRecords: meetings,
+    transform: (meeting) => ({
       id: meeting.id,
       zoomID: meeting.fields['Zoom ID'],
       slackCallID: meeting.fields['Slack Call ID'],
@@ -29,9 +32,8 @@ export default async ({ reset = false }) => {
       hostKey: meeting.fields['Host Key'],
       rawWebhookEventsTooLong: meeting.fields['Raw Webhook Events Too Long'] || false,
       schedulingLinkId: (meeting.fields['Scheduling Link'] || [])[0]
-    })),
-    skipDuplicates: true,
+    })
   })
 
-  console.log(`[${startTS}] ${results.count} meetings migrated`)
+  console.log(`[${startTS}] ${count} meetings migrated`)
 }

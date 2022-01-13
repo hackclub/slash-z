@@ -2,7 +2,7 @@
 
 // only run this if intentional... it's a heavy process
 
-if (true) {
+if (false) {
   let reset = true
 
   await (await import('./migrate-host.js')).default({ reset })
