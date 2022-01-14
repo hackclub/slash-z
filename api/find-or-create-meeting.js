@@ -34,12 +34,14 @@ const findOrCreateMeeting = async (queryID) => {
     const fields = {}
     fields.zoomID = zoomMeeting.id.toString()
     fields.host = {connect: {
-      zoomID: zoomMeeting.host.id
+      id: zoomMeeting.host.id
     }}
-    fields.startedAt = Date.now()
+    fields.startedAt = new Date(Date.now())
     fields.joinURL = zoomMeeting.join_url
-    fields.schedulingLinkId = link.id
-    fields.hostJoinURl = zoomMeeting.start_url
+    fields.schedulingLink = {connect: {
+      id: link.id
+    }}
+    fields.hostJoinURL = zoomMeeting.start_url
     fields.public = false // hard coding this b/c scheduled meetings aren't shown on the public list atm
     fields.hostKey = zoomMeeting.hostKey
     if (link.creatorSlackID) {

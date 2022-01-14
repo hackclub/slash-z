@@ -17,7 +17,7 @@ export default async function(user) {
 
     let meetingWhere = {
       endedAt: {equals: null},
-      hostKey: {isEmpty: false},
+      hostKey: {not: null},
       schedulingLinkId: link.id
     }
     const meeting = await prisma.find('meeting', {where: meetingWhere})

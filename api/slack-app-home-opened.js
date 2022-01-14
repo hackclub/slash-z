@@ -81,7 +81,7 @@ const publishHomePage = async ({user, results}) => {
 }
 
 const getUserInfo = async user => {
-  return await Prisma.find('authedAccount', { where: { slackId: user } })
+  return await Prisma.find('authedAccount', { where: { slackID: user } })
 }
 
 const getRecordings = async (user) => {
@@ -97,7 +97,7 @@ const getRecordings = async (user) => {
       },
     },
   });
-  const processingRecordingMeetings = await Prisma.get("meeting", {
+  const processing = await Prisma.get("meeting", {
     where: {
       creatorSlackID: user,
       webhookEvents: {
@@ -107,7 +107,7 @@ const getRecordings = async (user) => {
           },
         },
       },
-      not: {
+      NOT: {
         webhookEvents: {
           some: {
             eventType: {
