@@ -15,15 +15,18 @@ export default async (req, res) => {
     // Let's lookup our webhook event to see if we already got this event.
     const zoomCallID = req.body.payload.object.id
 
-    // const meeting = await AirBridge.find('Meetings', { filterByFormula: `{Zoom ID}='${zoomCallID}'` })
     const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallID } })
 
-    await Prisma.create('webhookEvent', {
+    const fields = {
       timestamp: new Date(req.body.event_ts),
       eventType: req.body.event,
       rawData: JSON.stringify(req.body, null, 2),
-      meeting: { connect: { id: meeting?.id } },
-    })
+    }
+    if (meeting) {
+      fields.meeting = { connect: { id: meeting.id } }
+    }
+
+    await Prisma.create('webhookEvent', fields)
 
     if (!meeting) {
       console.log('Meeting not found, skipping...', zoomCallID)
