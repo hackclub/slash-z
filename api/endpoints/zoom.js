@@ -22,7 +22,7 @@ export default async (req, res) => {
       timestamp: new Date(req.body.event_ts),
       eventType: req.body.event,
       rawData: JSON.stringify(req.body, null, 2),
-      meeting: meeting?.id
+      meeting: { connect: { id: meeting?.id } },
     })
 
     if (!meeting) {
