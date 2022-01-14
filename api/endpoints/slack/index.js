@@ -9,7 +9,7 @@ export default async (req, res) => {
     res.status(200).send()
 
     switch(req.body.command) {
-      case '/b':
+      case '/z':
         await slashZ(req, res)
         break
       case '/z-rooms':
