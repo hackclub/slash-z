@@ -1,8 +1,9 @@
 import closeZoomCall from "../close-zoom-call.js"
-import AirBridge from "../airbridge.js"
+import Prisma from "../prisma.js"
 import ensureZoomAuthenticated from "../ensure-zoom-authenticated.js"
 import updateSlackCallParticipantList from "../update-slack-call-participant-list.js"
 import slackAppHomeOpened from "../slack-app-home-opened.js"
+
 
 export default async (req, res) => {
   return await ensureZoomAuthenticated(req, res, async () => {
@@ -14,13 +15,14 @@ export default async (req, res) => {
     // Let's lookup our webhook event to see if we already got this event.
     const zoomCallID = req.body.payload.object.id
 
-    const meeting = await AirBridge.find('Meetings', { filterByFormula: `{Zoom ID}='${zoomCallID}'` })
+    // const meeting = await AirBridge.find('Meetings', { filterByFormula: `{Zoom ID}='${zoomCallID}'` })
+    const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallID } })
 
-    await AirBridge.create('Webhook Events', {
-      'Timestamp': req.body.event_ts,
-      'Event Type': req.body.event,
-      'Raw Data': JSON.stringify(req.body, null, 2),
-      'Meeting': meeting ? [meeting.id] : []
+    await Prisma.create('webhookEvent', {
+      timestamp: new Date(req.body.event_ts),
+      eventType: req.body.event,
+      rawData: JSON.stringify(req.body, null, 2),
+      meeting: meeting?.id
     })
 
     if (!meeting) {
@@ -34,16 +36,16 @@ export default async (req, res) => {
         return await closeZoomCall(zoomCallID)
         break
       case 'meeting.participant_joined':
-        return await updateSlackCallParticipantList('add', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
+        return await updateSlackCallParticipantList('add', meeting.slackCallID, req.body.payload.object.participant)
         break
       case 'meeting.participant_left':
-        return await updateSlackCallParticipantList('remove', meeting.fields['Slack Call ID'], req.body.payload.object.participant)
+        return await updateSlackCallParticipantList('remove', meeting.slackCallID, req.body.payload.object.participant)
         break
       case 'recording.started':
         return await postSlackCallThread(meeting)
         break
       case 'recording.completed':
-        return await slackAppHomeOpened(meeting.fields['Creator Slack ID'], false)
+        return await slackAppHomeOpened(meeting.creatorSlackID, false)
         break
       default:
         console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)

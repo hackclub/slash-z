@@ -17,7 +17,7 @@ const getBaseID = function(baseID = 'Slash-z') {
   }[baseID]
 }
 
-const get = async (table, options) => {
+const get = async (table, options = {}) => {
   const ts = Date.now()
   const {base, ...otherOptions} = options
   const baseID = getBaseID(base)

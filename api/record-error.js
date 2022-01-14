@@ -1,18 +1,18 @@
-import AirBridge from "./airbridge.js"
+import Prisma from "./prisma.js"
 
 export default (err) => {
   const errorFields = {
-    'Time': Date.now(),
-    'Text': `${err.name} ${err.message}`,
-    'Stack Trace': err.stack,
-    'Production?': process.env.NODE_ENV === 'production'
+    timestamp: new Date(Date.now()),
+    text: `${err.name} ${err.message}`,
+    stackTrace: err.stack,
+    production: process.env.NODE_ENV === 'production'
   }
   if (err.zoomHostID) {
-    errorFields['Host'] = [err.zoomHostID]
+    errorFields.hostZoomID = err.zoomHostID
   }
   if (err.zoomMeetingID) {
-    errorFields['Meeting'] = [err.zoomMeetingID]
+    errorFields.meetingId = err.zoomMeetingID
   }
 
-  AirBridge.create('Errors', errorFields)
+  Prisma.create('errorLog', errorFields)
 }

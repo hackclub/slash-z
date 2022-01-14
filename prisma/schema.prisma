@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Host {
+  id          String     @id @default(cuid())
+  email       String
+  enabled     Boolean
+  testing     Boolean
+  displayName String // previously "Name Displayed to Users"
+  apiKey      String
+  apiSecret   String
+  zoomID      String     @unique
+  meetings    Meeting[]
+  errors      String[]
+  ErrorLog    ErrorLog[]
+}
+
+model Meeting {
+  id                      String          @id @default(cuid())
+  zoomID                  String
+  slackCallID             String?
+  host                    Host            @relation(fields: [hostID], references: [id])
+  hostID                  String
+  startedAt               DateTime?
+  endedAt                 DateTime?
+  creatorSlackID          String?
+  joinURL                 String?
+  hostJoinURL             String?
+  webhookEvents           WebhookEvent[]
+  rawWebhookEvents        String?
+  rawData                 String?
+  slackChannelID          String?
+  public                  Boolean
+  hostKey                 String?
+  rawWebhookEventsTooLong Boolean         @default(false)
+  schedulingLink          SchedulingLink? @relation(fields: [schedulingLinkId], references: [id])
+  schedulingLinkId        String?
+  ErrorLog                ErrorLog[]
+}
+
+model WebhookEvent {
+  id        String   @id @default(cuid())
+  meetingId String
+  meeting   Meeting  @relation(fields: [meetingId], references: [id])
+  timestamp DateTime
+  eventType String
+  rawData   String
+}
+
+model SchedulingLink {
+  id              String          @id @default(cuid())
+  name            String
+  meetings        Meeting[]
+  meetingsIds     String[]
+  creatorSlackID  String?
+  authedAccount   AuthedAccount[] @relation(fields: [authedAccountID], references: [id])
+  authedAccountID String?
+}
+
+// Previously "Error" in the airtable version
+model ErrorLog {
+  id         String   @id @default(cuid())
+  timestamp  DateTime
+  production Boolean
+  text       String
+  stackTrace String
+  meeting    Meeting? @relation(fields: [meetingId], references: [id])
+  host       Host?    @relation(fields: [hostZoomID], references: [zoomID])
+  meetingId  String?
+  hostZoomID String?
+}
+
+model AuthedAccount {
+  id              String           @id @default(cuid())
+  name            String?
+  schedulingLinks SchedulingLink[]
+  slackID         String?
+}

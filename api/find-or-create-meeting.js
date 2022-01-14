@@ -1,21 +1,27 @@
 import Bottleneck from 'bottleneck'
 
-import AirBridge from './airbridge.js'
+import Prisma from './prisma.js'
 import openZoomMeeting from "./open-zoom-meeting.js"
 
 const findOrCreateMeeting = async (queryID) => {
   // Find the scheduling link record with the ID we've been given
-  let link = await AirBridge.find('Scheduling Links', {filterByFormula: `{Name}='${queryID}'` })
+  let link = await Prisma.find('schedulingLink', {
+    where: {name: queryID}
+  })
   if (!link) {
     const err = Error('Scheduling meeting not found!')
     err.statusCode = 404
     throw err
   }
 
+  let openMeetingsCount = await Prisma.count('meeting', { where: { endedAt: {
+    equals: null,
+  }, schedulingLinkId: link.id } })
+
   let airtableMeeting
   // if no OPEN meeting for the schedule link, let's create one now!
-  if (link.fields['Open Meetings'] == 0) {
-    console.log(`No open meetings for scheduling link '${link.fields['Name']}', creating a new one`)
+  if (openMeetingsCount == 0) {
+    console.log(`No open meetings for scheduling link '${link.name}', creating a new one`)
     // start a meeting
     let zoomMeeting
     try {
@@ -26,22 +32,33 @@ const findOrCreateMeeting = async (queryID) => {
     }
     // add it to the list of scheduled meetings
     const fields = {}
-    fields['Zoom ID'] = zoomMeeting.id.toString()
-    fields['Host'] = [zoomMeeting.host.id]
-    fields['Started At'] = Date.now()
-    fields['Join URL'] = zoomMeeting.join_url
-    fields['Scheduling Link'] = [link.id]
-    fields['Host Join URL'] = zoomMeeting.start_url
-    fields['Public'] = false // hard coding this b/c scheduled meetings aren't shown on the public list atm
-    fields['Host Key'] = zoomMeeting.hostKey
-    if (link.fields['Creator Slack ID']) {
-      fields['Creator Slack ID'] = link.fields['Creator Slack ID']
+    fields.zoomID = zoomMeeting.id.toString()
+    fields.host = {connect: {
+      id: zoomMeeting.host.id
+    }}
+    fields.startedAt = new Date(Date.now())
+    fields.joinURL = zoomMeeting.join_url
+    fields.schedulingLink = {connect: {
+      id: link.id
+    }}
+    fields.hostJoinURL = zoomMeeting.start_url
+    fields.public = false // hard coding this b/c scheduled meetings aren't shown on the public list atm
+    fields.hostKey = zoomMeeting.hostKey
+    if (link.creatorSlackID) {
+      fields.creatorSlackID = link.creatorSlackID
     }
 
-    airtableMeeting = await AirBridge.create('Meetings', fields)
+    airtableMeeting = await Prisma.create("meeting", fields)
   } else {
-    console.log(`There's already an open meeting for scheduling link '${link.fields['Name']}'`)
-    airtableMeeting = await AirBridge.find('Meetings', {filterByFormula: `AND('${link.fields['Name']}'={Scheduling Link},{Status}='OPEN')`})
+    console.log(`There's already an open meeting for scheduling link '${link.name}'`)
+    airtableMeeting = await Prisma.find('meeting', {
+      where: {
+        schedulingLinkId: link.id,
+        endedAt: {
+          equals: null,
+        }
+      }
+    })
   }
 
   return airtableMeeting

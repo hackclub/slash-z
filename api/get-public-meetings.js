@@ -1,4 +1,4 @@
-import airbridge from "./airbridge.js"
+import Prisma from "./prisma.js"
 import transcript from "./transcript.js"
 import fetch from 'node-fetch'
 
@@ -20,14 +20,13 @@ async function getParticipantCount(slackCallID) {
 }
 
 export default async function() {
-  const filterByFormula = `AND({Status}='OPEN',{Public}=TRUE())`
-  const meetings = await airbridge.get('Meetings', {filterByFormula})
+  const meetings = await Prisma.get('meeting', {where: {NOT: {startedAt: {equals: null}}, endedAt: {equals: null}, public: true}})
   const meetingsWithParticipants = await Promise.all(
     meetings.map(async m => ({
-      channel: m.fields['Slack Channel ID'],
-      channelFlavor: transcript(`channelFlavor.${m.fields['Slack Channel ID']}`, {}, null),
-      joinUrl: m.fields['Join URL'],
-      participantCount: await getParticipantCount(m.fields['Slack Call ID'])
+      channel: m.slackChannelId,
+      channelFlavor: transcript(`channelFlavor.${m.slackChannelId}`, {}, null),
+      joinUrl: m.joinUrl,
+      participantCount: await getParticipantCount(m.slackCallID)
     }))
   )
   return meetingsWithParticipants.filter(m => m.participantCount > 0)

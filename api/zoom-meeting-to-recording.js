@@ -1,11 +1,11 @@
 import ZoomClient from "./zoom-client.js"
-import AirBridge from './airbridge.js'
+import Prisma from './prisma.js'
 
 export default async (zoomCallID) => {
-  const meeting = await AirBridge.find('Meetings', { filterByFormula: `{Zoom ID}='${zoomCallID}'`})
-  const host = await AirBridge.find('Hosts', { filterByFormula: `RECORD_ID()='${meeting.fields['Host'][0]}'` })
+  const meeting = await Prisma.find('meetings', { where: {zoomID: zoomCallID }})
+  const host = await Prisma.find('hosts', meeting.hostZoomID )
 
-  const zoom = new ZoomClient({zoomSecret: host.fields['API Secret'], zoomKey: host.fields['API Key']})
+  const zoom = new ZoomClient({zoomSecret: host.apiSecret, zoomKey: host.apiKey})
 
   const password = zoomCallID.toString().substring(0, 8)
   const results = {}

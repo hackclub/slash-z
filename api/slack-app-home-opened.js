@@ -2,7 +2,7 @@ import transcript from './transcript.js'
 import fetch from 'node-fetch'
 import getPublicMeetings from './get-public-meetings.js'
 import getScheduledMeetings from './get-scheduled-meetings.js'
-import airbridge from './airbridge.js'
+import Prisma from './prisma.js'
 import zoomMeetingToRecording from './zoom-meeting-to-recording.js'
 
 const publishPage = async ({blocks, user})=> {
@@ -69,7 +69,7 @@ const publishHomePage = async ({user, results}) => {
     if (sm.length > 1) {
       blocks.push(transcript('appHome.scheduledHostKeys.multiple', {sm}))
     } else if (sm.length == 1) {
-      blocks.push(transcript('appHome.scheduledHostKeys.single', {hostKey: sm[0].meeting.fields['Host Key']}))
+      blocks.push(transcript('appHome.scheduledHostKeys.single', {hostKey: sm[0].meeting.hostKey}))
     } else {
       blocks.push(transcript('appHome.scheduledHostKeys.none'))
     }
@@ -81,32 +81,51 @@ const publishHomePage = async ({user, results}) => {
 }
 
 const getUserInfo = async user => {
-  const filterByFormula = `{Slack ID}='${user}'`
-  return await airbridge.find('Authed Accounts', {filterByFormula})
+  return await Prisma.find('authedAccount', { where: { slackID: user } })
 }
 
 const getRecordings = async (user) => {
-  const recordedMeetings = await airbridge.get('Meetings', {
-    filterByFormula: `AND({Creator Slack ID}='${user}',NOT({Recording Events}=BLANK()))`
-  })
-  const completed = (await Promise.all(recordedMeetings.filter(record => {
-    return record.fields['Recording Events'].includes('recording.completed')
-    // // if Zoom told us the recording is complete, assume it's complete
-    // const markedComplete = record.fields['Recording Events'].includes('recording.completed')
-    // // if Zoom hasn't told us the recording is c
-    // const pastDue = record.fields['']
-    // markedComplete || pastDue
-  }).map(async meeting => {
+  const completedRecordingMeetings = await Prisma.get("meeting", {
+    where: {
+      creatorSlackID: user,
+      webhookEvents: {
+        some: {
+          eventType: {
+            contains: "recording.completed"
+          },
+        },
+      },
+    },
+  });
+  const processing = await Prisma.get("meeting", {
+    where: {
+      creatorSlackID: user,
+      webhookEvents: {
+        some: {
+          eventType: {
+            contains: "recording.started"
+          },
+        },
+      },
+      NOT: {
+        webhookEvents: {
+          some: {
+            eventType: {
+              contains: "recording.completed"
+            },
+          },
+        },
+      },
+    },
+  });
+  const completed = completedRecordingMeetings.map(async meeting => {
     try {
-      return await zoomMeetingToRecording(meeting.fields['Zoom ID'])
+      return await zoomMeetingToRecording(meeting.zoomID)
     } catch (err) {
       console.log(err)
       return null
     }
-  }))).filter(Boolean)
-  const processing = recordedMeetings.filter(record => {
-    record.fields['Recording Events'].includes('recording.started')
-  })
+  }).filter(Boolean)
 
   return { completed, processing }
 }

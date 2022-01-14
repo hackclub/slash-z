@@ -19,8 +19,8 @@ export default async (req, res) => {
             console.log(`False alarm, this user is opening the '${req.body.event.tab}' tab. I'm ignoring it.`)
           }
           break
-      default:
-        throw new Error(`Unsupported slack event: '${req.body.type}'`)
+        default:
+          throw new Error(`Unsupported slack event: '${req.body.type}'`)
       }
     }
   })

@@ -1,23 +1,26 @@
-import airbridge from "./airbridge.js"
+import prisma from "./prisma.js"
 
 export default async function(user) {
-  const scheduleLinkFilter = `
-  AND(
-    {Creator Slack ID}='${user}',
-    {Open Meetings}>0
-  )
-  `
-  const links = await airbridge.get('Scheduling Links', {filterByFormula: scheduleLinkFilter})
+  const linksWhere = {
+    creatorSlackID: user,
+    meetings: {
+      some: {
+        endedAt: {
+          equals: null,
+        }
+      }
+    }
+  }
+  const links = await prisma.get('schedulingLink', {where: linksWhere})
 
   const meetings = await Promise.all(links.map(async link => {
-    const meetingFilter = `
-    AND(
-      {Status}='OPEN',
-      NOT({Host Key}=BLANK()),
-      {Scheduling Link}='${link.fields['Name']}'
-    )
-    `
-    const meeting = await airbridge.find('Meetings', {filterByFormula: meetingFilter})
+
+    let meetingWhere = {
+      endedAt: {equals: null},
+      hostKey: {not: null},
+      schedulingLinkId: link.id
+    }
+    const meeting = await prisma.find('meeting', {where: meetingWhere})
     return { meeting, link }
   }))
   

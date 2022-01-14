@@ -1,5 +1,5 @@
 import './env.js'
-import './jobs.js'
+import './jobs/index.js'
 import transcript from './api/transcript.js'
 
 import express from 'express'
