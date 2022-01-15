@@ -8,11 +8,6 @@ export default async (req, res) => {
     res.redirect('new-schedule-link')
     return
   }
-  
-  if (process.env.TEMP_REDIRECT && process.env.TEMP_ID_FOR_REDIRECT && req.query.id == process.env.TEMP_ID_FOR_REDIRECT) {
-    res.redirect(process.env.TEMP_REDIRECT)
-    return
-  }
 
   try {
     const airtableMeeting = await findOrCreateMeeting(query.id)
