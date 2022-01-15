@@ -53,7 +53,7 @@ const publishHomePage = async ({user, results}) => {
 
     if (results.recordings.completed.length > 0) {
       const completedRecordings = results.recordings.completed.map(c => ({
-        password: c.settings.password,
+        password: c?.settings?.password,
         url: c.share_url,
         meetingID: c.id,
         duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
