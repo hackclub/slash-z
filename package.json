@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development nodemon",
-    "start": "node server.js",
+    "start": "npx prisma generate && node server.js",
     "fmt": "npx prettier"
   },
   "dependencies": {
