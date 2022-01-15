@@ -76,8 +76,7 @@ export default async ({ creatorSlackID } = {}) => {
         },
         recording: {
           local_recording: true,
-          // temporarily true while testing out cloud sharing functionality
-          cloud_recording: true, // this is turned off for now because I haven't found a good way for users to access cloud recordings hosted in our host Zoom accounts
+          cloud_recording: true,
           record_gallery_view: true,
           record_speaker_view: true,
           save_chat_text: true,
