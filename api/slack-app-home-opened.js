@@ -52,7 +52,7 @@ const publishHomePage = async ({user, results}) => {
     }
 
     if (results.recordings.completed.length > 0) {
-      const completedRecordings = await Promise.all(results.recordings.completed).map(c => ({
+      const completedRecordings = (await Promise.all(results.recordings.completed)).map(c => ({
         password: c.settings.password,
         url: c.share_url,
         meetingID: c.id,
