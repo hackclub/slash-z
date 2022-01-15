@@ -143,7 +143,7 @@ export default async (user, loading=true) => {
     // least 2 seconds of loading to prevent flashing the user with updates
 
     if (loading) {
-      taskArray.push(new Promise(resolve => setTimeout(resolve, 2000)))
+      taskArray.push(new Promise(resolve => setTimeout(resolve, 1700)))
       taskArray.push(publishLoadingPage(user))
     }
 
