@@ -23,7 +23,9 @@ const get = async (table, options) => {
     include = options.include
   }
   try {
-    return await prisma[table].findMany({ where, orderBy, include })
+    const results = await prisma[table].findMany({ where, orderBy, include })
+    console.log(`[${ts}] Found ${results.count} results`)
+    return results
   } catch (err) {
     console.log(err)
   }
@@ -33,7 +35,8 @@ const get = async (table, options) => {
 // prismaFind('User', '01234567')
 // prismaFind('User', )
 const find = async (table, options) => {
-  console.log(`Trying to find '${table}' with options: '${JSON.stringify(options)}'`)
+  const ts = Date.now()
+  console.log(`[${ts}] Trying to find '${table}' with options: '${JSON.stringify(options)}'`)
   let where, orderBy, include
   if (typeof options === 'string') {
     where = { id: options }
@@ -44,7 +47,7 @@ const find = async (table, options) => {
   }
   try {
     const result = await prisma[table].findFirst({ where, orderBy, include })
-    console.log(`Found ${JSON.stringify(result)}`)
+    console.log(`[${ts}] Found record with ID '${result.id}'`)
     return result
   } catch (err) {
     console.log(err)
