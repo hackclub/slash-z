@@ -24,7 +24,7 @@ const get = async (table, options) => {
   }
   try {
     const results = await prisma[table].findMany({ where, orderBy, include })
-    console.log(`[${ts}] Found ${results.count} results`)
+    console.log(`[${ts}] Found ${results.length} record(s)`)
     return results
   } catch (err) {
     console.log(err)
