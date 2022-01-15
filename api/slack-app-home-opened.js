@@ -58,7 +58,6 @@ const publishHomePage = async ({user, results}) => {
         meetingID: c.id,
         duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
       }))
-      console.log('cake', results.recordings.completed)
       blocks.push(transcript('appHome.recordedMeetings.completed', {completedRecordings}))
     }
     blocks.push(transcript('appHome.divider'))
