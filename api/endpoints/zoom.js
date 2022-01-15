@@ -45,7 +45,8 @@ export default async (req, res) => {
         return await updateSlackCallParticipantList('remove', meeting.slackCallID, req.body.payload.object.participant)
         break
       case 'recording.started':
-        return await postSlackCallThread(meeting)
+        // return await postSlackCallThread(meeting)
+        // ^ not implemented yet
         break
       case 'recording.completed':
         return await slackAppHomeOpened(meeting.creatorSlackID, false)
