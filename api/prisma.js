@@ -44,7 +44,7 @@ const find = async (table, options) => {
   }
   try {
     const result = await prisma[table].findFirst({ where, orderBy, include })
-    console.log(`Found ${result}`)
+    console.log(`Found ${JSON.stringify(result)}`)
     return result
   } catch (err) {
     console.log(err)
