@@ -117,14 +117,14 @@ const getRecordings = async (user) => {
       },
     },
   });
-  const completed = completedRecordingMeetings.map(async meeting => {
+  const completed = (await Promise.all(completedRecordingMeetings.map(async meeting => {
     try {
       return await zoomMeetingToRecording(meeting.zoomID)
     } catch (err) {
       console.log(err)
       return null
     }
-  }).filter(Boolean)
+  }))).filter(Boolean)
 
   return { completed, processing }
 }
