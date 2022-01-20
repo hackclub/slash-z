@@ -46,22 +46,26 @@ const publishHomePage = async ({user, results}) => {
     blocks.push(transcript('appHome.publicMeetings', {publicMeetings: results.publicMeetings}))
     blocks.push(transcript('appHome.divider'))
   }
-  if (results.recordings != {}) {
-    if (results.recordings.processing.length > 0) {
-      blocks.push(transcript('appHome.recordedMeetings.processing', {processingCount: results.recordings.processing.length}))
-    }
 
-    if (results.recordings.completed.length > 0) {
-      const completedRecordings = (await Promise.all(results.recordings.completed)).map(c => ({
-        password: c.settings.password,
-        url: c.share_url,
-        meetingID: c.id,
-        duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
-      }))
-      blocks.push(transcript('appHome.recordedMeetings.completed', {completedRecordings}))
-    }
+  const {processing, completed} = results.recordings
+  if (processing.length > 0) {
+    blocks.push(transcript('appHome.recordedMeetings.processing', {processingCount: results.recordings.processing.length}))
+  }
+
+  if (completed.length > 0) {
+    const completedRecordings = (await Promise.all(results.recordings.completed)).map(c => ({
+      password: c.settings.password,
+      url: c.share_url,
+      meetingID: c.id,
+      duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
+    }))
+    blocks.push(transcript('appHome.recordedMeetings.completed', {completedRecordings}))
+  }
+
+  if (processing.length + completed.length > 0) {
     blocks.push(transcript('appHome.divider'))
   }
+
   blocks.push(transcript('appHome.calendarAddon.'+Boolean(results.user)))
   if (results.user) { // has access to the google calendar add-on
     const sm = results.scheduledMeetings
