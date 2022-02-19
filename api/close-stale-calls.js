@@ -5,7 +5,7 @@ export default async ({creatorSlackID} = {}) => {
   const startTS = Date.now()
   console.log(`Starting to close stale calls at ${startTS}`)
 
-  const cutoff = 60 * 2 * 1000 // 2 minutes
+  const cutoff = 60 * 60 * 2 * 1000 // 2 minutes
 
   const where = {
     endedAt: {
