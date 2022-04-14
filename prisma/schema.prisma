@@ -85,3 +85,8 @@ model AuthedAccount {
   schedulingLinks SchedulingLink[]
   slackID         String?
 }
+
+// Users who don't want to see a warning for creating meetings in public channels
+model IgnoredWarningUser {
+  id String @id
+}

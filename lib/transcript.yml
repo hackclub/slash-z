@@ -32,9 +32,9 @@ publicMeetings:
 footnoteSymbols:
   - †
   - ‡
-  - "[1]"
-  - "[1][2]"
-  - "*"
+  - '[1]'
+  - '[1][2]'
+  - '*'
   - §
 loadingEmoji:
   - spookytime
@@ -73,8 +73,8 @@ loading:
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a ton¹ of skele-fun!²_
   - \*Slash Z${this.t('copyrightSymbols')}\* _it's a skele-ton¹ of fun!²_
   - loading could take some time... looks like this app is run by a _skeleton_ crew
-  - ":bone: :clap: :bone: :clap: :bone: :clap: :bone:"
-  - ":skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones:"
+  - ':bone: :clap: :bone: :clap: :bone: :clap: :bone:'
+  - ':skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones: :clap: :skull_and_crossbones:'
   - | # This spagetti is the text for "i'm the sheriff of X" memes
     Howdy, i'm the sheriff of ${this.t('sheriffs')}
     :blank: :blank: :face_with_cowboy_hat:
@@ -100,7 +100,7 @@ loading:
   - Bone-Appetit!
   - bone to be wild!
   - These jokes are very bare bones
-startup: 
+startup:
   - Haunting on port ${this.port}
   - Port ${this.port} is about to get spooky!
   - Arrrrr! Hard to port ${this.port}!
@@ -110,6 +110,38 @@ greeting:
   - Hello <@${this.user}>, have a good ${this.t('currentDay')}!
   - Hello <@${this.user}>, your bones look wonderful today!
   - Greetings <@${this.user}>, please come in!
+publicChannelWarning:
+  blocks:
+    - type: section
+      text:
+        type: mrkdwn
+        text: |
+          *Hold your horses!*
+
+          You're about to start a public Zoom meeting that everyone in this channel can join. Are you sure this is what you meant to do?
+
+          Consider using a private channel or direct messages with yourself. You can always share the link later.
+
+          _This message shows up in public channels that aren't used by a club._
+    - type: actions
+      elements:
+        - type: button
+          text:
+            type: plain_text
+            text: Start meeting anyways
+          style: primary
+          value: slash-z-start
+        - type: button
+          text:
+            type: plain_text
+            text: Cancel
+          style: danger
+          value: slash-z-cancel
+        - type: button
+          text:
+            type: plain_text
+            text: Don't show this again
+          value: slash-z-start-ignore
 appHome:
   error:
     blocks:
@@ -152,7 +184,7 @@ appHome:
         There are ${this.pluralize('public meeting', this.publicMeetings.length)} open right now.
         ${this.publicMeetings.length > 0 ? this.t('publicMeetings.multiple', {meetings: this.publicMeetings}) : ''}
   recordedMeetings:
-    processing: 
+    processing:
       type: section
       text:
         type: mrkdwn
@@ -175,7 +207,7 @@ appHome:
       type: section
       text:
         type: mrkdwn
-        text: "Want to create a scheduled meeting link? You can install the the Google Calendar add-on at https://hack.af/z-addon."
+        text: 'Want to create a scheduled meeting link? You can install the the Google Calendar add-on at https://hack.af/z-addon.'
   scheduledHostKeys:
     multiple:
       type: section
@@ -188,12 +220,12 @@ appHome:
       type: header
       text:
         type: plain_text
-        text: "Your host key is ${this.hostKey}. Have a wonderful meeting!"
+        text: 'Your host key is ${this.hostKey}. Have a wonderful meeting!'
     none:
       type: section
       text:
         type: mrkdwn
-        text: "Once you join a meeting scheduled on your calendar, your host key will show up here."
+        text: 'Once you join a meeting scheduled on your calendar, your host key will show up here.'
 publicChannelFlavor:
   C0P5NE354: # bot-spam
     - like <#C012YMFQHUG>, but probably more lonely!
@@ -205,12 +237,12 @@ publicChannelFlavor:
     - <@U0C7B14Q3> unite! # @coworking-regulars
   C0JDWKJVA: # hack-night
     - great for procrastination
-    - "awoooo! :wolf: :moon:"
+    - 'awoooo! :wolf: :moon:'
     - open late
   C01NY9WC4P5: # sunroom
-    - "Tea parties :tea:" # https://hackclub.slack.com/archives/C0158NY6QEN/p1615328859017200?thread_ts=1615328097.016700&cid=C0158NY6QEN
+    - 'Tea parties :tea:' # https://hackclub.slack.com/archives/C0158NY6QEN/p1615328859017200?thread_ts=1615328097.016700&cid=C0158NY6QEN
   C0146U2KVUK: # rishi's personal channel
-    - ":ferrisbongo:" # https://hackclub.slack.com/archives/C0158NY6QEN/p1615340301017400?thread_ts=1615328097.016700&cid=C0158NY6QEN
+    - ':ferrisbongo:' # https://hackclub.slack.com/archives/C0158NY6QEN/p1615340301017400?thread_ts=1615328097.016700&cid=C0158NY6QEN
 errors:
   userIsRestricted: Sorry, you need to be a full member of Hack Club in order to run this command.
   channelIsForbidden: Sorry, you can\'t start a meeting in this channel.

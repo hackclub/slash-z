@@ -3,8 +3,8 @@ _metadata:
   minor_version: 1
 display_information:
   name: /z
-  description: "Create a Zoom Pro meeting. Find a bug? Bring it to #slash-z"
-  background_color: "#2d2d38"
+  description: 'Create a Zoom Pro meeting. Find a bug? Bring it to #slash-z'
+  background_color: '#2d2d38'
 features:
   app_home:
     home_tab_enabled: true
@@ -34,6 +34,9 @@ settings:
     request_url: https://slash-z.hackclub.com/api/endpoints/slack/events
     bot_events:
       - app_home_opened
+  interactivity:
+    is_enabled: true
+    request_url: https://slash-z.hackclub.com/api/endpoints/slack/interactivity
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false
