@@ -41,11 +41,6 @@ export default async (req, res) => {
 
       case 'slash-z-start-ignore':
         // Run /z and remember not to warn the user again
-        if (!(await Prisma.get('ignoredWarningUser', payload.user.id)).length) {
-          await Prisma.create('ignoredWarningUser', {
-            id: payload.user.id
-          })
-        }
         await slashZInner({
           displayName: payload.user.name,
           userId: payload.user.id,
@@ -53,6 +48,11 @@ export default async (req, res) => {
           responseUrl: payload.response_url,
           skipWarning: true
         })
+        if (!(await Prisma.get('ignoredWarningUser', payload.user.id)).length) {
+          await Prisma.create('ignoredWarningUser', {
+            id: payload.user.id
+          })
+        }
         break
 
       default:
