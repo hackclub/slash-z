@@ -13,13 +13,6 @@ export default async ({
   responseUrl,
   skipWarning = false
 }) => {
-  console.log({
-    userId,
-    channelId,
-    restricted: userIsRestricted(userId),
-    forbidden: channelIsForbidden(channelId)
-  })
-
   if (await userIsRestricted(userId)) {
     return fetch(responseUrl, {
       method: 'post',
