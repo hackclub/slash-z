@@ -46,7 +46,7 @@ export default async ({
   if (
     !skipWarning &&
     isMeetingPublic &&
-    !(await Prisma.get('ignoredWarningUser', userId)).length
+    !(await Prisma.count('ignoredWarningUser', userId))
   ) {
     await fetch(responseUrl, {
       method: 'post',

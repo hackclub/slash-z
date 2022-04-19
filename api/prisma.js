@@ -1,11 +1,11 @@
-import pkg from "@prisma/client"
+import pkg from '@prisma/client'
 const { PrismaClient } = pkg
 let prisma = new PrismaClient()
 
 import Bottleneck from 'bottleneck'
 
 const limiter = new Bottleneck({
-  maxConcurrent: 4,
+  maxConcurrent: 4
 })
 
 // prismaGet('Meeting')
@@ -36,7 +36,11 @@ const get = async (table, options) => {
 // prismaFind('User', )
 const find = async (table, options) => {
   const ts = Date.now()
-  console.log(`[${ts}] Trying to find '${table}' with options: '${JSON.stringify(options)}'`)
+  console.log(
+    `[${ts}] Trying to find '${table}' with options: '${JSON.stringify(
+      options
+    )}'`
+  )
   let where, orderBy, include
   if (typeof options === 'string') {
     where = { id: options }
@@ -56,9 +60,11 @@ const find = async (table, options) => {
 
 const count = async (table, options) => {
   let where, orderBy, include
-  console.log(`Trying to count '${table}' with options: '${JSON.stringify(options)}'`)
+  console.log(
+    `Trying to count '${table}' with options: '${JSON.stringify(options)}'`
+  )
   if (typeof options === 'string') {
-    where = { id: search }
+    where = { id: options }
   } else {
     where = options.where
     orderBy = options.orderBy
@@ -74,10 +80,13 @@ const count = async (table, options) => {
 const patch = async (table, recordID, fields) => {
   const ts = Date.now()
   try {
-    console.log(`[${ts}] PATCH '${table} ID ${recordID}' with the following fields:`, fields)
+    console.log(
+      `[${ts}] PATCH '${table} ID ${recordID}' with the following fields:`,
+      fields
+    )
     const result = await prisma[table].update({
       where: {
-        id: recordID,
+        id: recordID
       },
       data: fields
     })
@@ -92,9 +101,38 @@ const create = async (table, fields) => {
   const ts = Date.now()
   try {
     const result = await prisma[table].create({
-      data: fields,
+      data: fields
     })
     console.log(`[${ts}] Created my record with id: ${result.id}`)
+    return result
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+// Create or update a record
+const upsert = async (table, options, createFields, updateFields = {}) => {
+  const ts = Date.now()
+  try {
+    console.log(
+      `[${ts}] Trying to upsert '${table}' with options: '${JSON.stringify(
+        options
+      )}'`
+    )
+    let where, include
+    if (typeof options === 'string') {
+      where = { id: options }
+    } else {
+      where = options.where
+      include = options.include
+    }
+    const result = await prisma[table].upsert({
+      where,
+      include,
+      create: createFields,
+      update: updateFields
+    })
+    console.log(`[${ts}] Upsert successful!`)
     return result
   } catch (err) {
     console.log(err)
@@ -107,10 +145,12 @@ const destroy = async (table, id) => {
     console.log(`[${ts}] DELETE '${table}' RECORD '${id}'`)
     const results = await prisma[table].delete({
       where: {
-        id: id,
-      },
+        id: id
+      }
     })
-    console.log(`[${ts}] Deletion successful on '${table}' table, record '${id}'!`)
+    console.log(
+      `[${ts}] Deletion successful on '${table}' table, record '${id}'!`
+    )
     return results
   } catch (err) {
     console.log(err)
@@ -123,6 +163,7 @@ export default {
   count: (...args) => limiter.schedule(() => count(...args)),
   patch: (...args) => limiter.schedule(() => patch(...args)),
   create: (...args) => limiter.schedule(() => create(...args)),
+  upsert: (...args) => limiter.schedule(() => upsert(...args)),
   destroy: (...args) => deletionLimiter.schedule(() => destroy(...args)),
   client: prisma
 }
