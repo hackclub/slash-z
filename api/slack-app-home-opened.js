@@ -59,7 +59,11 @@ const publishHomePage = async ({user, results}) => {
       meetingID: c.id,
       duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
     }))
-    blocks.push(transcript('appHome.recordedMeetings.completed', {completedRecordings}))
+    blocks.push(transcript('appHome.recordedMeetings.completedHeader', { count: completedRecordings.length }))
+    completedRecordings.forEach(recording => {
+      blocks.push(transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
+    })
+    blocks.push(transcript('appHome.recordedMeetings.completedFooter'))
   }
 
   if (processing.length + completed.length > 0) {

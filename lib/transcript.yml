@@ -157,14 +157,25 @@ appHome:
       text:
         type: mrkdwn
         text: You have ${this.pluralize('recording', this.processingCount)} still processing :beachball:. Zoom usually takes the length of the call to process a video, so come back soon!
-    completed:
+    completedHeader:
+      type: section
+      text:
+        type: mrkdwn
+        text: You have ${this.pluralize('recording', this.count)} ready for download.
+    completedIndividual:
+      # @msw: Slack has an undocumented 3000 character per block limit, so we
+      # need to put each meeting recording in their own block– after ~15
+      # recordings we reach the limit.
       type: section
       text:
         type: mrkdwn
         text: |
-          You have ${this.pluralize('recording', this.completedRecordings.length)} ready for download:
-          ${this.completedRecordings.map(m => `- <${m.url}|Meeting ${m.meetingID} _(${m.duration} minutes long)_> (password *${m.password}*)`).join('\n')}
-          _Recorded meetings will automatically by removed after 60 days._
+          - <${this.url}|Meeting ${this.meetingID} _(${this.duration} minutes long)_> (password *${this.password}*)
+    completedFooter:
+      type: section
+      text:
+        type: mrkdwn
+        text: _Recorded meetings will automatically by removed after 60 days._
   calendarAddon:
     true:
       type: section
