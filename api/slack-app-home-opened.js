@@ -79,6 +79,9 @@ const publishHomePage = async ({user, results}) => {
   }
   blocks.push(transcript('appHome.divider'))
   const result = await publishPage({user, blocks})
+  if (!result.ok) {
+    throw new Error(result.error)
+  }
   console.log(result)
   return result
 }
