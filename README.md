@@ -21,7 +21,7 @@ _built by [@maxwofford](https://github.com/maxwofford) (initial version by [@zac
 
 ### Usage
 
-Go to any channel (or DM) in the Hack Club Slack & run `/z`.
+Go to any channel (or DM) in the Hack Club Slack & run `/z`. For more advanced features, see the [guide](https://zguide.hackclub.com).
 
 <img src="https://cloud-grl3n7i0e-hack-club-bot.vercel.app/0z-demo.gif" alt="type '/z' into slack for a call!" max-width="400px">
 
