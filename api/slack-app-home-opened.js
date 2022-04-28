@@ -57,6 +57,7 @@ const publishHomePage = async ({user, results}) => {
       password: c.settings.password,
       url: c.share_url,
       meetingID: c.id,
+      timestamp: `${new Date(c.start_time).toLocaleString()}`, // fix date string formatting before merging
       duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
     }))
     blocks.push(transcript('appHome.recordedMeetings.completedHeader', { count: completedRecordings.length }))
