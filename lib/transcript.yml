@@ -170,7 +170,7 @@ appHome:
       text:
         type: mrkdwn
         text: |
-          - <${this.url}|Meeting ${this.meetingID} _(${this.duration} minutes long)_> (password *${this.password}*) - ${this.timestamp}
+          - <${this.url}|Meeting ${this.meetingID} _(${this.duration} minutes long)_> (password *${this.password}*)
     completedFooter:
       type: section
       text:
