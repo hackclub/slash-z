@@ -57,7 +57,12 @@ const publishHomePage = async ({user, results}) => {
       password: c.settings.password,
       url: c.share_url,
       meetingID: c.id,
-      timestamp: `${new Date(c.start_time).toLocaleString('en-US', { timeZone: user.tz })}`,
+      timestamp: `${(() => {
+        const timestamp = Math.floor(new Date(c.start_time).valueOf() / 1000);
+        const fallback = new Date(c.start_time).toLocaleString('en-US', { timeZone: user.tz });
+        const slackTimeString = `<!date^${timestamp}^Started {date_pretty} at {time}|${fallback}>`;
+        return slackTimeString;
+      })()}`,
       duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
     }))
     blocks.push(transcript('appHome.recordedMeetings.completedHeader', { count: completedRecordings.length }))
