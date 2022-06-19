@@ -18,7 +18,7 @@ export default async (req, res) => {
     const slackData = await fetch(tokenUrl, {method: 'post'}).then(r => r.json())
     
     // Check if the authed user actually exists
-    if (slackData?.authed_user?.id === null) {
+    if (!slackData?.authed_user?.id) { // Instead of checking null, check any falsy value, such as undefined
       res.redirect('/auth-error.html')
       return
     }
