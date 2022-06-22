@@ -88,7 +88,6 @@ export default async ({ creatorSlackID } = {}) => {
           embed_password_in_join_link: true,
           waiting_room: false,
         },
-        polling: true
       },
     });
   }
