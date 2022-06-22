@@ -73,6 +73,7 @@ export default async ({ creatorSlackID } = {}) => {
           file_transfer: true,
           co_host: true,
           polling: true,
+          closed_caption: true
         },
         recording: {
           local_recording: true,
@@ -87,7 +88,7 @@ export default async ({ creatorSlackID } = {}) => {
         meeting_security: {
           embed_password_in_join_link: true,
           waiting_room: false,
-        },
+        }
       },
     });
   }
