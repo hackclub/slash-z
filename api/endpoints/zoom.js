@@ -3,6 +3,7 @@ import Prisma from "../prisma.js"
 import ensureZoomAuthenticated from "../ensure-zoom-authenticated.js"
 import updateSlackCallParticipantList from "../update-slack-call-participant-list.js"
 import slackAppHomeOpened from "../slack-app-home-opened.js"
+import hackNightStats from "../hack-night.js"
 
 
 export default async (req, res) => {
@@ -32,6 +33,10 @@ export default async (req, res) => {
       console.log('Meeting not found, skipping...', zoomCallID)
       return
     }
+    
+    const isHackNight = meeting.schedulingLink.name === "1vu13b";
+
+    if (isHackNight) hackNightStats(req.body.event, meeting, req.body.paylod);
 
     switch (req.body.event) {
       case 'meeting.ended':
