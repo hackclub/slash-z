@@ -34,7 +34,9 @@ export default async (req, res) => {
       return
     }
     
-    if (meeting.schedulingLink.name === "1vu13b") hackNightStats(req.body.event, meeting, req.body.paylod);
+    const isHackNight = meeting.schedulingLink.name === "1vu13b";
+
+    if (isHackNight) hackNightStats(req.body.event, meeting, req.body.paylod);
 
     switch (req.body.event) {
       case 'meeting.ended':
