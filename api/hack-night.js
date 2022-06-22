@@ -52,17 +52,3 @@ export default async function hackNightStats (event, meeting, payload) {
     default: {}
   }
 }
-
-export async function testJoin () {
-  const participants = await fetchParticipantNumber();
-  await setParticipantNumber(participants + 1);
-}
-
-export async function testLeave () {
-  const participants = await fetchParticipantNumber();
-  await setParticipantNumber(participants - 1 < 0 ? 0 : participants - 1);
-}
-
-export async function testEnd () {
-  await setParticipantNumber(0);
-}
