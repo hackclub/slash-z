@@ -29,8 +29,8 @@ oauth_config:
       - chat:write
       - commands
       - users:read
-      - bookmarks:write
       - bookmarks:read
+      - bookmarks:write
 settings:
   event_subscriptions:
     request_url: https://slash-z.hackclub.com/api/endpoints/slack/events

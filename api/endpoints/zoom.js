@@ -16,7 +16,7 @@ export default async (req, res) => {
     // Let's lookup our webhook event to see if we already got this event.
     const zoomCallID = req.body.payload.object.id
 
-    const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallID.toString() } })
+    const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallID.toString() }, include: { schedulingLink: true } })
 
     const fields = {
       timestamp: new Date(req.body.event_ts),
