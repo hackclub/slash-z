@@ -2,6 +2,7 @@ import Bottleneck from 'bottleneck'
 
 import Prisma from './prisma.js'
 import openZoomMeeting from "./open-zoom-meeting.js"
+import sendHostKey from "./send-host-key.js";
 
 const findOrCreateMeeting = async (queryID) => {
   // Find the scheduling link record with the ID we've been given
@@ -46,9 +47,13 @@ const findOrCreateMeeting = async (queryID) => {
     fields.hostKey = zoomMeeting.hostKey
     if (link.creatorSlackID) {
       fields.creatorSlackID = link.creatorSlackID
+
+      // if it was a scheduled link with a creator, send a DM
+      sendHostKey({creatorSlackID: fields.creatorSlackID, hostKey: fields.hostKey})
     }
 
     airtableMeeting = await Prisma.create("meeting", fields)
+
   } else {
     console.log(`There's already an open meeting for scheduling link '${link.name}'`)
     airtableMeeting = await Prisma.find('meeting', {

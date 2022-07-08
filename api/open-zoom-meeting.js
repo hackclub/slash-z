@@ -1,6 +1,6 @@
 import ZoomClient from "./zoom-client.js";
 import Prisma from "./prisma.js";
-import sendHostKey from "./send-host-key.js";
+// import sendHostKey from "./send-host-key.js";
 import closeStaleCalls from "./close-stale-calls.js";
 
 async function availableHost() {
@@ -94,6 +94,9 @@ export default async ({ creatorSlackID } = {}) => {
   }
 
   const hostKey = Math.random().toString().substr(2, 6).padEnd(6, 0);
+
+  // sendHostKey({creatorSlackID, hostKey})
+
   await zoom.patch({
     path: `users/${host.zoomID}`,
     body: { host_key: hostKey },
