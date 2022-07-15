@@ -14,9 +14,6 @@ const postMessage = async ({channel, text}) => {
 export default async ({creatorSlackID, hostKey}) => {
   console.log('Posting the Slack DM', {creatorSlackID, hostKey})
   // while debugging, only run for tester
-  if (creatorSlackID != 'U0C7B14Q3') {
-    return []
-  }
   const slackDMs = []
   slackDMs.push(await postMessage({
       channel: creatorSlackID,
