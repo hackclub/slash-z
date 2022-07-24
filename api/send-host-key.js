@@ -16,13 +16,9 @@ export default async ({creatorSlackID, hostKey}) => {
   // while debugging, only run for tester
   const slackDMs = []
   slackDMs.push(await postMessage({
-      channel: creatorSlackID,
-      text: `The host key for the call you just opened is...`
-    }))
-  slackDMs.push(await postMessage({
-      channel: creatorSlackID,
-      text: `**${hostKey}**`
-    }))
+    channel: creatorSlackID,
+    text: `_*${hostKey}*_ is the host key for the call you just opened.`
+  }));
 
   return slackDMs
 }
