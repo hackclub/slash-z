@@ -18,6 +18,7 @@ plurals:
   participant: participants
   public meeting: public meetings
   recording: recordings
+  minute: minutes
 publicMeetings:
   none: |
     https://cloud-rfuqitcwv-hack-club-bot.vercel.app/0510b43.jpg
@@ -170,7 +171,7 @@ appHome:
       text:
         type: mrkdwn
         text: |
-          - <${this.url}|Meeting ${this.meetingID} _(${this.duration} minutes long)_> (password *${this.password}*) - ${this.timestamp}
+          - <${this.url}|Meeting ${this.meetingID} _(${this.pluralize("minute", this.duration)} long)_> (password *${this.password}*) - ${this.timestamp}
     completedFooter:
       type: section
       text:
