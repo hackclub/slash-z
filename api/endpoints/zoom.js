@@ -44,6 +44,7 @@ export default async (req, res) => {
         return await closeZoomCall(zoomCallID)
         break
       case 'meeting.participant_joined':
+        console.log('triggered!')
         return await updateSlackCallParticipantList('add', meeting.slackCallID, req.body.payload.object.participant)
         break
       case 'meeting.participant_left':
