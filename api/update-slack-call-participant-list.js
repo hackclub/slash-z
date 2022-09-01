@@ -40,6 +40,6 @@ export default async (addOrRemove, callID, zoomParticipant) => {
       users: [user]
     })
   }).then(r => r.json())
-
+  console.log(result)
   return result
 }
