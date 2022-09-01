@@ -34,7 +34,7 @@ export default async (req, res) => {
       return
     }
     
-    const isHackNight = meeting.schedulingLink.name === "1vu13b";
+    const isHackNight = meeting?.schedulingLink?.name === "1vu13b";
 
     if (isHackNight) hackNightStats(req.body.event, meeting, req.body.paylod);
 
