@@ -3,6 +3,11 @@ import Prisma from "./prisma.js";
 // import sendHostKey from "./send-host-key.js";
 import closeStaleCalls from "./close-stale-calls.js";
 
+const hackNightSettings = {
+  who_can_share_screen_when_someone_is_sharing: 'all',
+  participants_share_simultaneously: 'multiple'
+}
+
 async function availableHost() {
   const hosts = await Prisma.get("host", {
     where: {
@@ -21,7 +26,7 @@ async function availableHost() {
   return hosts[Math.floor(Math.random() * hosts.length)];
 }
 
-export default async ({ creatorSlackID } = {}) => {
+export default async ({ creatorSlackID, isHackNight } = {}) => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
   // ¯\_(ツ)_/¯
@@ -73,7 +78,8 @@ export default async ({ creatorSlackID } = {}) => {
           file_transfer: true,
           co_host: true,
           polling: true,
-          closed_caption: true
+          closed_caption: true,
+          ...(() => isHackNight ? hackNightSettings : {})
         },
         recording: {
           local_recording: true,

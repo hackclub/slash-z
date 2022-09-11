@@ -26,7 +26,7 @@ const findOrCreateMeeting = async (queryID) => {
     // start a meeting
     let zoomMeeting
     try {
-      zoomMeeting = await openZoomMeeting()
+      zoomMeeting = await openZoomMeeting({ isHackNight: link?.name == '1vu13b' })
     } catch (err) {
       err.statusCode = 503
       throw err
@@ -45,7 +45,7 @@ const findOrCreateMeeting = async (queryID) => {
     fields.hostJoinURL = zoomMeeting.start_url
     fields.public = false // hard coding this b/c scheduled meetings aren't shown on the public list atm
     fields.hostKey = zoomMeeting.hostKey
-    if (link.creatorSlackID && link.id != '1vu13b') { // disable hack night
+    if (link.creatorSlackID && link.name != '1vu13b') { // disable hack night
       fields.creatorSlackID = link.creatorSlackID
 
       // if it was a scheduled link with a creator, send a DM
