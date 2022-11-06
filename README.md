@@ -1,7 +1,5 @@
 # `/z` (Slash Z)
 
-_⚠️ GitHub & Heroku have turned off their integration while investigating a [breach](https://github.blog/2022-04-15-security-alert-stolen-oauth-user-tokens/), so changes will not automatically deploy after pushing to `main`. If you have access to do so, please [push your changes to the `main` branch of the Heroku git remote](https://devcenter.heroku.com/articles/git) once your PR is merged. Otherwise, please mention it in the PR and assign [@maxwofford](https://github.com/maxwofford) or [@sampoder](https://github.com/sampoder) for review._
-
 [<img src="https://cloud-mii3ocl31-hack-club-bot.vercel.app/3untitled_artwork.jpg" width="400" align="right" alt="dinosaur chilling on a Zoom call with friends">](https://cloud-av0cos2o5-hack-club-bot.vercel.app/1untitled_artwork_2.mp4)
 
 
