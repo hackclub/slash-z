@@ -79,7 +79,9 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
           co_host: true,
           polling: true,
           closed_caption: true,
-          ...(() => isHackNight ? hackNightSettings : {})
+          ...(
+            (() => (isHackNight ? hackNightSettings : {}))()
+          )
         },
         recording: {
           local_recording: true,
