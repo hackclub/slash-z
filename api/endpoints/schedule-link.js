@@ -20,6 +20,11 @@ export default async (req, res) => {
       res.redirect(`https://slack.com/oauth/v2/authorize?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&user_scope=identify&client_id=2210535565.1711449950551&state=${stateString}`)
     }
     
+    if (query.id === "5s7xrr") { 
+      // Special case for George Hotz AMA, redirect to another Zoom link
+      res.redirect('https://hack.af/geohot-zoom')
+    }
+    
     const airtableMeeting = await findOrCreateMeeting(query.id)
     if (query.phone) {
       res.redirect('/phone.html?meetingID='+airtableMeeting.zoomID)
