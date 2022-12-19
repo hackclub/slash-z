@@ -1,5 +1,6 @@
 import './env.js'
 import './jobs/index.js'
+import { setBookmarkTitle } from './api/hack-night.js'
 import transcript from './api/transcript.js'
 
 import express from 'express'
@@ -26,3 +27,7 @@ const port = process.env.PORT || 0
 const listener = app.listen(port, () => {
   console.log(transcript('startup', {port: listener.address().port}))
 })
+
+setInterval(() => {
+  setBookmarkTitle();
+}, 1000 * 60) // update the hack night bookmark every minute with the correct url
