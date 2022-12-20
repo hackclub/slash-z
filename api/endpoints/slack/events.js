@@ -1,5 +1,7 @@
+import fetch from "node-fetch"
 import ensureSlackAuthenticated from "../../ensure-slack-authenticated.js"
 import slackAppHomeOpened from '../../slack-app-home-opened.js'
+import hackAfLinkSent from '../../hack-af-link-sent.js'
 
 export default async (req, res) => {
   return await ensureSlackAuthenticated(req, res, async () => {
@@ -19,8 +21,11 @@ export default async (req, res) => {
             console.log(`False alarm, this user is opening the '${req.body.event.tab}' tab. I'm ignoring it.`)
           }
           break
+        case 'link_shared':
+          await hackAfLinkSent(req.body.event)
+          break;
         default:
-          throw new Error(`Unsupported slack event: '${req.body.type}'`)
+          throw new Error(`Unsupported slack event: '${req.body.event.type}'`)
       }
     }
   })
