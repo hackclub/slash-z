@@ -169,7 +169,7 @@ export default async (req, res) => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `You find a hastily scribbled note on the ground. You find the numbers *${meeting.hostKey}* you can use to <https://support.zoom.us/hc/en-us/articles/115001315866-Host-Key-Control-For-Zoom-Rooms|make yourself the host> of the *${meeting.displayName}*.`
+          text: `You find a hastily scribbled note on the ground. You find the numbers *${meeting.hostKey}* you can use to <https://support.zoom.us/hc/en-us/articles/205172555-Using-your-host-key#h_8b2de46c-afc6-44ff-a729-eaba6fb49bfa|make yourself the host> of the *${meeting.displayName}*.`
         }
       }]
     })
