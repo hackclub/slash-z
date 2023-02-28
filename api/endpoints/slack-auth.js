@@ -13,6 +13,8 @@ export default async (req, res) => {
                       `&client_id=${process.env.SLACK_CLIENT_ID}` +
                       `&client_secret=${process.env.SLACK_CLIENT_SECRET}` +
                       `&redirect_uri=${encodeURIComponent('https://hack.af/z/slack-auth')}`
+
+  console.log({code, state, tokenUrl})
   
   if (meetingID === "1vu13b") { // Hack Night!
     const slackData = await fetch(tokenUrl, {method: 'post'}).then(r => r.json())
