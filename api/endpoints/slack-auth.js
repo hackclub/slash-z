@@ -4,9 +4,13 @@ import findOrCreateMeeting from "../find-or-create-meeting.js"
 
 export default async (req, res) => {
   const {code, state: recordIDData} = req.query
+
+  console.log({code, recordIDData})
   
   const {userID, meetingID} = JSON.parse(Buffer.from(decodeURIComponent(recordIDData), "base64").toString())
-  
+
+  console.log({code, recordIDData, userID, meetingID})
+
   // Generate the token request
   const tokenUrl = 'https://slack.com/api/oauth.v2.access' +
                       `?code=${code}` +
