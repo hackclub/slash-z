@@ -22,6 +22,7 @@ export default async (req, res) => {
   
   if (meetingID === "1vu13b") { // Hack Night!
     const slackData = await fetch(tokenUrl, {method: 'post'}).then(r => r.json())
+    console.log(slackData)
     
     // Check if the authed user actually exists
     if (!slackData?.authed_user?.id) { // Instead of checking null, check any falsy value, such as undefined
