@@ -14,7 +14,7 @@ export default async (req, res) => {
     console.log({state})
     const stateString = encodeURIComponent(Buffer.from(JSON.stringify(state), "utf8").toString("base64"))
     
-    const authUrl = `https://js-slash-z.hackclub.com/auth-start.html?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&user_scope=identify&client_id=2210535565.1711449950551&state=${stateString}`
+    const authUrl = `https://js-slash-z.hackclub.com/auth-start.html?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&user_scope=identify&client_id=${process.env.SLACK_CLIENT_ID}&state=${stateString}`
     return res.json({
       error: 'AUTH',
       authUrl
