@@ -18,7 +18,7 @@ export default async (req, res) => {
       
       const redirectUrl = 'https://hack.af/z/slack-auth'
       // Redirect to Slack Auth specifying that it's /z
-      return res.redirect(`https://slack.com/oauth/v2/authorize?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&user_scope=identify&client_id=2210535565.1711449950551&state=${stateString}`)
+      return res.redirect(`https://slack.com/oauth/v2/authorize?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&user_scope=identify&client_id=${process.env.SLACK_CLIENT_ID}&state=${stateString}`)
       // Return to prevent creating a meeting if it's not necessary
     }
     
