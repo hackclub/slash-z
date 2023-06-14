@@ -40,7 +40,7 @@ export default async (req, res) => {
 
     switch (req.body.event) {
       case 'meeting.ended':
-        await Prisma.create('customLogs', { message: 'zoom_end_meeting_webhook', zoomCallId })
+        await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId })
         console.log('Attempting to close call w/ ID of', zoomCallID)
         return await closeZoomCall(zoomCallID, false, true)
         break

@@ -49,7 +49,7 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
       path: `meetings/${meeting.zoomID}/status`,
       body: { action: "end" },
     });
-    await Prisma.create('customLogs', { message: `slash_z_ended_call_${metrics.total_records}_participants`, zoomCallId: meeting.zoomID })
+    await Prisma.create('customLogs', { text: `slash_z_ended_call_${metrics.total_records}_participants`, zoomCallId: meeting.zoomID })
   }
   await zoom.patch({
     path: `meetings/${meeting.zoomID}`,

@@ -36,7 +36,7 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
   if (!host) {
     console.log("No free hosts! I'm going to try closing stale calls");
     const closedCalls = await closeStaleCalls({ creatorSlackID });
-    await Prisma.create('customLogs', { message: `${closedCalls.length}_stale_calls_closed_due_to_no_free_hosts`, zoomCallId: closedCalls.toString() })
+    await Prisma.create('customLogs', { text: `${closedCalls.length}_stale_calls_closed_due_to_no_free_hosts`, zoomCallId: closedCalls.toString() })
     if (closedCalls.length > 0) {
       host = await availableHost();
     }
