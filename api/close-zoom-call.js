@@ -18,10 +18,18 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
   const metrics = await zoom.get({
     path: `metrics/meetings/${meeting.zoomID}/participants`,
   });
-  
-  if(!metrics || !Object.keys(metrics).includes("total_records")){
-    await Prisma.create('customLogs', { text: `metrics_not_definded`, zoomCallId: meeting.zoomID })
+
+  if(!metrics){
+    await Prisma.create('customLogs', { text: `metrics_not_defined`, zoomCallId: meeting.zoomID })
     return null;
+  }
+  
+  // 400/404's denote meetings that do not exist.  We need to clean them up on our side.
+  if (metrics.http_code == 400 || metrics.http_code == 404) {
+    
+    await Prisma.create('customLogs', { text: `metrics_meeting_doesnt_exist`, zoomCallId: meeting.zoomID })
+    await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
+    return null;    
   }
 
   if (!forceClose && metrics && metrics.total_records > 0) {
