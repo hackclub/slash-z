@@ -18,6 +18,10 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
   const metrics = await zoom.get({
     path: `metrics/meetings/${meeting.zoomID}/participants`,
   });
+  
+  if(!metrics){
+    await Prisma.create('customLogs', { text: `metrics_not_definded`, zoomCallId: meeting.zoomID })
+  }
 
   if (!forceClose && metrics && metrics.total_records > 0) {
     console.log(
