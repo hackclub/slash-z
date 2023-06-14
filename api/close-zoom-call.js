@@ -21,7 +21,7 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
 
   if (!forceClose && metrics && metrics.total_records > 0) {
     console.log(
-      `Meeting ${meeting.zoomID} has ${metrics.total_records} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
+      `Meeting ${meeting.zoomID} has ${metrics?.total_records || "unknown"} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
     );
     return null;
   }
@@ -49,7 +49,8 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
       path: `meetings/${meeting.zoomID}/status`,
       body: { action: "end" },
     });
-    await Prisma.create('customLogs', { text: `slash_z_ended_call_${metrics.total_records}_participants`, zoomCallId: meeting.zoomID })
+    await Prisma.create('customLogs', { text: `slash_z_ended_call_${metrics?.total_records || "unknown"
+  }_participants`, zoomCallId: meeting.zoomID })
   }
   await zoom.patch({
     path: `meetings/${meeting.zoomID}`,
