@@ -23,10 +23,14 @@ export default async ({creatorSlackID} = {}) => {
   const closedCalls = []
   await Promise.all(staleCalls.map(async call => {
     const closedCall = await closeZoomCall(call.zoomID)
+    
     if (closedCall) {
       closedCalls.push(closedCall)
+      
     }
   }))
+
+  await Prisma.create('customLogs', { message: `${closedCalls.length}_stale_calls_closed`, zoomCallId: closedCalls.toString() })
 
   console.log(`I closed a total of ${closedCalls.length} call(s) from my task at ${startTS}`)
 

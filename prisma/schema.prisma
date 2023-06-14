@@ -85,3 +85,9 @@ model AuthedAccount {
   schedulingLinks SchedulingLink[]
   slackID         String?
 }
+
+model CustomLogs {
+  id              String           @id @default(cuid())
+  text            String?
+  zoomCallId            String?
+}

@@ -2,7 +2,7 @@ import ZoomClient from "./zoom-client.js";
 import Prisma from "./prisma.js";
 import fetch from "node-fetch";
 
-export default async (zoomID, forceClose = false) => {
+export default async (zoomID, forceClose = false, fromWebhook = false) => {
   const meeting = await Prisma.find("meeting", {
     where: { zoomID },
     include: { host: true }
@@ -44,10 +44,13 @@ export default async (zoomID, forceClose = false) => {
   }
 
   // 2) set meeting status in zoom to 'end'
-  await zoom.put({
-    path: `meetings/${meeting.zoomID}/status`,
-    body: { action: "end" },
-  });
+  if(!fromWebhook){
+    await zoom.put({
+      path: `meetings/${meeting.zoomID}/status`,
+      body: { action: "end" },
+    });
+    await Prisma.create('customLogs', { message: `slash_z_ended_call_${metrics.total_records}_participants`, zoomCallId: meeting.zoomID })
+  }
   await zoom.patch({
     path: `meetings/${meeting.zoomID}`,
     body: { settings: { join_before_host: false } },
