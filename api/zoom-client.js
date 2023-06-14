@@ -43,16 +43,20 @@ export default class ZoomClient {
         ...opts.headers
       },
       body: JSON.stringify(opts.body)
-    }).then(r => {
+    }).then(async r => {
       // Zoom sometimes responds with 204 for no content.
       // We don't want to try parsing JSON for this, because there is no JSON to parse
       console.log({response: r.ok})
       if (r.ok && r.status != 204) {
-        return r.json()
+        payload = r.json()
+        payload.http_code = r.status
+        return payload
       } else if (r.status == 204) {
-        return {}
+        return {http_code:r.status}
       } else {
-        return r.text().then(text => {throw Error(text)})
+        text = await r.text()
+        console.error(text)
+        return {http_code:r.status, text:text}
       }
     }).catch(err => {
       console.error(err)
