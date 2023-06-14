@@ -11,6 +11,10 @@ export default async (req, res) => {
   }
 
   try {
+
+    if (query.id === "rx0fbo") {
+      return res.redirect(`https://hackclub.zoom.us/j/84489216040?pwd=UXNNNTJxQjV5dEdqTVNzbkE0RlpTZz09`)
+    }
     
     if (query.id === "1vu13b" && query.key !== currentTimeHash()) { // Special case for Hack Night
       const state = { meetingID: query.id }
