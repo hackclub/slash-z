@@ -54,9 +54,7 @@ export default class ZoomClient {
       } else if (r.status == 204) {
         return {http_code:r.status}
       } else {
-        text = await r.text()
-        console.error(text)
-        return {http_code:r.status, text:text}
+        return {http_code:r.status}
       }
     }).catch(err => {
       console.error(err)
