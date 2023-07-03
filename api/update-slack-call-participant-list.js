@@ -28,7 +28,7 @@ export default async (addOrRemove, callID, zoomParticipant) => {
     method: 'post',
     headers: {
       'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json; charset=utf-8'
     },
     body: JSON.stringify({
       id: callID,
