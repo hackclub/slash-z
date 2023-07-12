@@ -23,7 +23,7 @@ const loadTranscript = () => {
 
   try {
     const doc = yaml.load(
-      readFileSync(path.join(__dirname, '..', 'lib', 'transcript.yml'), 'utf8')
+      readFileSync(path.join(__dirname, '..', 'lib', 'transcript.yml').slice(1), 'utf8')
     )
     return doc
   } catch (e) {
