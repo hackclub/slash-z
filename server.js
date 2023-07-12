@@ -25,7 +25,7 @@ app.use(bugsnag().errorHandler)
 
 const port = process.env.PORT || 0
 const listener = app.listen(port, () => {
-  console.log(transcript('startup', {port: listener.address().port}))
+  // console.log(transcript('startup', {port: listener.address().port}))
 })
 
 setInterval(() => {
