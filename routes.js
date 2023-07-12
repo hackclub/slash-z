@@ -1,6 +1,6 @@
 import { resolve, relative, extname, basename, dirname } from 'path'
 import { readdir } from 'fs/promises'
-import { pathToFileURL } from "url";
+
 import recordError from './api/record-error.js'
 
 async function getFiles(dir) {
@@ -35,7 +35,7 @@ export default async (app) => {
         routePath = `${routePath}/${basename(file, extname(file))}`
       }
 
-      const route = (await import(pathToFileURL(file))).default // just to test we can load the file
+      const route = (await import(file)).default // just to test we can load the file
 
       app.all('/' + routePath, async (req, res) => {
         try {
