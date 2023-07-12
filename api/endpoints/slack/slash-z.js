@@ -50,7 +50,7 @@ export default async (req, res) => {
     },
     body: JSON.stringify({
       response_type: 'in_channel',
-      text: `<@${req.body.user_id}> started a new Zoom Pro meeting with \`/z\``,
+      text: 'A new Zoom Pro meeting was started with /z',
     })
   })
 
