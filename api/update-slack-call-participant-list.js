@@ -14,7 +14,12 @@ async function userToAvatar({name, email}) {
   })
 }
 
-export default async (addOrRemove, callID, zoomParticipant) => {
+export default async (addOrRemove, slackCallId, zoomParticipant) => {
+  if (slackCallId == null) {
+    console.log("Not a Slack-originated zoom.  No need to update Slack call status")
+    return null
+  }
+    
   const { user_name: name, email, user_id: zoomID } = zoomParticipant
   const user = { }
   // Why uniquify by name instead of zoomID? the ID zoom gives us changes per join for users under a non-hackclub account.
@@ -31,7 +36,7 @@ export default async (addOrRemove, callID, zoomParticipant) => {
       'Content-Type': 'application/json; charset=utf-8'
     },
     body: JSON.stringify({
-      id: callID,
+      id: slackCallId,
       users: [user]
     })
   }).then(r => r.json())
