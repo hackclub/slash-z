@@ -1,5 +1,6 @@
 import { resolve, relative, extname, basename, dirname } from 'path'
 import { readdir } from 'fs/promises'
+import os from "os";
 import { pathToFileURL } from "url";
 import recordError from './api/record-error.js'
 
@@ -34,8 +35,9 @@ export default async (app) => {
       if (basename(file, extname(file)) != 'index') {
         routePath = `${routePath}/${basename(file, extname(file))}`
       }
-
-      const route = (await import(pathToFileURL(file))).default // just to test we can load the file
+      
+      const fileUri = os.platform() === "win32" ? pathToFileURL(file) : file;
+      const route = (await import(fileUri)).default // just to test we can load the file
 
       app.all('/' + routePath, async (req, res) => {
         try {

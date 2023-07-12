@@ -1,6 +1,7 @@
 import yaml from 'js-yaml'
 import { readFileSync } from 'fs'
 import path from 'path'
+import os from "os"
 
 const pluralize = (word, count) => {
   // want to use this method? make sure to add your word to transcript.yml under 'plurals'
@@ -19,11 +20,15 @@ const sample = (arr) => {
 
 const loadTranscript = () => {
   const moduleURL = new URL(import.meta.url);
-  const __dirname = decodeURIComponent(path.dirname(moduleURL.pathname));
-
+  
+  let __dirname = decodeURIComponent(path.dirname(moduleURL.pathname));
+  __dirname = os.platform() == "win32" ? __dirname.slice(1) : __dirname
+  
+  console.log("Dirname = ", __dirname);
+  
   try {
     const doc = yaml.load(
-      readFileSync(path.join(__dirname, '..', 'lib', 'transcript.yml').slice(1), 'utf8')
+      readFileSync(path.join(__dirname, '..', 'lib', 'transcript.yml'), 'utf8')
     )
     return doc
   } catch (e) {
