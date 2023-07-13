@@ -35,13 +35,15 @@ export default async (app) => {
       if (basename(file, extname(file)) != 'index') {
         routePath = `${routePath}/${basename(file, extname(file))}`
       }
+
+      routePath = os.platform() === "win32" ? routePath.split("\\").slice(7).join("/") : routePath;
       
       const fileUri = os.platform() === "win32" ? pathToFileURL(file) : file;
       const route = (await import(fileUri)).default // just to test we can load the file
 
       app.all('/' + routePath, async (req, res) => {
         try {
-          await route(req, res)
+            await route(req, res)
         } catch (err) {
           console.error(err)
           recordError(err)
