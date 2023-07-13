@@ -23,8 +23,6 @@ const loadTranscript = () => {
   let __dirname = decodeURIComponent(path.dirname(moduleURL.pathname));
   __dirname = os.platform() == "win32" ? __dirname.slice(1) : __dirname
   
-  console.log("Dirname = ", __dirname);
-  
   try {
     const doc = yaml.load(
       readFileSync(path.join(__dirname, '..', 'lib', 'transcript.yml'), 'utf8')
