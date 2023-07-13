@@ -20,11 +20,8 @@ const sample = (arr) => {
 
 const loadTranscript = () => {
   const moduleURL = new URL(import.meta.url);
-  
   let __dirname = decodeURIComponent(path.dirname(moduleURL.pathname));
   __dirname = os.platform() == "win32" ? __dirname.slice(1) : __dirname
-  
-  console.log("Dirname = ", __dirname);
   
   try {
     const doc = yaml.load(
