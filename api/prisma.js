@@ -46,7 +46,7 @@ const find = async (table, options) => {
     include = options.include
   }
   try {
-    const result = await prisma[table].findMany({ where, orderBy, include })
+    const result = await prisma[table].findFirst({ where, orderBy, include })
     console.log(`[${ts}] Found record with ID '${result.id}'`)
     return result
   } catch (err) {

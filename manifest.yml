@@ -14,7 +14,7 @@ features:
     display_name: slash-z
     always_online: true
   slash_commands:
-    - command: /z-staging
+    - command: /z
       url: https://js-slash-z.hackclub.com/api/endpoints/slack
       description: Start a Zoom Pro meeting
       should_escape: true

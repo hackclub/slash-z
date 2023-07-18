@@ -11,13 +11,13 @@ export default async (req, res) => {
 
   console.log({code, recordIDData, userID, meetingID})
 
-  const tokenRedirectUri = process.env.NODE_ENV === "production" ? "https://hack.af/z/slack-auth" : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth";
+  // const tokenRedirectUri = process.env.NODE_ENV === "production" ? "https://hack.af/z/slack-auth" : "http://localhost:58941/api/endpoints/slack-auth";
   // Generate the token request
   const tokenUrl = 'https://slack.com/api/oauth.v2.access' +
                       `?code=${code}` +
                       `&client_id=${process.env.SLACK_CLIENT_ID}` +
                       `&client_secret=${process.env.SLACK_CLIENT_SECRET}` +
-                      `&redirect_uri=${encodeURIComponent(tokenRedirectUri)}`
+                      `&redirect_uri=${encodeURIComponent('https://hack.af/z/slack-auth')}`
 
   console.log({code, recordIDData, userID, meetingID, tokenUrl})
   
