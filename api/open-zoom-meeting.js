@@ -58,7 +58,7 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
     // get the user's zoom id
     const hostZoom = await zoom.get({ path: `users/${host.email}` });
     host = await Prisma.patch("host", host.id, {
-      where: { zoomID: hostZoom.id },
+      zoomID: hostZoom.id
     });
 
     // (max@maxwofford.com) This looks super redundant. Why are we also setting
