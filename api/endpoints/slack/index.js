@@ -10,10 +10,10 @@ export default async (req, res) => {
     res.status(200).send()
 
     switch(req.body.command) {
-      case isProd ? '/z' : '/staging-z':
+      case isProd ? '/z' : '/test-z':
         await slashZ(req, res)
         break
-      case isProd ? '/z-rooms' : '/staging-z-rooms':
+      case isProd ? '/z-rooms' : '/test-z-rooms':
         await slashZRooms(req, res)
         break
       default:

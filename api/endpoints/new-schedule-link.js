@@ -23,7 +23,7 @@ export default async (req, res) => {
   }
 
   // should open a meeting using
-  // <staging-app-url>/api/endpoints/schedule-link?id=9whz6
+  // <staging-app-url>/api/endpoints/schedule-link?id=<link-id>
 
   // let's spice this name creation up in the future too
   const id = Math.random().toString(36).substring(7)
