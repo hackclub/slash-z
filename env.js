@@ -1,6 +1,5 @@
 import dotenv from 'dotenv'
-import isProd from './isprod.js'
 
-if (isProd) {
+if (process.env.NODE_ENV === "production") {
   dotenv.config()
 }
