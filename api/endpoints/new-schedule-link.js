@@ -1,4 +1,5 @@
 import Prisma from "../prisma.js"
+import isProd from "../../isprod.js"
 
 export default async (req, res) => {
   console.log({name: req.query.id})
@@ -8,7 +9,7 @@ export default async (req, res) => {
   }
   if (!user.slackID) {
     // No slack ID for this user? they're unauthenticated! Let's return an auth challenge
-    const redirectUrl = process.env.NODE_ENV === "production" ? 'https://hack.af/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
+    const redirectUrl = isProd ? 'https://hack.af/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
     
     const state = { userID: user.id }
     console.log({state})
@@ -29,7 +30,7 @@ export default async (req, res) => {
   res.json({id,
     videoUri: `https://hack.af/z-join?id=${id}`,
     moreUri: `https://hack.af/z-phone?id=${id}`,
-    stagingVideoUri: process.env.NODE_ENV === "staging" ? `https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/schedule-link?id=${id}` : null 
+    stagingVideoUri: !isProd ? `https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/schedule-link?id=${id}` : null 
   })
 
   Prisma.create('schedulingLink', {

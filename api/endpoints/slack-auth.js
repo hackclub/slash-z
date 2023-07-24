@@ -1,6 +1,7 @@
 import Prisma from '../prisma.js'
 import fetch from 'node-fetch'
 import findOrCreateMeeting from "../find-or-create-meeting.js"
+import isProd from '../../isprod.js'
 
 export default async (req, res) => {
   const {code, state: recordIDData} = req.query
@@ -11,7 +12,7 @@ export default async (req, res) => {
 
   console.log({code, recordIDData, userID, meetingID})
 
-  const tokenRedirectUri = process.env.NODE_ENV === "production" ? "https://hack.af/z/slack-auth" : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth";
+  const tokenRedirectUri = isProd ? "https://hack.af/z/slack-auth" : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth";
   // Generate the token request
   const tokenUrl = 'https://slack.com/api/oauth.v2.access' +
                       `?code=${code}` +

@@ -1,5 +1,6 @@
 import findOrCreateMeeting from "../find-or-create-meeting.js"
 import { currentTimeHash } from "../time-hash.js"
+import isProd from "../../isprod.js"
 
 export default async (req, res) => {
   const { query } = req
@@ -20,7 +21,7 @@ export default async (req, res) => {
       const state = { meetingID: query.id }
       const stateString = encodeURIComponent(Buffer.from(JSON.stringify(state), "utf8").toString("base64"))
       
-      const redirectUrl = process.env.NODE_ENV === "production" ? 'https://hack.af/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
+      const redirectUrl = isProd ? 'https://hack.af/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
       // Redirect to Slack Auth specifying that it's /z
       return res.redirect(`https://slack.com/oauth/v2/authorize?response_type=code&redirect_uri=${encodeURIComponent(redirectUrl)}&user_scope=identify&client_id=${process.env.SLACK_CLIENT_ID}&state=${stateString}`)
       // Return to prevent creating a meeting if it's not necessary
