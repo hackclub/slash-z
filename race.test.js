@@ -13,10 +13,15 @@ async function openParallelCalls(n, id) {
     const results = await Promise.all(responses.map(res => res.text()));
 
     let firstResult;
+    // remains true if all zoom call links match
     let allMatch = true;
     results.forEach((result, idx) => {
+
+        // find the index of the meta containing the zoom url
         const matchZoom = new RegExp(/<meta property="og:url"+/);
         const _result = matchZoom.exec(result);
+
+        // get the meta tag with the zoom call link
         const zoomurl = result.slice(_result.index, _result.index + 110);
         console.log(zoomurl);
         if (idx === 0) firstResult = zoomurl;
@@ -27,6 +32,7 @@ async function openParallelCalls(n, id) {
     return allMatch;
 }
 
+// checks for the number of open meetings
 async function getOpenMeetings() {
     const omReq = await fetch(`${baseUrl}/api/endpoints/stats`);
     const omRes = await omReq.json();
