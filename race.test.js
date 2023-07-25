@@ -1,6 +1,13 @@
 
 const baseUrl = "https://js-slash-z.herokuapp.com";
 
+async function generateNewMeeting() {
+    const response = await fetch(`${baseUrl}/api/endpoints/new-schedule-link`);
+    const result = await response.json();
+
+    return result.id;
+}
+
 // sends n parallel requests to schedule link with id
 async function openParallelCalls(n, id) {
     const requests = [];
@@ -12,24 +19,23 @@ async function openParallelCalls(n, id) {
     const responses = await Promise.all(requests);
     const results = await Promise.all(responses.map(res => res.text()));
 
-    let firstResult;
-    // remains true if all zoom call links match
-    let allMatch = true;
-    results.forEach((result, idx) => {
-
+    const zoomUrls = results.map(result => {
         // find the index of the meta containing the zoom url
         const matchZoom = new RegExp(/<meta property="og:url"+/);
         const _result = matchZoom.exec(result);
 
         // get the meta tag with the zoom call link
         const zoomurl = result.slice(_result.index, _result.index + 110);
-        console.log(zoomurl);
-        if (idx === 0) firstResult = zoomurl;
-        if (zoomurl !== firstResult) allMatch = false;
+        console.log("Zoom Meta = ", zoomurl);
         console.log("-----------------------");
-    })
-    console.log(`All zoom calls ${allMatch ? "do" : "don't"} match`);
-    return allMatch;
+
+        return zoomurl;
+    });
+
+    const urlSet = new Set(zoomUrls);
+    console.log("Unique calls = ", urlSet.size);
+
+    return  urlSet.size === 1 ? true : false; 
 }
 
 // checks for the number of open meetings
@@ -37,11 +43,12 @@ async function getOpenMeetings() {
     const omReq = await fetch(`${baseUrl}/api/endpoints/stats`);
     const omRes = await omReq.json();
 
-    console.log("open calls = ", omRes.hosts.open);
+    console.log("Open calls = ", omRes.hosts.open);
 }
-// sendParallelRequests(8, "cdrq1").then(() => getOpenMeetings())
 
 test("Concurrent join requests does not lead to different calls", async () => {
-    const sameCalls = await openParallelCalls(2, "cdrq1");
+    const meetingName = await generateNewMeeting();
+    const sameCalls = await openParallelCalls(2, meetingName);
+
     expect(sameCalls).toBe(true);
 });
