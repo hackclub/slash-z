@@ -1,3 +1,4 @@
+.env_prod
 .vscode
 .vercel
 node_modules

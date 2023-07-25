@@ -1,0 +1,280 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "graphite",
+        "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+          },
+          "hide": false,
+          "refCount": 0,
+          "refId": "A",
+          "target": "alias(stats.gauges.environment.slashz.hosts.total, 'total')"
+        },
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+          },
+          "hide": false,
+          "refCount": 0,
+          "refId": "C",
+          "target": "alias(stats.gauges.environment.slashz.hosts.open, 'open')"
+        },
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+          },
+          "hide": false,
+          "refCount": 0,
+          "refId": "D",
+          "target": "alias(diffSeries(#A, #C), 'used')",
+          "targetFull": "alias(diffSeries(alias(stats.gauges.environment.slashz.hosts.total, 'total'), alias(stats.gauges.environment.slashz.hosts.open, 'open')), 'used')"
+        }
+      ],
+      "title": "Zoom License Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "graphite",
+        "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+          },
+          "hide": true,
+          "refCount": 0,
+          "refId": "A",
+          "target": "alias(stats.gauges.environment.slashz.hosts.total, 'total')"
+        },
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+          },
+          "hide": true,
+          "refCount": 0,
+          "refId": "C",
+          "target": "alias(stats.gauges.environment.slashz.hosts.open, 'open')"
+        },
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+          },
+          "hide": true,
+          "refCount": 0,
+          "refId": "D",
+          "target": "alias(diffSeries(#A, #C), 'used')",
+          "targetFull": "alias(diffSeries(alias(stats.gauges.environment.slashz.hosts.total, 'total'), alias(stats.gauges.environment.slashz.hosts.open, 'open')), 'used')"
+        },
+        {
+          "datasource": {
+            "type": "graphite",
+            "uid": "e332d031-491c-40ff-bdf0-c4ee3b48181a"
+          },
+          "hide": false,
+          "refCount": 0,
+          "refId": "B",
+          "target": "alias(asPercent(#D, #A), 'zoom license utilization %')",
+          "targetFull": "alias(asPercent(alias(diffSeries(alias(stats.gauges.environment.slashz.hosts.total, 'total'), alias(stats.gauges.environment.slashz.hosts.open, 'open')), 'used'), alias(stats.gauges.environment.slashz.hosts.total, 'total')), 'zoom license utilization %')"
+        }
+      ],
+      "title": "Zoom License Utilization",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Slash-Z",
+  "uid": "f3869cb3-1e23-4ff2-84b1-74f9d10cf535",
+  "version": 7,
+  "weekStart": ""
+}
