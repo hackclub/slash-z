@@ -9,7 +9,7 @@ async function generateNewMeeting() {
 }
 
 // sends n parallel requests to schedule link with id
-// returns the number of zoom calls that were started
+// returns the number of unique zoom calls that were started
 async function openParallelCalls(n, id) {
     const requests = [];
     for (let i = 0; i < n; i++) {
@@ -49,7 +49,7 @@ async function getOpenMeetings() {
 
 test("Concurrent join requests does not lead to different calls", async () => {
     const meetingName = await generateNewMeeting();
-    const sameCalls = await openParallelCalls(2, meetingName);
+    const numCalls = await openParallelCalls(2, meetingName);
 
-    expect(sameCalls).toBe(1);
+    expect(numCalls).toBe(1);
 }, 6000);
