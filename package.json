@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon",
     "start": "npx prisma generate && node server.js",
-    "fmt": "npx prettier"
+    "fmt": "npx prettier",
+    "test": "jest"
   },
   "dependencies": {
     "@bugsnag/js": "^7.11.0",
@@ -26,5 +27,8 @@
     "nodemon": "^2.0.7",
     "prisma": "3.3.0",
     "zoomus": "^0.1.4"
+  },
+  "devDependencies": {
+    "jest": "^29.6.1"
   }
 }
