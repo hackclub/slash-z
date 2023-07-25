@@ -269,8 +269,8 @@
       {
         "current": {
           "selected": true,
-          "text": "staging",
-          "value": "staging"
+          "text": "production",
+          "value": "production"
         },
         "hide": 0,
         "includeAll": false,
@@ -279,12 +279,12 @@
         "name": "env",
         "options": [
           {
-            "selected": true,
+            "selected": false,
             "text": "staging",
             "value": "staging"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "production",
             "value": "production"
           }
@@ -297,7 +297,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
