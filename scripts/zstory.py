@@ -37,7 +37,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("-s", "--sched")
 parser.add_argument("-z", "--zoom")
 parser.add_argument("--start", type=int)
-parser.add_argument("--end", type=int, default=1)
+parser.add_argument("--end", type=int)
 
 # parse the arguments!
 args = parser.parse_args()
@@ -69,14 +69,14 @@ def trace_events(cursor: Cursor, meetingId: str):
         
         print(f"{(time - start_time).seconds:5}s later | {(participant['user_name'] if participant else ''):15} | 🫡{event_type:6}")
 
-def filter_by_date(cursor: Cursor, start: int, end: int):
+def filter_by_date(cursor: Cursor, start: int, end: int | None):
     query_no_end = 'SELECT ("zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "startedAt">=%s ORDER BY "startedAt" ASC' 
     query_with_end = 'SELECT ("zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC'
 
-    if end == 1:
-        cursor.execute(query_no_end, (datetime.fromtimestamp(start),))
-    else:
+    if end is not None:
         cursor.execute(query_with_end, (datetime.fromtimestamp(start), datetime.fromtimestamp(end)))
+    else:
+        cursor.execute(query_no_end, (datetime.fromtimestamp(start),))
 
     meetings = cursor.fetchall()
     print(meetings)
@@ -96,7 +96,7 @@ with psycopg.connect(config("DATABASE_URL")) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
 
-        if args.start and args.end:
+        if args.start:
             filter_by_date(cursor, args.start, args.end)
             quit()
 
