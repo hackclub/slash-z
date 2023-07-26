@@ -1,5 +1,6 @@
 import argparse
 import psycopg
+from psycopg.cursor import Cursor
 import json
 from datetime import datetime
 from decouple import config
@@ -34,17 +35,57 @@ parser = argparse.ArgumentParser(
 
 # the default argument we want to get is the scheduling link name
 parser.add_argument("meetid")
+parser.add_argument("-s", "--slack", action="store_true")
 
 # parse the arguments!
 args = parser.parse_args()
 
 print(f"Tracing meeting {args.meetid}...")
 
+def trace_events(cursor: Cursor, meetingId: str):
+    print("\nEvents...")
+    # query the WebHook events of the meeting
+    cursor.execute('SELECT (timestamp, "rawData") FROM "WebhookEvent" WHERE "meetingId"=%s ORDER BY timestamp ASC', (meetingId, ))
+    events = cursor.fetchall()
+
+    if len(events) == 0:
+        print("No WebhookEvents for this meeting")
+        return
+
+    # will be replaced with the timestamp of the first webhook event
+    start_time = datetime.now() 
+    for item in events:
+        timestamp, event = item[0]
+        event_dict = json.loads(event)
+        event_type = event_dict["event"]
+
+        time = datetime.fromisoformat(timestamp)
+        if event_type == "meeting.started": 
+            print("Start time = ", time)
+            start_time = time
+
+        participant = event_dict["payload"]["object"].get("participant", None)
+        
+        print(f"{(time - start_time).seconds:5}s later | {(participant['user_name'] if participant else ''):15} | 🫡{event_type:6}")
+
 # connect to the database
 with psycopg.connect(config("DATABASE_URL")) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
+        if args.slack:
+            cursor.execute('SELECT id FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,)) # type: ignore
+            meeting = cursor.fetchone()
+            meetingId = meeting[0] if meeting else None
 
+            if meetingId is None: 
+                print(f"Could not find meeting with ID {meetingId}")
+                quit()
+
+            print(f"Zoom started using license {args.meetid}")
+            trace_events(cursor, meetingId) 
+            print(f"Released Zoom license {args.meetid}")
+            quit()
+            
         # get the scheduling link id
         cursor.execute('SELECT id FROM "SchedulingLink" WHERE name=%s', (args.meetid,)) # type: ignore
         schedule = cursor.fetchone()
@@ -67,29 +108,7 @@ with psycopg.connect(config("DATABASE_URL")) as conn:
             print(f"\n Story of meeting ({idx+1}) with ID = ", meetingId)
             print(f"Zoom started using license {zoomId}")
 
-            print("\nEvents...")
-            # query the WebHook events of the meeting
-            cursor.execute('SELECT (timestamp, "rawData") FROM "WebhookEvent" WHERE "meetingId"=%s ORDER BY timestamp ASC', (meetingId, ))
-            events = cursor.fetchall()
+            trace_events(cursor, meetingId) 
 
-            if len(events) == 0:
-                print("No WebhookEvents for this meeting")
-                continue
-
-            # will be replaced with the timestamp of the first webhook event
-            start_time = datetime.now() 
-            for item in events:
-                timestamp, event = item[0]
-                event_dict = json.loads(event)
-                event_type = event_dict["event"]
-
-                time = datetime.fromisoformat(timestamp)
-                if event_type == "meeting.started": 
-                    print("Start time = ", time)
-                    start_time = time
-    
-                participant = event_dict["payload"]["object"].get("participant", None)
-               
-                print(f"{(time - start_time).seconds:5}s later | {(participant['user_name'] if participant else ''):15} | 🫡{event_type:6}")
             print(f"Released Zoom license {zoomId}")
     conn.commit()
