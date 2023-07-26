@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 app.use(responseTime(function (req, res, time) {
-  const stat = (req.method + req.url).toLowerCase()
+  const stat = (req.method + req.url.split('?')[0]).toLowerCase()
     .replace(/[:.]/g, '')
     .replace(/\//g, '_')
   const httpCode = res.statusCode
