@@ -62,7 +62,7 @@ with psycopg.connect(config("DATABASE_URL")) as conn:
         print(f"\n{len(meetings)} meetings found")
         for idx, meeting in enumerate(meetings):
             # zoomId also refers to the zoom license
-            meetingId, zoomId = meeting[0] if meeting else (None, None)
+            meetingId, zoomId = meeting[0] 
 
             print(f"\n Story of meeting ({idx+1}) with ID = ", meetingId)
             print(f"Zoom started using license {zoomId}")
@@ -89,12 +89,7 @@ with psycopg.connect(config("DATABASE_URL")) as conn:
                     start_time = time
     
                 participant = event_dict["payload"]["object"].get("participant", None)
-                """
-                if event_type == "meeting.started" or event_type == "meeting.ended":
-                    print("🫡", event_type)
-                else:
-                    pass
-                """
+               
                 print(f"{(time - start_time).seconds:5}s later | {(participant['user_name'] if participant else ''):15} | 🫡{event_type:6}")
             print(f"Released Zoom license {zoomId}")
     conn.commit()
