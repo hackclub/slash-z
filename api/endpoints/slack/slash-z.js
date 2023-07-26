@@ -5,6 +5,7 @@ import channelIsForbidden from "../../channel-is-forbidden.js"
 import openZoomMeeting from '../../open-zoom-meeting.js'
 import transcript from '../../transcript.js'
 import fetch from 'node-fetch'
+import metrics from '../../../metrics.js'
 
 export default async (req, res) => {
   console.log({
@@ -62,6 +63,7 @@ export default async (req, res) => {
   try {
     meeting = await openZoomMeeting({ creatorSlackID: req.body.user_id })
   } catch (err) {
+    metrics.increment("error.no_hosts_available", 1)
     const errorSlackPost = await fetch(req.body.response_url, {
       method: 'post',
       headers: {
