@@ -87,7 +87,7 @@ def filter_by_date(cursor: Cursor, start: int, end: int):
         
         if meeting[2] is not None:
             time_elapsed = datetime.fromisoformat(meeting[2]) - datetime.fromisoformat(meeting[1])
-            print(f"zoomID: {meeting[0]} | started {meeting[1]} ended {time_elapsed.seconds if time_elapsed else 'Ongoing'}s later ") 
+            print(f"zoomID: {meeting[0]} | started {meeting[1]} ended {time_elapsed.seconds}s later ") 
         else: print(f"zoomID: {meeting[0]} | started {meeting[1]} Ongoing...") 
 
 
