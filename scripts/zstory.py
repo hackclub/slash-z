@@ -33,15 +33,16 @@ parser = argparse.ArgumentParser(
     description="Helps you debug slash-z meetings"
 ) 
 
-# the default argument we want to get is the scheduling link name
-parser.add_argument("-s", "--sched")
-parser.add_argument("-z", "--zoom")
-parser.add_argument("--start", type=int)
-parser.add_argument("--end", type=int)
+subparser = parser.add_subparsers()
 
-# parse the arguments!
-args = parser.parse_args()
+dissector = subparser.add_parser("dissect", description="Dissect slash-z calls in detail")
+dissector.add_argument("meetid", default=None, nargs="*") # argument is zoomID or call link name
+dissector.add_argument("-z", action="store_true") # if present, will return the single zoom call
+dissector.add_argument("--start", type=int) # specifies a starting point of the search
+dissector.add_argument("--end", type=int) # specifies a stopping point
 
+# parse dissector args
+d_args = dissector.parse_args()
 
 def trace_events(cursor: Cursor, meetingId: str):
     print("\nEvents...")
@@ -91,54 +92,63 @@ def filter_by_date(cursor: Cursor, start: int, end: int | None):
         else: print(f"zoomID: {meeting[0]} | started {meeting[1]} Ongoing...") 
 
 
+def dissect_scheduled_meeting(cursor: Cursor, meetid: str):
+    print(f"Tracing meetings with name {d_args.meetid[1]}...")
+    # get the scheduling link id
+    cursor.execute('SELECT id FROM "SchedulingLink" WHERE name=%s', (d_args.meetid[1],)) # type: ignore
+    schedule = cursor.fetchone()
+    scheduling_link_id = schedule[0] if schedule else None
+
+    if scheduling_link_id is None:
+        print(f"Scheduling link with name {d_args.meetid[1]} not found") 
+        quit()
+    
+
+    # query meeting id and zoom license
+    cursor.execute('SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s', (scheduling_link_id,))
+    meetings = cursor.fetchall()
+
+    print(f"\n{len(meetings)} meetings found")
+    for idx, meeting in enumerate(meetings):
+        # zoomId also refers to the zoom license
+        meetingId, zoomId = meeting[0] 
+
+        print(f"\n Story of meeting ({idx+1}) with ID = ", meetingId)
+        print(f"Zoom started using license {zoomId}")
+
+        trace_events(cursor, meetingId) 
+
+        print(f"Released Zoom license {zoomId}")
+
+def dissect_slack_meeting(cursor: Cursor, meetingId: str):
+    cursor.execute('SELECT id FROM "Meeting" WHERE "zoomID"=%s', (d_args.meetid[1],)) # type: ignore
+    meeting = cursor.fetchone()
+    meetingId = meeting[0] if meeting else None
+
+    if meetingId is None: 
+        print(f"Could not find meeting with ID {meetingId}")
+        quit()
+
+    print(f"Zoom started using license {d_args.meetid[1]}")
+    trace_events(cursor, meetingId) 
+    print(f"Released Zoom license {d_args.meetid[1]}")
+
 # connect to the database
 with psycopg.connect(config("DATABASE_URL")) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
 
-        if args.start:
-            filter_by_date(cursor, args.start, args.end)
-            quit()
-
-        if args.zoom:
-            cursor.execute('SELECT id FROM "Meeting" WHERE "zoomID"=%s', (args.zoom,)) # type: ignore
-            meeting = cursor.fetchone()
-            meetingId = meeting[0] if meeting else None
-
-            if meetingId is None: 
-                print(f"Could not find meeting with ID {meetingId}")
+        if len(d_args.meetid) > 1:
+            if d_args.meetid[1] and d_args.z:
+                dissect_slack_meeting(cursor, d_args.meetid[1])
+                quit()
+                
+            if d_args.meetid[1] and not d_args.z:
+                dissect_scheduled_meeting(cursor, d_args.meetid[1])
                 quit()
 
-            print(f"Zoom started using license {args.zoom}")
-            trace_events(cursor, meetingId) 
-            print(f"Released Zoom license {args.zoom}")
+        if d_args.start:
+            filter_by_date(cursor, d_args.start, d_args.end)
             quit()
-            
-        if args.sched:
-            print(f"Tracing meeting {args.sched}...")
-            # get the scheduling link id
-            cursor.execute('SELECT id FROM "SchedulingLink" WHERE name=%s', (args.sched,)) # type: ignore
-            schedule = cursor.fetchone()
-            scheduling_link_id = schedule[0] if schedule else None
 
-            if scheduling_link_id is None:
-                print(f"Scheduling link with name {args.sched} not found") 
-                quit()
-            
-
-            # query meeting id and zoom license
-            cursor.execute('SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s', (scheduling_link_id,))
-            meetings = cursor.fetchall()
-
-            print(f"\n{len(meetings)} meetings found")
-            for idx, meeting in enumerate(meetings):
-                # zoomId also refers to the zoom license
-                meetingId, zoomId = meeting[0] 
-
-                print(f"\n Story of meeting ({idx+1}) with ID = ", meetingId)
-                print(f"Zoom started using license {zoomId}")
-
-                trace_events(cursor, meetingId) 
-
-                print(f"Released Zoom license {zoomId}")
     conn.commit()
