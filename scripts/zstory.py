@@ -115,7 +115,7 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         cursor.execute(queries.get("end"), (scheduling_link_id, datetime.fromtimestamp(start), datetime.fromtimestamp(end)))
     elif start and end is None:
         cursor.execute(queries.get("start"), (scheduling_link_id, datetime.fromtimestamp(start)))
-    else: cursor.execute(queries.get("normal"), (scheduling_link_id))
+    else: cursor.execute(queries.get("normal"), (scheduling_link_id, ))
 
     meetings = cursor.fetchall()
 
