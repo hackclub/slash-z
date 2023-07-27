@@ -92,20 +92,31 @@ def filter_by_date(cursor: Cursor, start: int, end: int | None):
         else: print(f"zoomID: {meeting[0]} | started {meeting[1]} Ongoing...") 
 
 
-def dissect_scheduled_meeting(cursor: Cursor, meetid: str):
-    print(f"Tracing meetings with name {d_args.meetid[1]}...")
+def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
+    print(f"Tracing meetings with name {meetid}...")
+    
     # get the scheduling link id
-    cursor.execute('SELECT id FROM "SchedulingLink" WHERE name=%s', (d_args.meetid[1],)) # type: ignore
+    cursor.execute('SELECT id FROM "SchedulingLink" WHERE name=%s', (meetid, ))
+
     schedule = cursor.fetchone()
     scheduling_link_id = schedule[0] if schedule else None
 
     if scheduling_link_id is None:
-        print(f"Scheduling link with name {d_args.meetid[1]} not found") 
+        print(f"Scheduling link with name {meetid} not found") 
         quit()
     
-
+    queries = {
+        "normal": 'SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s',
+        "start": 'SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
+        "end": 'SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC'
+    }
     # query meeting id and zoom license
-    cursor.execute('SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s', (scheduling_link_id,))
+    if start and end:
+        cursor.execute(queries.get("end"), (scheduling_link_id, datetime.fromtimestamp(start), datetime.fromtimestamp(end)))
+    elif start and end is None:
+        cursor.execute(queries.get("start"), (scheduling_link_id, datetime.fromtimestamp(start)))
+    else: cursor.execute(queries.get("normal"), (scheduling_link_id))
+
     meetings = cursor.fetchall()
 
     print(f"\n{len(meetings)} meetings found")
@@ -138,13 +149,14 @@ with psycopg.connect(config("DATABASE_URL")) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
 
+        # when accessing d_args.meetid we get [dissect, <meetid>]
         if len(d_args.meetid) > 1:
             if d_args.meetid[1] and d_args.z:
                 dissect_slack_meeting(cursor, d_args.meetid[1])
                 quit()
                 
             if d_args.meetid[1] and not d_args.z:
-                dissect_scheduled_meeting(cursor, d_args.meetid[1])
+                dissect_scheduled_meeting(cursor, d_args.meetid[1], d_args.start, d_args.end)
                 quit()
 
         if d_args.start:
