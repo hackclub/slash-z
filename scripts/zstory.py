@@ -80,16 +80,30 @@ def filter_by_date(cursor: Cursor, start: int, end: int | None):
         cursor.execute(query_no_end, (datetime.fromtimestamp(start),))
 
     meetings = cursor.fetchall()
-    print(meetings)
 
     print(f"Found {len(meetings)} meetings")
-    for meeting in meetings:
-        meeting = meeting[0]
+    prev_meeting = ()
+    for idx, meeting in enumerate(meetings):
+        overlap = 0
+
+        zoom_id, started_at, ended_at = meeting[0]
+
+        started_at = datetime.fromisoformat(started_at)
+        ended_at = datetime.fromisoformat(ended_at)
+
+        if len(prev_meeting) > 0:
+            overlap = started_at - prev_meeting[1]
+            overlap = overlap.seconds
+
+        if overlap <= 90 and idx > 0:
+            print(f"\n\033[1;32;40mOverlap with (zoomID: {prev_meeting[0]}) by {overlap}seconds \033[0;0m") 
         
-        if meeting[2] is not None:
-            time_elapsed = datetime.fromisoformat(meeting[2]) - datetime.fromisoformat(meeting[1])
-            print(f"zoomID: {meeting[0]} | started {meeting[1]} ended {time_elapsed.seconds}s later ") 
-        else: print(f"zoomID: {meeting[0]} | started {meeting[1]} Ongoing...") 
+        if ended_at is not None:
+            time_elapsed = ended_at - started_at 
+            print(f"zoomID: {zoom_id} | started {started_at} ended {time_elapsed.seconds}s later ") 
+        else: print(f"zoomID: {zoom_id} | started {ended_at} Ongoing...") 
+
+        prev_meeting = (zoom_id, started_at)
 
 
 def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
@@ -106,9 +120,9 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         quit()
     
     queries = {
-        "normal": 'SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s',
-        "start": 'SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
-        "end": 'SELECT (id, "zoomID") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC'
+        "normal": 'SELECT (id, "zoomID", "startedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s',
+        "start": 'SELECT (id, "zoomID", "startedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
+        "end": 'SELECT (id, "zoomID", "startedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC'
     }
     # query meeting id and zoom license
     if start and end:
@@ -119,16 +133,25 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 
     meetings = cursor.fetchall()
 
+    prev_meeting = ()
     print(f"\n{len(meetings)} meetings found")
     for idx, meeting in enumerate(meetings):
+        overlap = 0
         # zoomId also refers to the zoom license
-        meetingId, zoomId = meeting[0] 
+        meetingId, zoomId, started_at = meeting[0] 
+        started_at = datetime.fromisoformat(started_at)
 
-        print(f"\n Story of meeting ({idx+1}) with ID = ", meetingId)
+        if len(prev_meeting) > 0:
+            overlap = started_at - prev_meeting[1]
+            overlap = overlap.seconds
+
+        print(f"\nStory of meeting ({idx+1}) with ID = ", meetingId)
         print(f"Zoom started using license {zoomId}")
-
+        if overlap <= 90 and idx > 0:
+            print(f"\033[1;32;40mOverlap with ({prev_meeting[0]}) by {overlap}seconds \033[0;0m")
         trace_events(cursor, meetingId) 
 
+        prev_meeting = (meetingId, started_at)
         print(f"Released Zoom license {zoomId}")
 
 def dissect_slack_meeting(cursor: Cursor, meetingId: str):
