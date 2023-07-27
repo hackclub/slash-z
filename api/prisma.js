@@ -1,4 +1,5 @@
 import pkg from "@prisma/client"
+import metrics from "../metrics.js"
 const { PrismaClient } = pkg
 let prisma = new PrismaClient()
 
@@ -25,8 +26,10 @@ const get = async (table, options) => {
   try {
     const results = await prisma[table].findMany({ where, orderBy, include })
     console.log(`[${ts}] Found ${results.length} record(s)`)
+    metrics.increment("prisma.get.success", 1)
     return results
   } catch (err) {
+    metrics.increment("prisma.get.failure", 1)
     console.log(err)
   }
 }
@@ -48,8 +51,10 @@ const find = async (table, options) => {
   try {
     const result = await prisma[table].findFirst({ where, orderBy, include })
     console.log(`[${ts}] Found record with ID '${result.id}'`)
+    metrics.increment("prisma.find.success", 1)
     return result
   } catch (err) {
+    metrics.increment("prisma.find.failure", 1)
     console.log(err)
   }
 }
@@ -65,8 +70,11 @@ const count = async (table, options) => {
     include = options.include
   }
   try {
-    return await prisma[table].count({ where, orderBy, include })
+    const count = await prisma[table].count({ where, orderBy, include })
+    metrics.increment("prisma.count.success", 1)
+    return count
   } catch (err) {
+    metrics.increment("prisma.count.failure", 1)
     console.log(err)
   }
 }
@@ -82,8 +90,10 @@ const patch = async (table, recordID, fields) => {
       data: fields
     })
     console.log(`[${ts}] PATCH successful!`)
+    metrics.increment("prisma.patch.success", 1)
     return result
   } catch (err) {
+    metrics.increment("prisma.patch.failure", 1)
     console.log(err)
   }
 }
@@ -95,8 +105,10 @@ const create = async (table, fields) => {
       data: fields,
     })
     console.log(`[${ts}] Created my record with id: ${result.id}`)
+    metrics.increment("prisma.create.success", 1)
     return result
   } catch (err) {
+    metrics.increment("prisma.create.failure", 1)
     console.log(err)
   }
 }
@@ -111,8 +123,10 @@ const destroy = async (table, id) => {
       },
     })
     console.log(`[${ts}] Deletion successful on '${table}' table, record '${id}'!`)
+    metrics.increment("prisma.destroy.success", 1)
     return results
   } catch (err) {
+    metrics.increment("prisma.destroy.failure", 1)
     console.log(err)
   }
 }
