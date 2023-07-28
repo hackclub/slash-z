@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import fetch from 'node-fetch'
-
+import metrics from '../metrics.js'
 export default class ZoomClient {
   constructor(props) {
     this.zoomKey = props.zoomKey
@@ -35,7 +35,9 @@ export default class ZoomClient {
   }
 
   async request(opts) {
+    const pathPrefix = opts.path.split("/")[0]
     console.log(opts)
+    let startTimeMs = Date.now()
     return fetch(`https://api.zoom.us/v2/${opts.path}`, {
       method: opts.method,
       headers: {
@@ -44,9 +46,16 @@ export default class ZoomClient {
       },
       body: JSON.stringify(opts.body)
     }).then(async r => {
+      const metricName = `zoom.${pathPrefix}.${r.status}`
+      let elapsedTimeMs = startTimeMs - Date.now();
+
+      metrics.timing(metricName, elapsedTimeMs)
+      metrics.increment(metricName, 1)
+
       // Zoom sometimes responds with 204 for no content.
       // We don't want to try parsing JSON for this, because there is no JSON to parse
       console.log({response: r.ok})
+
       if (r.ok && r.status != 204) {
         let payload = r.json()
         payload.http_code = r.status
@@ -57,6 +66,7 @@ export default class ZoomClient {
         return {http_code:r.status}
       }
     }).catch(err => {
+      metrics.increment("error.zoom_request_exception", 1)
       console.error(err)
     })
   }
