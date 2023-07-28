@@ -46,10 +46,11 @@ export default class ZoomClient {
       },
       body: JSON.stringify(opts.body)
     }).then(async r => {
-      const metricName = `zoom.${pathPrefix}.${r.status}`
+      const httpCodeMetricName = `zoom.http.code.${pathPrefix}.${r.status}`
+      const httpLatencyMetricName = `zoom.http.latency.${pathPrefix}.${r.status}`
       let elapsedTimeMs = startTimeMs - Date.now();
 
-      metrics.timing(metricName, elapsedTimeMs)
+      metrics.timing(httpCodeMetricName, elapsedTimeMs)
       metrics.increment(metricName, 1)
 
       // Zoom sometimes responds with 204 for no content.
