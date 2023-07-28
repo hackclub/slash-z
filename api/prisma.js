@@ -5,6 +5,8 @@ let prisma = new PrismaClient()
 
 import Bottleneck from 'bottleneck'
 
+const VERBOSE_PRISMA_LOGGING = process.env.VERBOSE_PRISMA_LOGGING ? false : process.env.VERBOSE_PRISMA_LOGGING=='true'
+
 const limiter = new Bottleneck({
   maxConcurrent: 4,
 })
@@ -14,7 +16,9 @@ const limiter = new Bottleneck({
 // prismaGet('Meeting', { where: {id: '01234567'} })
 const get = async (table, options) => {
   const ts = Date.now()
-  console.log(`[${ts}] Trying to get '${table}' with options:`, options)
+  if (VERBOSE_PRISMA_LOGGING)
+    console.log(`[${ts}] Trying to get '${table}' with options:`, options)
+  
   let where, orderBy, include
   if (typeof options === 'string') {
     where = { id: options }
@@ -25,12 +29,13 @@ const get = async (table, options) => {
   }
   try {
     const results = await prisma[table].findMany({ where, orderBy, include })
-    console.log(`[${ts}] Found ${results.length} record(s)`)
+    if (VERBOSE_PRISMA_LOGGING)
+      console.log(`[${ts}] Found ${results.length} record(s)`)
     metrics.increment("prisma.get.success", 1)
     return results
   } catch (err) {
     metrics.increment("prisma.get.failure", 1)
-    console.log(err)
+    console.error(err)
   }
 }
 
@@ -39,7 +44,8 @@ const get = async (table, options) => {
 // prismaFind('User', )
 const find = async (table, options) => {
   const ts = Date.now()
-  console.log(`[${ts}] Trying to find '${table}' with options: '${JSON.stringify(options)}'`)
+  if (VERBOSE_PRISMA_LOGGING)
+    console.log(`[${ts}] Trying to find '${table}' with options: '${JSON.stringify(options)}'`)
   let where, orderBy, include
   if (typeof options === 'string') {
     where = { id: options }
@@ -50,7 +56,8 @@ const find = async (table, options) => {
   }
   try {
     const result = await prisma[table].findFirst({ where, orderBy, include })
-    console.log(`[${ts}] Found record with ID '${result.id}'`)
+    if (VERBOSE_PRISMA_LOGGING)
+      console.log(`[${ts}] Found record with ID '${result.id}'`)
     metrics.increment("prisma.find.success", 1)
     return result
   } catch (err) {
@@ -61,7 +68,8 @@ const find = async (table, options) => {
 
 const count = async (table, options) => {
   let where, orderBy, include
-  console.log(`Trying to count '${table}' with options: '${JSON.stringify(options)}'`)
+  if (VERBOSE_PRISMA_LOGGING)
+    console.log(`Trying to count '${table}' with options: '${JSON.stringify(options)}'`)
   if (typeof options === 'string') {
     where = { id: search }
   } else {
@@ -75,26 +83,28 @@ const count = async (table, options) => {
     return count
   } catch (err) {
     metrics.increment("prisma.count.failure", 1)
-    console.log(err)
+    console.error(err)
   }
 }
 
 const patch = async (table, recordID, fields) => {
   const ts = Date.now()
   try {
-    console.log(`[${ts}] PATCH '${table} ID ${recordID}' with the following fields:`, fields)
+    if (VERBOSE_PRISMA_LOGGING)
+      console.log(`[${ts}] PATCH '${table} ID ${recordID}' with the following fields:`, fields)
     const result = await prisma[table].update({
       where: {
         id: recordID,
       },
       data: fields
     })
-    console.log(`[${ts}] PATCH successful!`)
+    if (VERBOSE_PRISMA_LOGGING)
+      console.log(`[${ts}] PATCH successful!`)
     metrics.increment("prisma.patch.success", 1)
     return result
   } catch (err) {
     metrics.increment("prisma.patch.failure", 1)
-    console.log(err)
+    console.error(err)
   }
 }
 
@@ -104,30 +114,33 @@ const create = async (table, fields) => {
     const result = await prisma[table].create({
       data: fields,
     })
-    console.log(`[${ts}] Created my record with id: ${result.id}`)
+    if (VERBOSE_PRISMA_LOGGING)
+      console.log(`[${ts}] Created my record with id: ${result.id}`)
     metrics.increment("prisma.create.success", 1)
     return result
   } catch (err) {
     metrics.increment("prisma.create.failure", 1)
-    console.log(err)
+    console.error(err)
   }
 }
 
 const destroy = async (table, id) => {
   const ts = Date.now()
   try {
-    console.log(`[${ts}] DELETE '${table}' RECORD '${id}'`)
+    if (VERBOSE_PRISMA_LOGGING)
+      console.log(`[${ts}] DELETE '${table}' RECORD '${id}'`)
     const results = await prisma[table].delete({
       where: {
         id: id,
       },
     })
-    console.log(`[${ts}] Deletion successful on '${table}' table, record '${id}'!`)
+    if (VERBOSE_PRISMA_LOGGING)
+      console.log(`[${ts}] Deletion successful on '${table}' table, record '${id}'!`)
     metrics.increment("prisma.destroy.success", 1)
     return results
   } catch (err) {
     metrics.increment("prisma.destroy.failure", 1)
-    console.log(err)
+    console.error(err)
   }
 }
 
