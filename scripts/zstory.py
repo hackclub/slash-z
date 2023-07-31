@@ -44,6 +44,17 @@ dissector.add_argument("--end", type=int) # specifies a stopping point
 # parse dissector args
 d_args = dissector.parse_args()
 
+# meeting passed here is of the form
+# (meeting_id, start_time, end_time)
+
+def check_overlap(meet_1: (str, int, int), meet_2: (str, int, int)):
+    meet1 = range(meet_1[1], meet_1[2])
+    meet2 = range(meet_2[1], meet_2[2])
+    overlap = list(set(meet2).intersection(meet1))
+    if len(overlap) > 0:
+        return overlap[-1] - overlap[0] 
+    return 0
+
 def trace_events(cursor: Cursor, meetingId: str):
     print("\nEvents...")
     # query the WebHook events of the meeting
@@ -56,6 +67,10 @@ def trace_events(cursor: Cursor, meetingId: str):
 
     # will be replaced with the timestamp of the first webhook event
     start_time = datetime.now() 
+    # I believe the situation where there are two start times for the same zoom id is rare
+    # and that in this situation, it makes sense to just count the number of start times 
+    # to indetify an overlap
+    start_time_count = 0
     for item in events:
         timestamp, event = item[0]
         event_dict = json.loads(event)
@@ -63,7 +78,10 @@ def trace_events(cursor: Cursor, meetingId: str):
 
         time = datetime.fromisoformat(timestamp)
         if event_type == "meeting.started": 
-            print("Start time = ", time)
+            print(f"\033[94mStart time = {time}\033[0;0m")
+            if start_time_count == 1:
+                print(f"\033[93mOverlap \033[0;0m")
+            start_time_count += 1
             start_time = time
 
         participant = event_dict["payload"]["object"].get("participant", None)
@@ -82,7 +100,8 @@ def filter_by_date(cursor: Cursor, start: int, end: int | None):
     meetings = cursor.fetchall()
 
     print(f"Found {len(meetings)} meetings")
-    prev_meeting = ()
+
+    prev_meetings = []
     for idx, meeting in enumerate(meetings):
         overlap = 0
 
@@ -90,20 +109,25 @@ def filter_by_date(cursor: Cursor, start: int, end: int | None):
 
         started_at = datetime.fromisoformat(started_at)
         ended_at = datetime.fromisoformat(ended_at) if ended_at else None
-
-        if len(prev_meeting) > 0:
-            overlap = started_at - prev_meeting[1]
-            overlap = overlap.seconds
-
-        if overlap <= 90 and idx > 0:
-            print(f"\n\033[1;32;40mOverlap with (zoomID: {prev_meeting[0]}) by {overlap}seconds \033[0;0m") 
-        
+       
         if ended_at is not None:
-            time_elapsed = ended_at - started_at 
-            print(f"zoomID: {zoom_id} | started {started_at} ended {time_elapsed.seconds}s later ") 
-        else: print(f"zoomID: {zoom_id} | started {ended_at} Ongoing...") 
+            _meeting = (zoom_id, int(started_at.timestamp()), int(ended_at.timestamp()))
+            # check for overlapping meetings
+            for p_meeting in prev_meetings:
+                # print("p_meeting = ", p_meeting)
+                # print("curr meeting = ", _meeting)
+                overlap = check_overlap(p_meeting, _meeting)
+                
+                if overlap > 0:
+                    print(f"\033[93mOverlap with ({p_meeting[0]}) by {overlap} seconds \033[0;0m")
 
-        prev_meeting = (zoom_id, started_at)
+            prev_meetings.append(_meeting)
+            time_elapsed = ended_at - started_at 
+            print(f"zoomID: {zoom_id} | started {started_at} ended {time_elapsed.seconds}s later") 
+
+        else: print(f"zoomID: {zoom_id} | started {ended_at} Ongoing... ") 
+        print()
+
 
 
 def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
@@ -120,9 +144,9 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         quit()
     
     queries = {
-        "normal": 'SELECT (id, "zoomID", "startedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s',
-        "start": 'SELECT (id, "zoomID", "startedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
-        "end": 'SELECT (id, "zoomID", "startedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC'
+        "normal": 'SELECT (id, "zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s',
+        "start": 'SELECT (id, "zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
+        "end": 'SELECT (id, "zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC'
     }
     # query meeting id and zoom license
     if start and end:
@@ -133,22 +157,30 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 
     meetings = cursor.fetchall()
 
-    prev_meeting = ()
+    prev_meetings = []
     print(f"\n{len(meetings)} meetings found")
     for idx, meeting in enumerate(meetings):
         overlap = 0
         # zoomId also refers to the zoom license
-        meetingId, zoomId, started_at = meeting[0] 
+        meetingId, zoomId, started_at, ended_at = meeting[0] 
         started_at = datetime.fromisoformat(started_at)
+        ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
-        if len(prev_meeting) > 0:
-            overlap = started_at - prev_meeting[1]
-            overlap = overlap.seconds
+        _meeting = (meetingId, int(started_at.timestamp()), int(ended_at.timestamp()))
+        if ended_at is not None:
+             # check for overlapping meetings
+            for p_meeting in prev_meetings:
+                # print("p_meeting = ", p_meeting)
+                # print("curr meeting = ", _meeting)
+                overlap = check_overlap(p_meeting, _meeting)
+                
+                if overlap > 0:
+                    print(f"\033[93mOverlap with ({p_meeting[0]}) by {overlap} seconds \033[0;0m")
 
+            prev_meetings.append(_meeting)
+        
         print(f"\nStory of meeting ({idx+1}) with ID = ", meetingId)
         print(f"Zoom started using license {zoomId}")
-        if overlap <= 90 and idx > 0:
-            print(f"\033[1;32;40mOverlap with ({prev_meeting[0]}) by {overlap}seconds \033[0;0m")
         trace_events(cursor, meetingId) 
 
         prev_meeting = (meetingId, started_at)
