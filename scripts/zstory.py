@@ -35,16 +35,18 @@ parser = argparse.ArgumentParser(
 subparser = parser.add_subparsers()
 
 dissector = subparser.add_parser(
-    "dissect", description="Dissect slash-z calls in detail"
+    "dissect", description="Debug what happened in slash-z calls"
 )
 dissector.add_argument(
-    "meetid", default=None, nargs="*"
+    "meetid", default=None, nargs="*",
+    help="The zoom schedule id e.g yzu4r in hack.af/z-join?id=yzu4r"
 )  # argument is zoomID or call link name
 dissector.add_argument(
-    "-z", action="store_true"
+    "-z", action="store_true",
+    help="If provided, then <meetid> is considered to be the zoom meeting id e.g 88934609083"
 )  # if present, will return the single zoom call
-dissector.add_argument("--start", type=int)  # specifies a starting point of the search
-dissector.add_argument("--end", type=int)  # specifies a stopping point
+dissector.add_argument("--start", type=int, help="Specify the start time when searching for a meeting in a range")  # specifies a starting point of the search
+dissector.add_argument("--end", type=int, help="Specify the latest time when searching for a meeting in a range")  # specifies a stopping point
 
 # parse dissector args
 d_args = dissector.parse_args()
