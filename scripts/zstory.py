@@ -89,7 +89,7 @@ def filter_by_date(cursor: Cursor, start: int, end: int | None):
         zoom_id, started_at, ended_at = meeting[0]
 
         started_at = datetime.fromisoformat(started_at)
-        ended_at = datetime.fromisoformat(ended_at)
+        ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
         if len(prev_meeting) > 0:
             overlap = started_at - prev_meeting[1]
