@@ -53,6 +53,7 @@ d_args = dissector.parse_args()
 
 if len(d_args._get_args()) == 0:
     dissector.print_help() 
+    quit()
 
 # meeting passed here is of the form
 # (meeting_id, start_time, end_time)
