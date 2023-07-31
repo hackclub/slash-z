@@ -51,10 +51,12 @@ dissector.add_argument("--end", type=int, help="Specify the latest time when sea
 # parse dissector args
 d_args = dissector.parse_args()
 
+if len(d_args._get_args()) == 0:
+    dissector.print_help() 
+    quit()
+
 # meeting passed here is of the form
 # (meeting_id, start_time, end_time)
-
-
 def check_overlap(meet_1: (str, int, int), meet_2: (str, int, int)):
     meet1 = range(meet_1[1], meet_1[2])
     meet2 = range(meet_2[1], meet_2[2])
@@ -106,7 +108,7 @@ def trace_events(cursor: Cursor, meetingId: str):
         participant = event_dict["payload"]["object"].get("participant", None)
 
         print(
-            f"{(time - start_time).seconds:5}s later | {(participant['user_name'] if participant else ''):15} | 🫡{event_type:6}"
+            f"{(time - start_time).seconds:5}s later | {(participant['user_name'] if participant else ''):15} | {event_type:6}"
         )
 
 
@@ -168,7 +170,7 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
     scheduling_link_id = schedule[0] if schedule else None
 
     if scheduling_link_id is None:
-        print(f"Scheduling link with name {meetid} not found")
+        print(f"Scheduling link with name {meetid} does not exist")
         quit()
 
     queries = {
@@ -220,11 +222,11 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
             prev_meetings.append(_meeting)
 
         print(f"\nStory of meeting ({idx+1}) with ID = ", meetingId)
-        print(f"Zoom started using license {zoomId}")
+        print(f"Zoom started using license {zoomId} | {started_at}")
         trace_events(cursor, meetingId)
 
         prev_meeting = (meetingId, started_at)
-        print(f"Released Zoom license {zoomId}")
+        print(f"Released Zoom license {zoomId} | {ended_at}")
 
 
 def dissect_slack_meeting(cursor: Cursor, meetingId: str):
