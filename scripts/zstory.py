@@ -51,7 +51,7 @@ dissector.add_argument("--end", type=int, help="Specify the latest time when sea
 # parse dissector args
 d_args = dissector.parse_args()
 
-if len(d_args._get_args()) == 0:
+if not d_args.meetid and not d_args.z and not d_args.start and not d_args.end:
     dissector.print_help() 
     quit()
 
