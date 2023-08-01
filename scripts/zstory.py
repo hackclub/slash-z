@@ -260,17 +260,20 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 
 
 def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
-    cursor.execute('SELECT id FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
+    cursor.execute('SELECT (id, "startedAt", "endedAt") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
     meeting = cursor.fetchone()
-    meeting_id = meeting[0] if meeting else None
+    meeting_id, started_at, ended_at = meeting[0] if meeting else None
 
     if meeting_id is None:
         print(f"Could not find meeting with zoom ID {zoom_id}")
         quit()
 
-    print(f"Zoom started using license {zoom_id}")
+    started_at = datetime.fromisoformat(started_at)
+    ended_at = datetime.fromisoformat(ended_at)
+
+    print(f"Zoom started using license {zoom_id} | {started_at}")
     trace_events(cursor, meeting_id)
-    print(f"Released Zoom license {zoom_id}")
+    print(f"Released Zoom license {zoom_id} | {ended_at}")
 
 
 # connect to the database
