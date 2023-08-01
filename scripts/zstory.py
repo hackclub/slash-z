@@ -4,6 +4,7 @@ from psycopg.cursor import Cursor
 import json
 from datetime import datetime
 from decouple import config
+import sys
 
 """
 This tool helps get an overview or the "story" of a certain zoom call.
@@ -32,28 +33,57 @@ parser = argparse.ArgumentParser(
     prog="zstory", description="Helps you debug slash-z meetings"
 )
 
-subparser = parser.add_subparsers()
+subparser = parser.add_subparsers(dest="command")
 
 dissector = subparser.add_parser(
-    "dissect", description="Debug what happened in slash-z calls"
+    "dissect",
+    description="Debug what happened in slash-z calls",
 )
+filter_parser = subparser.add_parser(
+    "filter",
+    description="Filter meetings within a certain time range",
+)
+
 dissector.add_argument(
-    "meetid", default=None, nargs="*",
-    help="The zoom schedule id e.g yzu4r in hack.af/z-join?id=yzu4r"
+    "meetid",
+    default=None,
+    help="The zoom schedule id e.g yzu4r in hack.af/z-join?id=yzu4r",
 )  # argument is zoomID or call link name
 dissector.add_argument(
-    "-z", action="store_true",
-    help="If provided, then <meetid> is considered to be the zoom meeting id e.g 88934609083"
+    "-z",
+    action="store_true",
+    help="If provided, then <meetid> is considered to be the zoom meeting id e.g 88934609083",
 )  # if present, will return the single zoom call
-dissector.add_argument("--start", type=int, help="Specify the start time when searching for a meeting in a range")  # specifies a starting point of the search
-dissector.add_argument("--end", type=int, help="Specify the latest time when searching for a meeting in a range")  # specifies a stopping point
+dissector.add_argument(
+    "--start",
+    type=int,
+    help="Specify the start time when searching for a meeting in a range",
+)  # specifies a starting point of the search
+dissector.add_argument(
+    "--end",
+    type=int,
+    help="Specify the latest time when searching for a meeting in a range",
+)  # specifies a stopping point
 
-# parse dissector args
-d_args = dissector.parse_args()
+# filter arguments
+filter_parser.add_argument(
+    "--start",
+    required=True,
+    type=int,
+    help="Specify the start time when searching for a meeting in a range",
+)  # specifies a starting point of the search
+filter_parser.add_argument(
+    "--end",
+    type=int,
+    help="Specify the latest time when searching for a meeting in a range",
+)  # specifies a stopping point
 
-if len(d_args._get_args()) == 0:
-    dissector.print_help() 
+# parse args
+args = parser.parse_args()
+if not len(sys.argv) > 1:
+    parser.print_help()
     quit()
+
 
 # meeting passed here is of the form
 # (meeting_id, start_time, end_time)
@@ -229,38 +259,36 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         print(f"Released Zoom license {zoomId} | {ended_at}")
 
 
-def dissect_slack_meeting(cursor: Cursor, meetingId: str):
-    cursor.execute('SELECT id FROM "Meeting" WHERE "zoomID"=%s', (d_args.meetid[1],))  # type: ignore
+def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
+    cursor.execute('SELECT id FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
     meeting = cursor.fetchone()
-    meetingId = meeting[0] if meeting else None
+    meeting_id = meeting[0] if meeting else None
 
-    if meetingId is None:
-        print(f"Could not find meeting with ID {meetingId}")
+    if meeting_id is None:
+        print(f"Could not find meeting with zoom ID {zoom_id}")
         quit()
 
-    print(f"Zoom started using license {d_args.meetid[1]}")
-    trace_events(cursor, meetingId)
-    print(f"Released Zoom license {d_args.meetid[1]}")
+    print(f"Zoom started using license {zoom_id}")
+    trace_events(cursor, meeting_id)
+    print(f"Released Zoom license {zoom_id}")
 
 
 # connect to the database
 with psycopg.connect(config("DATABASE_URL")) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
-        # when accessing d_args.meetid we get [dissect, <meetid>]
-        if len(d_args.meetid) > 1:
-            if d_args.meetid[1] and d_args.z:
-                dissect_slack_meeting(cursor, d_args.meetid[1])
-                quit()
+        match args.command:
+            case "dissect":
+                if args.meetid:
+                    if args.meetid and args.z:
+                        dissect_slack_meeting(cursor, args.meetid)
+                        quit()
 
-            if d_args.meetid[1] and not d_args.z:
-                dissect_scheduled_meeting(
-                    cursor, d_args.meetid[1], d_args.start, d_args.end
-                )
+                if args.meetid and not args.z:
+                    dissect_scheduled_meeting(cursor, args.meetid, args.start, args.end)
+                    quit()
+            case "filter":
+                filter_by_date(cursor, args.start, args.end)
                 quit()
-
-        if d_args.start:
-            filter_by_date(cursor, d_args.start, d_args.end)
-            quit()
 
     conn.commit()
