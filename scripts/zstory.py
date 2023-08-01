@@ -33,13 +33,15 @@ parser = argparse.ArgumentParser(
     prog="zstory", description="Helps you debug slash-z meetings"
 )
 
-subparser = parser.add_subparsers()
+subparser = parser.add_subparsers(dest="command")
 
 dissector = subparser.add_parser(
-    "dissect", description="Debug what happened in slash-z calls"
+    "dissect",
+    description="Debug what happened in slash-z calls",
 )
 filter_parser = subparser.add_parser(
-    "filter", description="Filter meetings within a certain time range"
+    "filter",
+    description="Filter meetings within a certain time range",
 )
 
 dissector.add_argument(
@@ -63,6 +65,7 @@ dissector.add_argument(
     help="Specify the latest time when searching for a meeting in a range",
 )  # specifies a stopping point
 
+# filter arguments
 filter_parser.add_argument(
     "--start",
     required=True,
@@ -274,17 +277,18 @@ def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
 with psycopg.connect(config("DATABASE_URL")) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
-        if args.start:
-            filter_by_date(cursor, args.start, args.end)
-            quit()
+        match args.command:
+            case "dissect":
+                if args.meetid:
+                    if args.meetid and args.z:
+                        dissect_slack_meeting(cursor, args.meetid)
+                        quit()
 
-        if args.meetid:
-            if args.meetid and args.z:
-                dissect_slack_meeting(cursor, args.meetid)
-                quit()
-
-            if args.meetid and not args.z:
-                dissect_scheduled_meeting(cursor, args.meetid, args.start, args.end)
+                if args.meetid and not args.z:
+                    dissect_scheduled_meeting(cursor, args.meetid, args.start, args.end)
+                    quit()
+            case "filter":
+                filter_by_date(cursor, args.start, args.end)
                 quit()
 
     conn.commit()
