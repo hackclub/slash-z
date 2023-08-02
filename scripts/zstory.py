@@ -204,9 +204,9 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         quit()
 
     queries = {
-        "normal": 'SELECT (id, "zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s',
-        "start": 'SELECT (id, "zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
-        "end": 'SELECT (id, "zoomID", "startedAt", "endedAt") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC',
+        "normal": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "schedulingLinkId"=%s',
+        "start": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
+        "end": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC',
     }
     # query meeting id and zoom license
     if start and end:
@@ -232,7 +232,7 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
     for idx, meeting in enumerate(meetings):
         overlap = 0
         # zoomId also refers to the zoom license
-        meetingId, zoomId, started_at, ended_at = meeting[0]
+        meetingId, zoomId, started_at, ended_at, join_url = meeting[0]
         started_at = datetime.fromisoformat(started_at)
         ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
@@ -253,6 +253,7 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 
         print(f"\nStory of meeting ({idx+1}) with ID = ", meetingId)
         print(f"Zoom started using license {zoomId} | {started_at}")
+        print(f"Zoom Join Link: {join_url}")
         trace_events(cursor, meetingId)
 
         prev_meeting = (meetingId, started_at)
@@ -260,9 +261,9 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 
 
 def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
-    cursor.execute('SELECT (id, "startedAt", "endedAt") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
+    cursor.execute('SELECT (id, "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
     meeting = cursor.fetchone()
-    meeting_id, started_at, ended_at = meeting[0] if meeting else None
+    meeting_id, started_at, ended_at, join_url = meeting[0] if meeting else (None, None, None, None)
 
     if meeting_id is None:
         print(f"Could not find meeting with zoom ID {zoom_id}")
@@ -272,6 +273,7 @@ def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
     ended_at = datetime.fromisoformat(ended_at)
 
     print(f"Zoom started using license {zoom_id} | {started_at}")
+    print(f"Zoom Join Link: {join_url}")
     trace_events(cursor, meeting_id)
     print(f"Released Zoom license {zoom_id} | {ended_at}")
 
