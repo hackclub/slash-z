@@ -13,7 +13,16 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
     zoomSecret: host.apiSecret,
     zoomKey: host.apiKey, 
   });
-  const deleteMeeting = () => zoom.delete({ path: `meetings/${meeting.zoomID}` });
+
+  const deleteMeeting = async () => {
+    const response = await zoom.delete({ path: `meetings/${meeting.zoomID}` });
+    if (response.http_code == 400) {
+      return metrics.increment("warning.delete_ongoing_zoom_meeting");
+    } else if (response.http_code == 404) {
+      return metrics.increment("error.delete_non_existent_zoom_meeting");
+    }
+    return metrics.increment("success.delete_zoom_meeting");
+  };
 
   // check if zoom meeting still has participants...
   const metrics = await zoom.get({
