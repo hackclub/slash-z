@@ -17,11 +17,11 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
   const deleteMeeting = async () => {
     const response = await zoom.delete({ path: `meetings/${meeting.zoomID}` });
     if (response.http_code == 400) {
-      return metrics.increment("warning.delete_ongoing_zoom_meeting");
+      return metrics.increment("delete_meeting.warning");
     } else if (response.http_code == 404) {
-      return metrics.increment("error.delete_non_existent_zoom_meeting");
+      return metrics.increment("delete_meeting.error");
     }
-    return metrics.increment("success.delete_zoom_meeting");
+    return metrics.increment("delete_meeting.success");
   };
 
   // check if zoom meeting still has participants...
