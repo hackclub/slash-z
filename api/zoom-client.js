@@ -34,6 +34,14 @@ export default class ZoomClient {
     })
   }
 
+  async delete(opts) {
+    return this.request({
+      ...opts,
+      method: 'delete',
+      headers: { ...opts.headers, 'content-type': 'application/json' }
+    })
+  }
+
   async request(opts) {
     const pathPrefix = opts.path.split("/")[0]
     console.log(opts)

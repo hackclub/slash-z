@@ -14,6 +14,16 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
     zoomKey: host.apiKey, 
   });
 
+  const deleteMeeting = async () => {
+    const response = await zoom.delete({ path: `meetings/${meeting.zoomID}` });
+    if (response.http_code == 400) {
+      return metrics.increment("delete_meeting.warning", 1);
+    } else if (response.http_code == 404) {
+      return metrics.increment("delete_meeting.error", 1);
+    }
+    return metrics.increment("delete_meeting.success", 1);
+  };
+
   // check if zoom meeting still has participants...
   const metrics = await zoom.get({
     path: `metrics/meetings/${meeting.zoomID}/participants`,
@@ -25,10 +35,15 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
   }
   
   // 400/404's denote meetings that do not exist.  We need to clean them up on our side.
+  // they also denote meetings where all participants have left
   if (metrics.http_code == 400 || metrics.http_code == 404) {
     
     await Prisma.create('customLogs', { text: `metrics_meeting_doesnt_exist`, zoomCallId: meeting.zoomID })
     await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
+
+    // we need to delete the meeting if not already deleted
+    deleteMeeting();
+
     return null;    
   }
 
@@ -72,6 +87,9 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
 
   // 3) end airtable call
   await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
+
+  // delete the meeting from zoom to invalidate the url
+  deleteMeeting();
 
   return meeting.id;
 };
