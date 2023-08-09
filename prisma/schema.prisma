@@ -18,7 +18,7 @@ model Host {
   displayName String // previously "Name Displayed to Users"
   apiKey      String
   apiSecret   String
-  zoomID      String     @unique
+  zoomID      String     
   meetings    Meeting[]
   errors      String[]
   ErrorLog    ErrorLog[]
@@ -74,7 +74,7 @@ model ErrorLog {
   text       String
   stackTrace String
   meeting    Meeting? @relation(fields: [meetingId], references: [id])
-  host       Host?    @relation(fields: [hostZoomID], references: [zoomID])
+  host       Host?    @relation(fields: [hostZoomID], references: [id])
   meetingId  String?
   hostZoomID String?
 }
