@@ -1,5 +1,6 @@
 import ZoomClient from "./zoom-client.js";
 import Prisma from "./prisma.js";
+import metrics from "../metrics.js";
 import fetch from "node-fetch";
 
 export default async (zoomID, forceClose = false, fromWebhook = false) => {
@@ -25,18 +26,18 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
   };
 
   // check if zoom meeting still has participants...
-  const metrics = await zoom.get({
+  const zoomMetrics = await zoom.get({
     path: `metrics/meetings/${meeting.zoomID}/participants`,
   });
 
-  if(!metrics){
+  if(!zoomMetrics){
     await Prisma.create('customLogs', { text: `metrics_not_defined`, zoomCallId: meeting.zoomID })
     return null;
   }
   
   // 400/404's denote meetings that do not exist.  We need to clean them up on our side.
   // they also denote meetings where all participants have left
-  if (metrics.http_code == 400 || metrics.http_code == 404) {
+  if (zoomMetrics.http_code == 400 || zoomMetrics.http_code == 404) {
     
     await Prisma.create('customLogs', { text: `metrics_meeting_doesnt_exist`, zoomCallId: meeting.zoomID })
     await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
@@ -47,9 +48,9 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
     return null;    
   }
 
-  if (!forceClose && metrics && metrics.total_records > 0) {
+  if (!forceClose && zoomMetrics && zoomMetrics.total_records > 0) {
     console.log(
-      `Meeting ${meeting.zoomID} has ${metrics?.total_records || "unknown"} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
+      `Meeting ${meeting.zoomID} has ${zoomMetrics?.total_records || "unknown"} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
     );
     return null;
   }
@@ -77,7 +78,7 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
       path: `meetings/${meeting.zoomID}/status`,
       body: { action: "end" },
     });
-    await Prisma.create('customLogs', { text: `slash_z_ended_call_${metrics?.total_records || "unknown"
+    await Prisma.create('customLogs', { text: `slash_z_ended_call_${zoomMetrics?.total_records || "unknown"
   }_participants`, zoomCallId: meeting.zoomID })
   }
   await zoom.patch({
