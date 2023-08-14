@@ -5,7 +5,7 @@ import metrics from '../metrics.js'
 export default class ZoomClient {
 
   /**
-  * create a new zoom client
+  * instantiate a new zoom client
   * @constructor
   * @param {Object} props - an object containing the zoom api key and api secret
   * @param {string} props.zoomKey - The zoom api key
@@ -19,7 +19,7 @@ export default class ZoomClient {
 
   
   /**
-  * Send a get request to zoom
+  * Sends a get request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers
@@ -31,7 +31,7 @@ export default class ZoomClient {
 
 
   /**
-  * Send a post request to zoom
+  * Sends a post request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers
@@ -46,7 +46,7 @@ export default class ZoomClient {
 
 
   /**
-  * Send a patch request to zoom
+  * Sends a patch request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers
@@ -62,7 +62,7 @@ export default class ZoomClient {
 
 
   /**
-  * Send a put request to zoom
+  * Sends a put request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers
@@ -78,7 +78,7 @@ export default class ZoomClient {
 
 
   /**
-  * Send a delete request to zoom
+  * Sends a delete request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers

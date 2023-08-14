@@ -2,7 +2,9 @@ import Prisma from "./prisma.js"
 import closeZoomCall from "./close-zoom-call.js"
 
 /**
-* @param {Object}
+ * Closes call older than two minutes with no participants
+* @param {Object} param
+* @param {string} param.creatorSlackID 
 * @returns {any[]}
 */
 export default async ({creatorSlackID} = {}) => {

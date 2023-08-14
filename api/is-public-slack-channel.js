@@ -25,9 +25,9 @@ export default async function(channelID) {
       isPublic = isPublic && (
         channelInfo.ok &&
         !channelInfo.channel['is_private'] &&
-        !channelInfo.channel['is_im'] &&
-        !channelInfo.channel['is_mpim'] &&
-        !channelInfo.channel['is_group']
+        !channelInfo.channel['is_im'] && // is_im: private conversation between two individuals or with a bot
+        !channelInfo.channel['is_mpim'] && // is_mpim: unnamed private conversation between multiple users
+        !channelInfo.channel['is_group'] // is_group: private channel created before 2021
       )
     }),
     // check Operations airtable to see if this channel isn't a club channel

@@ -4,7 +4,7 @@ import openZoomMeeting from "./open-zoom-meeting.js"
 import sendHostKey from "./send-host-key.js";
 
 /**
-* finds an existing meeting or create a new one with the query id
+* finds an existing meeting or create a new one for the query id if not found
 * @function 
 * @param {string} queryID - The schedule link id
 * @returns {Promise<any>}

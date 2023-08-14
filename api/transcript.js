@@ -107,7 +107,9 @@ const replaceErrors = (key, value) => {
 }
 
 /**
-* Returns the 
+* Returns a value corresponding to {search} 
+* from transcript.yml, replacing any placeholder with a variable
+* from {vars}
 * @function
 * @param {string} search - the word to transcribe
 * @param {Object} vars
@@ -137,7 +139,6 @@ const transcript = (search, vars, fallback) => {
  * @param {Object} vars 
  * @returns {null|Object|any[]|string} 
  */
-
 const hydrateObj = (obj, vars = {}) => {
   if (obj == null) {
     return null
@@ -158,7 +159,8 @@ const hydrateObj = (obj, vars = {}) => {
 
 
 /**
- * 
+ * Replaces a variable in the yaml string with a value from var 
+ * @example var = {port: 3000}; target = "Hello ${this.port}", result = "Hello 3000"
  * @param {strng} target 
  * @param {Object} vars 
  * @returns {string} 

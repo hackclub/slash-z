@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 
 /**
-* Determine if a channel is restricted or not
+* Returns true if a user is restricted
 * @function
 * @param {string} userID - The slack user ID
 * @returns {Promise<boolean>}
