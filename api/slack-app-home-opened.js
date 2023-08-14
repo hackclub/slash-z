@@ -96,10 +96,18 @@ const publishHomePage = async ({user, results}) => {
   return result
 }
 
+/**
+ * 
+ * @param {string} user - user slack id
+ */
 const getUserInfo = async user => {
   return await Prisma.find('authedAccount', { where: { slackID: user } })
 }
 
+/**
+ * 
+ * @param {string} user - user slack id
+ */
 const getRecordings = async (user) => {
   const completedRecordingMeetings = await Prisma.get("meeting", {
     where: {

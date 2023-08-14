@@ -6,7 +6,8 @@ import sendHostKey from "./send-host-key.js";
 /**
 * finds an existing meeting or create a new one with the query id
 * @function 
-* @params {string} queryID - The schedule link id
+* @param {string} queryID - The schedule link id
+* @returns {Promise<any>}
 */
 const findOrCreateMeeting = async (queryID) => {
   // Find the scheduling link record with the ID we've been given

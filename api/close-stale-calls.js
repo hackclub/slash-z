@@ -3,6 +3,7 @@ import closeZoomCall from "./close-zoom-call.js"
 
 /**
 * @param {Object}
+* @returns {any[]}
 */
 export default async ({creatorSlackID} = {}) => {
   const startTS = Date.now()

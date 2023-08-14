@@ -3,6 +3,14 @@ import Prisma from "./prisma.js";
 import metrics from "../metrics.js";
 import fetch from "node-fetch";
 
+/**
+* Closes a zoom call
+* @function
+* @param {string} zoomID - The zoom call id
+* @param {boolean} forceClose - force close the zoom call. Defaults to false
+* @param {boolean} fromWebhook - The record ID 
+* @returns {Promise<Object>}
+*/
 export default async (zoomID, forceClose = false, fromWebhook = false) => {
   const meeting = await Prisma.find("meeting", {
     where: { zoomID },

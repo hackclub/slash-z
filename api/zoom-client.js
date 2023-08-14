@@ -7,7 +7,7 @@ export default class ZoomClient {
   /**
   * create a new zoom client
   * @constructor
-  * @param {Object} props - an object containing the zoom api key and api secret:w
+  * @param {Object} props - an object containing the zoom api key and api secret
   * @param {string} props.zoomKey - The zoom api key
   * @param {string} props.zoomSecret- The zoom api secret
   * @returns {ZoomClient}
@@ -62,7 +62,7 @@ export default class ZoomClient {
 
 
   /**
-  * Send a get request to zoom
+  * Send a put request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers
@@ -78,7 +78,7 @@ export default class ZoomClient {
 
 
   /**
-  * Send a get request to zoom
+  * Send a delete request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers
@@ -94,7 +94,7 @@ export default class ZoomClient {
 
 
 /**
-  * Make a get request to zoom
+  * Send a request to zoom
   * @param {Object} opts - the parameter options
   * @param {string} opts.path - the endpoint e.g /metrics/<meeting-id>
   * @param {Object} opts.headers - the request headers
