@@ -12,6 +12,7 @@ import fetch from "node-fetch";
 * @returns {Promise<Object>}
 */
 export default async (zoomID, forceClose = false, fromWebhook = false) => {
+
   const meeting = await Prisma.find("meeting", {
     where: { zoomID },
     include: { host: true }
@@ -70,6 +71,7 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
     const startTime = Date.parse(meeting.startedAt);
     const durationMs = Date.now() - startTime;
     const duration = Math.floor(durationMs / 1000);
+
     const _slackPost = await fetch("https://slack.com/api/calls.end", {
       method: "post",
       headers: {
@@ -82,19 +84,18 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
 
   // 2) set meeting status in zoom to 'end'
   if(!fromWebhook){
+    // set the meeting status to 'end' 
+    // irrespective of participants
     await zoom.put({
       path: `meetings/${meeting.zoomID}/status`,
       body: { action: "end" },
     });
+
     await Prisma.create('customLogs', { text: `slash_z_ended_call_${zoomMetrics?.total_records || "unknown"
   }_participants`, zoomCallId: meeting.zoomID })
   }
-  await zoom.patch({
-    path: `meetings/${meeting.zoomID}`,
-    body: { settings: { join_before_host: false } },
-  });
 
-  // 3) end airtable call
+  // 3) set the meeting end time 
   await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
 
   // delete the meeting from zoom to invalidate the url

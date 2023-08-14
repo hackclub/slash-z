@@ -26,7 +26,7 @@ const sample = (arr) => {
 }
 
 /**
-* Loads the transcipt.yml file
+* Loads the transcipt.yml file into an object
 * @function
 * @returns {string}
 */
@@ -45,10 +45,24 @@ const loadTranscript = () => {
   }
 }
 
+/**
+ * Recursively searches deep into the {transcriptObj}.
+ * searchArr is a list such as ['plurals', 'participants']
+ * constructed from a string such as 'plurals.participants'
+ * representing object access of the form { plurals: { participants: {}}}
+ * @param {string[]} searchArr - A list of subsequent levels through which to search
+ * @param {Object} transcriptObj - An object representation of  transcript.yml
+ * @param {any} fallback 
+ * @returns {Object|string} 
+ */
 const recurseTranscript = (searchArr, transcriptObj, fallback) => {
+  // start searching from the first item of the search array
   const searchCursor = searchArr.shift()
   const targetObj = transcriptObj[searchCursor]
 
+  // if the item wasn't found in the array
+  // return an new error
+  // or return the fallback if a fallback was passed
   if (!targetObj) {
     if (typeof fallback == 'undefined') {
       return new Error('errors.transcript')
@@ -57,16 +71,29 @@ const recurseTranscript = (searchArr, transcriptObj, fallback) => {
       return fallback
     }
   }
+
+  // if we haven't reached the deepest key, 
+  // keep going!
   if (searchArr.length > 0) {
     return recurseTranscript(searchArr, targetObj)
   } else {
+    // if our target object is an array -- like a list item
     if (Array.isArray(targetObj)) {
+      // pick one of the items and return it
       return sample(targetObj)
     } else {
+      // otherwise return the target object
       return targetObj
     }
   }
 }
+
+/**
+ * Returns a plain object from an error 
+ * @param {string} key 
+ * @param {any} value 
+ * @returns {Object}
+ */
 const replaceErrors = (key, value) => {
   // from https://stackoverflow.com/a/18391400
   if (value instanceof Error) {
@@ -104,6 +131,13 @@ const transcript = (search, vars, fallback) => {
   return hydrateObj(dehydratedTarget, vars)
 }
 
+/**
+ * Hydrates a javascript object 
+ * @param {Object|string|any[]} obj 
+ * @param {Object} vars 
+ * @returns {null|Object|any[]|string} 
+ */
+
 const hydrateObj = (obj, vars = {}) => {
   if (obj == null) {
     return null
@@ -121,6 +155,14 @@ const hydrateObj = (obj, vars = {}) => {
     return obj
   }
 }
+
+
+/**
+ * 
+ * @param {strng} target 
+ * @param {Object} vars 
+ * @returns {string} 
+ */
 const evalTranscript = (target, vars = {}) => (
   function () {
     return eval('`' + target + '`')
