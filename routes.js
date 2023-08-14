@@ -4,6 +4,12 @@ import os from "os";
 import { pathToFileURL } from "url";
 import recordError from './api/record-error.js'
 
+/**
+* Lists all files in {dir}
+* @function
+* @param {string} dir - The root directory name
+* @returns {Promise<string[]>}
+*/
 async function getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true })
   const files = await Promise.all(dirents.map((dirent) => {
@@ -13,6 +19,12 @@ async function getFiles(dir) {
   return Array.prototype.concat(...files)
 }
 
+/**
+* Creates an API endpoint for files in the /api directory
+* @function
+* @param {Object} app - An express app instance
+* @returns {Promise<void>}
+*/
 export default async (app) => {
   const startTS = Date.now()
   const files = await getFiles('./api/endpoints')

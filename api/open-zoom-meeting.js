@@ -8,6 +8,11 @@ const hackNightSettings = {
   participants_share_simultaneously: 'multiple'
 }
 
+/**
+* Pick a random host not used in a call
+* @function
+* @returns {Promise<Object>}
+*/
 async function availableHost() {
   const hosts = await Prisma.get("host", {
     where: {
@@ -26,6 +31,14 @@ async function availableHost() {
   return hosts[Math.floor(Math.random() * hosts.length)];
 }
 
+/**
+* Opens a new zoom meeting 
+* @function  
+* @param {Object} prop 
+* @param {string} prop.creatorSlackID - The ID of the slack creator
+* @param {boolean} prop.isHackNight - Should the zoom meeting be a hack night
+* @returns {Object}
+*/
 export default async ({ creatorSlackID, isHackNight } = {}) => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-

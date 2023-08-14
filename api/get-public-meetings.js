@@ -2,6 +2,12 @@ import Prisma from "./prisma.js"
 import transcript from "./transcript.js"
 import fetch from 'node-fetch'
 
+/**
+* Get the number of participants in a slack call
+* @function
+* @param {string} slackCallID - The ID of the slack call
+* @returns {Promise<number>}
+*/
 async function getParticipantCount(slackCallID) {
   const callInfo = await fetch('https://slack.com/api/calls.info', {
     method: 'post',
@@ -19,6 +25,11 @@ async function getParticipantCount(slackCallID) {
   return callInfo.call.users.length
 }
 
+/**
+* Get a list of meetings having one or more participants
+* @function
+* @returns {Promise<Object[]>}
+*/
 export default async function() {
   const meetings = await Prisma.get('meeting', {where: {NOT: {startedAt: {equals: null}}, endedAt: {equals: null}, public: true}})
   const meetingsWithParticipants = await Promise.all(

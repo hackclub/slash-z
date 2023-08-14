@@ -1,6 +1,12 @@
 import airbridge from "./airbridge.js"
 import fetch from 'node-fetch'
 
+/**
+* Returns true if the channelID is a public slack channel
+* @function
+* @param {string} channelID - The ID of the slack channel
+* @returns {Promise<boolean>}
+*/
 export default async function(channelID) {
   if (channelID[0].toLowerCase() != 'c') {
     // slack channels start with 'c'

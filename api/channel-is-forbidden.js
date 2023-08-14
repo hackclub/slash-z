@@ -1,3 +1,9 @@
+/**
+* check if the slack channel is forbidden
+* @function 
+* @param {string} channelID - The ID of the slack channel
+* @returns {boolean}
+*/
 export default (channelID) => {
   const forbiddenChannels = [
     'C74HZS5A5', // #lobby

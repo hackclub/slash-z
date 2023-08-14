@@ -3,6 +3,13 @@ import { readFileSync } from 'fs'
 import path from 'path'
 import os from "os"
 
+/**
+* Returns the plural of {word}
+* @function
+* @param {string} word
+* @param {number} count
+* @returns {string}
+*/
 const pluralize = (word, count) => {
   // want to use this method? make sure to add your word to transcript.yml under 'plurals'
   if (count == 1) {
@@ -18,6 +25,11 @@ const sample = (arr) => {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
+/**
+* Loads the transcipt.yml file
+* @function
+* @returns {string}
+*/
 const loadTranscript = () => {
   const moduleURL = new URL(import.meta.url);
   let __dirname = decodeURIComponent(path.dirname(moduleURL.pathname));
@@ -32,6 +44,7 @@ const loadTranscript = () => {
     console.error(e)
   }
 }
+
 const recurseTranscript = (searchArr, transcriptObj, fallback) => {
   const searchCursor = searchArr.shift()
   const targetObj = transcriptObj[searchCursor]
@@ -66,6 +79,14 @@ const replaceErrors = (key, value) => {
   return value
 }
 
+/**
+* Returns the 
+* @function
+* @param {string} search - the word to transcribe
+* @param {Object} vars
+* @param {Object} fallback
+* @returns {string} 
+*/
 const transcript = (search, vars, fallback) => {
   if (vars) {
     console.log(
@@ -82,6 +103,7 @@ const transcript = (search, vars, fallback) => {
   const dehydratedTarget = recurseTranscript(searchArr, transcriptObj, fallback)
   return hydrateObj(dehydratedTarget, vars)
 }
+
 const hydrateObj = (obj, vars = {}) => {
   if (obj == null) {
     return null

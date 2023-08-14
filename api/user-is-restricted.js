@@ -1,5 +1,11 @@
 import fetch from 'node-fetch'
 
+/**
+* Determine if a channel is restricted or not
+* @function
+* @param {string} userID - The slack user ID
+* @returns {Promise<boolean>}
+*/
 export default async (userID) => {
   const userInfo = await fetch(`https://slack.com/api/users.info?user=${userID}`, {
     headers: {
