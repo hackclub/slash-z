@@ -16,8 +16,9 @@ export default async (req, res) => {
     if (query.id === "rx0fbo") {
       return res.redirect(`https://hackclub.zoom.us/j/84489216040?pwd=UXNNNTJxQjV5dEdqTVNzbkE0RlpTZz09`)
     }
-    
-    if (query.id === "1vu13b" && query.key !== currentTimeHash()) { // Special case for Hack Night
+
+    // Special case for Hack Night
+    if (query.id === "1vu13b" && query.key !== currentTimeHash()) { 
       const state = { meetingID: query.id }
       const stateString = encodeURIComponent(Buffer.from(JSON.stringify(state), "utf8").toString("base64"))
       

@@ -3,7 +3,9 @@ import isProd from "../../isprod.js"
 
 export default async (req, res) => {
   console.log({name: req.query.id})
+
   let user = await Prisma.find('authedAccount', { where: {name: req.query.id} })
+
   if (!user) {
     user = await Prisma.create('authedAccount', {name: req.query.id})
   }
