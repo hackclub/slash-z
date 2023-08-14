@@ -1,8 +1,6 @@
 import pkg from "@prisma/client"
 import metrics from "../metrics.js"
 const { PrismaClient } = pkg
-let prisma = new PrismaClient()
-
 import Bottleneck from 'bottleneck'
 
 const VERBOSE_PRISMA_LOGGING = process.env.VERBOSE_PRISMA_LOGGING ? false : process.env.VERBOSE_PRISMA_LOGGING=='true'
@@ -11,9 +9,18 @@ const limiter = new Bottleneck({
   maxConcurrent: 4,
 })
 
+let prisma = new PrismaClient()
 // prismaGet('Meeting')
 // prismaGet('Meeting', '01234567')
 // prismaGet('Meeting', { where: {id: '01234567'} })
+
+/**
+* Get all records matching clauses in options
+* @function
+* @param {string} table - The name of the database table
+* @param {Object} options - options
+* @returns {Promise<Object[]>}
+*/
 const get = async (table, options) => {
   const ts = Date.now()
   if (VERBOSE_PRISMA_LOGGING)
@@ -42,6 +49,14 @@ const get = async (table, options) => {
 // prismaFind('User')
 // prismaFind('User', '01234567')
 // prismaFind('User', )
+
+/**
+* Returns a single record matching the clauses in options
+* @function 
+* @param {string} table - The database table name
+* @param {Object} options - The query options
+* @returns {Promise<Object>}
+*/
 const find = async (table, options) => {
   const ts = Date.now()
   if (VERBOSE_PRISMA_LOGGING)
@@ -66,6 +81,13 @@ const find = async (table, options) => {
   }
 }
 
+/**
+* Returns the number of records in table
+* @function
+* @param {string} table - The database table name
+* @param {Object} - The query options
+* @returns {Promise<number>}
+*/
 const count = async (table, options) => {
   let where, orderBy, include
   if (VERBOSE_PRISMA_LOGGING)
@@ -87,6 +109,14 @@ const count = async (table, options) => {
   }
 }
 
+/**
+* Update fields on record with {recordID} in table
+* @function
+* @param {string} table - The table name in the database
+* @param {string} recordID - The ID of the record in table
+* @param {Object} fields - The fields to update on the record
+* @returns {Promise<Object>} 
+*/
 const patch = async (table, recordID, fields) => {
   const ts = Date.now()
   try {
@@ -108,6 +138,13 @@ const patch = async (table, recordID, fields) => {
   }
 }
 
+/**
+* Create a new record with {fields} in {table}
+* @function 
+* @param {string} table - The database table name
+* @param {Object} fields - The new record's values
+* @returns {Promise<Object>}
+*/
 const create = async (table, fields) => {
   const ts = Date.now()
   try {
@@ -124,6 +161,13 @@ const create = async (table, fields) => {
   }
 }
 
+/**
+* Delete the record with id {id} from {table}
+* @function
+* @param {string} table - The database table name
+* @param {string} id - The id of the record to delete in {table}
+* @returns {Promise<Object>}
+*/
 const destroy = async (table, id) => {
   const ts = Date.now()
   try {

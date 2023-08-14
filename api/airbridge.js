@@ -1,5 +1,6 @@
 import AirtablePlus from 'airtable-plus'
 import Bottleneck from 'bottleneck'
+
 const limiter = new Bottleneck({
   maxConcurrent: 2,
   // minTime: 5000
@@ -10,6 +11,12 @@ const deletionLimiter = new Bottleneck({
   minTime: 3000
 })
 
+/**
+* Get the base ID of an airtable database
+* @function
+* @param {string} baseID - defaults to 'Slash-z'
+* @returns {string}
+*/
 const getBaseID = function(baseID = 'Slash-z') {
   return {
     'Slash-z': 'appuEsdMf6hHXibSh',
@@ -17,6 +24,13 @@ const getBaseID = function(baseID = 'Slash-z') {
   }[baseID]
 }
 
+/**
+* Read records from {table} with respect to {options}
+* @function
+* @param {string} table - The airtable table name
+* @param {Object} options - Airtable options {table}
+* @returns {Promise<Object>}
+*/
 const get = async (table, options = {}) => {
   const ts = Date.now()
   const {base, ...otherOptions} = options
@@ -36,11 +50,26 @@ const get = async (table, options = {}) => {
   }
 }
 
+/**
+* Find a record from {table} with {options}
+* @function
+* @param {string} table - The airtable table name
+* @param {Object} options - Airtable options {table}
+* @returns {Promise<Object>}
+*/
 const find = async (table, options) => {
   const results = await get(table, {...options, maxRecords: 1})
   return results[0]
 }
 
+/**
+* Update the record with ID {recordID} in {table} with {fields}
+* @function
+* @param {string} table - The airtable table name
+* @param {string} recordID - The record ID 
+* @param {Object} fields - The fields to update
+* @returns {Promise<Object>}
+*/
 const patch = async (table, recordID, fields) => {
   const ts = Date.now()
   try {
@@ -58,6 +87,13 @@ const patch = async (table, recordID, fields) => {
   }
 }
 
+/**
+* Create a new record in {table} with {fields}
+* @function
+* @param {string} table - The airtable table name
+* @param {Object} fields - The fields to update
+* @returns {Promise<Object>}
+*/
 const create = async (table, fields) => {
   const ts = Date.now()
   try {
@@ -75,6 +111,13 @@ const create = async (table, fields) => {
   }
 }
 
+/**
+* Delete the record with ID {id} in {table}
+* @function
+* @param {string} table - The airtable table name
+* @param {string} id - The record ID 
+* @returns {Promise<Object>}
+*/
 const destroy = async (table, id) => {
   const ts = Date.now()
   const airtable = new AirtablePlus({

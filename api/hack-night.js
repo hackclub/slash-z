@@ -1,6 +1,11 @@
 import fetch from "node-fetch";
 import { currentTimeHash } from "./time-hash.js";
 
+/**
+* Get the title of a bookmarked slack channel
+* @function 
+* @returns {Promise<string>}
+*/
 export async function fetchBookmarkTitle () {
   const response = await fetch('https://slack.com/api/bookmarks.list?channel_id=C0JDWKJVA', {
     headers: {
@@ -12,6 +17,12 @@ export async function fetchBookmarkTitle () {
   return title;
 }
 
+/**
+* Set the bookmark title of a slack channel
+* @function 
+* @param {string} title - The new title of the bookmark
+* @returns {Promise<Object>}
+*/
 export async function setBookmarkTitle (title) {
   const response = await fetch('https://slack.com/api/bookmarks.edit', {
     method: 'POST',
@@ -31,16 +42,35 @@ export async function setBookmarkTitle (title) {
   return json;
 }
 
+/**
+* Return the number of participants in a hack night call
+* @function
+* @returns {Promise<number>}
+*/
 export async function fetchParticipantNumber () {
   const title = await fetchBookmarkTitle();
   const number = +(title.split('').filter(char => !isNaN(char)).join('') || '0');
   return number;
 }
 
+/**
+* Set the participant number in a hack night call
+* @function
+* @param {number} - number
+* @returns {Promise<string>}
+*/
 export async function setParticipantNumber (number) {
   return await setBookmarkTitle('Join Hack Night! 👤 ' + number);
 }
 
+/**
+* Return the stats of a hack night call
+* @function
+* @param {string} event - The event name e.g "meeting.ended"
+* @param {any} meeting
+* @param {Object} payload
+* @returns {Promise<void>}
+*/
 export default async function hackNightStats (event, meeting, payload) {
   switch (event) {
     case 'meeting.ended':

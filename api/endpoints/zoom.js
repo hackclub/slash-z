@@ -23,6 +23,7 @@ export default async (req, res) => {
       eventType: req.body.event,
       rawData: JSON.stringify(req.body, null, 2),
     }
+
     if (meeting) {
       fields.meeting = { connect: { id: meeting.id } }
     }
@@ -64,6 +65,5 @@ export default async (req, res) => {
         console.log(JSON.stringify(req.body, null, 2))
         break
     }
-
   })
 }

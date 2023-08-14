@@ -1,5 +1,11 @@
 import prisma from "./prisma.js"
 
+/**
+* Get scheduled meetings
+* @function
+* @param {string} user - The slack ID of the user
+* @returns {Promise<Object[]>}
+*/
 export default async function(user) {
   const linksWhere = {
     creatorSlackID: user,

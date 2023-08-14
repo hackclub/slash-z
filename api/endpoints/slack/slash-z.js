@@ -55,10 +55,6 @@ export default async (req, res) => {
     })
   })
 
-  // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
-  // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
-  // ¯\_(ツ)_/¯
-
   let meeting
   try {
     meeting = await openZoomMeeting({ creatorSlackID: req.body.user_id })
@@ -140,6 +136,7 @@ export default async (req, res) => {
       }
     }]
   }
+
   if (meeting.password) {
     slackPostFields.blocks.push({
       type: 'section',

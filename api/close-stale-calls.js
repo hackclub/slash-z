@@ -1,12 +1,20 @@
 import Prisma from "./prisma.js"
 import closeZoomCall from "./close-zoom-call.js"
 
+/**
+ * Closes call older than two minutes with no participants
+* @param {Object} param
+* @param {string} param.creatorSlackID 
+* @returns {any[]}
+*/
 export default async ({creatorSlackID} = {}) => {
   const startTS = Date.now()
   console.log(`Starting to close stale calls at ${startTS}`)
 
   const cutoff = 60 * 2 * 1000 // 2 minutes
 
+  // get meetings started more than two minutes ago
+  // that haven't ended
   const where = {
     endedAt: {
       equals: null,
@@ -26,7 +34,6 @@ export default async ({creatorSlackID} = {}) => {
     
     if (closedCall) {
       closedCalls.push(closedCall)
-      
     }
   }))
 

@@ -1,6 +1,12 @@
 import airbridge from "./airbridge.js"
 import fetch from 'node-fetch'
 
+/**
+* Returns true if the channelID is a public slack channel
+* @function
+* @param {string} channelID - The ID of the slack channel
+* @returns {Promise<boolean>}
+*/
 export default async function(channelID) {
   if (channelID[0].toLowerCase() != 'c') {
     // slack channels start with 'c'
@@ -19,9 +25,9 @@ export default async function(channelID) {
       isPublic = isPublic && (
         channelInfo.ok &&
         !channelInfo.channel['is_private'] &&
-        !channelInfo.channel['is_im'] &&
-        !channelInfo.channel['is_mpim'] &&
-        !channelInfo.channel['is_group']
+        !channelInfo.channel['is_im'] && // is_im: private conversation between two individuals or with a bot
+        !channelInfo.channel['is_mpim'] && // is_mpim: unnamed private conversation between multiple users
+        !channelInfo.channel['is_group'] // is_group: private channel created before 2021
       )
     }),
     // check Operations airtable to see if this channel isn't a club channel

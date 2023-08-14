@@ -1,20 +1,27 @@
 import Bottleneck from 'bottleneck'
-
 import Prisma from './prisma.js'
 import openZoomMeeting from "./open-zoom-meeting.js"
 import sendHostKey from "./send-host-key.js";
 
+/**
+* finds an existing meeting or create a new one for the query id if not found
+* @function 
+* @param {string} queryID - The schedule link id
+* @returns {Promise<any>}
+*/
 const findOrCreateMeeting = async (queryID) => {
   // Find the scheduling link record with the ID we've been given
   let link = await Prisma.find('schedulingLink', {
     where: {name: queryID}
   })
+
   if (!link) {
     const err = Error('Scheduling meeting not found!')
     err.statusCode = 404
     throw err
   }
 
+  // find open meetings using the schedule link id
   let openMeetingsCount = await Prisma.count('meeting', { where: { endedAt: {
     equals: null,
   }, schedulingLinkId: link.id } })
