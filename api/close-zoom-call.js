@@ -52,7 +52,7 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
     await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
 
     // we need to delete the meeting if not already deleted
-    deleteMeeting();
+    await deleteMeeting();
 
     return null;    
   }
@@ -99,7 +99,7 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
   await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
 
   // delete the meeting from zoom to invalidate the url
-  deleteMeeting();
+  await deleteMeeting();
 
   return meeting.id;
 };

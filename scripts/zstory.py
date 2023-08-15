@@ -270,7 +270,7 @@ def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
         quit()
 
     started_at = datetime.fromisoformat(started_at)
-    ended_at = datetime.fromisoformat(ended_at)
+    ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
     print(f"Zoom started using license {zoom_id} | {started_at}")
     print(f"Zoom Join Link: {join_url}")
