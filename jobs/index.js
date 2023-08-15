@@ -11,14 +11,14 @@ import './migrate-airtable-to-prisma.js'
 // we'll queue it up for a couple minutes later in case we have multiple rebuilds in a row
 if (isProd) {
   console.log('Queueing jobs...')
-  setTimeout(cleanupAirtableRecords, 1000 * 60 * 10) // after 10 minutes in milliseconds
+  // setTimeout(cleanupAirtableRecords, 1000 * 60 * 10) // after 10 minutes in milliseconds
 
-  // setTimeout(() => {
-  //   setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
-  // }, 1000 * 60) // after 1 minute in milliseconds
+  setTimeout(() => {
+  setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
+  }, 1000 * 60) // after 1 minute in milliseconds
 } else {
-  // closeStaleCalls()
-  // setTimeout(() => {
-  //   setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
-  // }, 1000 * 60) // after 1 minute in milliseconds
+  closeStaleCalls()
+  setTimeout(() => {
+  setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
+  }, 1000 * 60) // after 1 minute in milliseconds
 }
