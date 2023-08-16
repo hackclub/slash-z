@@ -104,10 +104,11 @@ export default class ZoomClient {
     const pathPrefix = opts.path.split("/")[0]
     console.log(opts)
     let startTimeMs = Date.now()
+    const access_token = await this.token();
     return fetch(`https://api.zoom.us/v2/${opts.path}`, {
       method: opts.method,
       headers: {
-        authorization: `Bearer ${this.token()}`,
+        authorization: `Bearer ${access_token}`,
         ...opts.headers
       },
       body: JSON.stringify(opts.body)
