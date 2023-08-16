@@ -151,6 +151,7 @@ export default class ZoomClient {
     const response = await fetch(`https://zoom.us/oauth/token`, {
       method: "POST",
       headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
         "Host": "zoom.us",
         "Authorization": `Basic ${key}`
       },
@@ -159,4 +160,5 @@ export default class ZoomClient {
     const result = await response.json();
     return result.access_token;
   }
+
 }
