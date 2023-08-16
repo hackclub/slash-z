@@ -124,7 +124,6 @@ export default class ZoomClient {
       // We don't want to try parsing JSON for this, because there is no JSON to parse
       console.log({response: r.ok})
 
-        const msg = await r.json();
       if (r.ok && r.status != 204) {
         let payload = r.json()
         payload.http_code = r.status
@@ -151,12 +150,13 @@ export default class ZoomClient {
     const key = process.env.ZOOM_KEY;
     const account_id = process.env.ZOOM_ACCOUNT_ID;
 
-    const response = await fetch(`https://zoom.us/oauth/token?grant_type=account_credentials&account_id=${account_id}`, {
+    const response = await fetch(`https://zoom.us/oauth/token`, {
       method: "POST",
       headers: {
         "Host": "zoom.us",
         "Authorization": `Basic ${key}`
-      }
+      },
+      body: `grant_type=account_credentials&account_id=${account_id}`
     });
     const result = await response.json();
     return result.access_token;
