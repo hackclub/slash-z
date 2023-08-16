@@ -144,14 +144,20 @@ export default class ZoomClient {
   /**
   * Generates a jwt for sending request
   * @method
-  * @returns {string}
+  * @returns {Promise<string>}
   */
-  token() {
-    const payload = {
-      iss: this.zoomKey,
-      exp: new Date().getTime() + 5000,
-    }
-    const token = jwt.sign(payload, this.zoomSecret)
-    return token
+  async token() {
+    const key = process.env.ZOOM_KEY;
+    const account_id = process.env.ZOOM_ACCOUNT_ID;
+
+    const response = await fetch(`https://zoom.us/oauth/token?grant_type=account_credentials&account_id=${account_id}`, {
+      method: "POST",
+      headers: {
+        "Host": "zoom.us",
+        "Authorization": `Basic ${key}`
+      }
+    });
+    const result = await response.json();
+    return result.access_token;
   }
 }
