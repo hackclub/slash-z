@@ -123,13 +123,16 @@ export default class ZoomClient {
       // We don't want to try parsing JSON for this, because there is no JSON to parse
       console.log({response: r.ok})
 
+        const msg = await r.json();
       if (r.ok && r.status != 204) {
         let payload = r.json()
         payload.http_code = r.status
         return payload
       } else if (r.status == 204) {
+          console.log(msg);
         return {http_code:r.status}
       } else {
+          console.log(msg);
         return {http_code:r.status}
       }
     }).catch(err => {
