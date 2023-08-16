@@ -104,10 +104,11 @@ export default class ZoomClient {
     const pathPrefix = opts.path.split("/")[0]
     console.log(opts)
     let startTimeMs = Date.now()
+    const access_token = await this.token();
     return fetch(`https://api.zoom.us/v2/${opts.path}`, {
       method: opts.method,
       headers: {
-        authorization: `Bearer ${this.token()}`,
+        authorization: `Bearer ${access_token}`,
         ...opts.headers
       },
       body: JSON.stringify(opts.body)
@@ -141,14 +142,23 @@ export default class ZoomClient {
   /**
   * Generates a jwt for sending request
   * @method
-  * @returns {string}
+  * @returns {Promise<string>}
   */
-  token() {
-    const payload = {
-      iss: this.zoomKey,
-      exp: new Date().getTime() + 5000,
-    }
-    const token = jwt.sign(payload, this.zoomSecret)
-    return token
+  async token() {
+    const key = process.env.ZOOM_KEY;
+    const account_id = process.env.ZOOM_ACCOUNT_ID;
+
+    const response = await fetch(`https://zoom.us/oauth/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Host": "zoom.us",
+        "Authorization": `Basic ${key}`
+      },
+      body: `grant_type=account_credentials&account_id=${account_id}`
+    });
+    const result = await response.json();
+    return result.access_token;
   }
+
 }
