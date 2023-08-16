@@ -129,10 +129,8 @@ export default class ZoomClient {
         payload.http_code = r.status
         return payload
       } else if (r.status == 204) {
-          console.log(msg);
         return {http_code:r.status}
       } else {
-          console.log(msg);
         return {http_code:r.status}
       }
     }).catch(err => {
