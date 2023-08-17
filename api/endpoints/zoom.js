@@ -6,6 +6,15 @@ import slackAppHomeOpened from "../slack-app-home-opened.js"
 import hackNightStats from "../hack-night.js"
 
 
+
+const getZoomId = (req) => {
+  try {
+      return req.body.payload.object.id;
+  } catch {
+    return null
+  }
+}
+
 export default async (req, res) => {
   return await ensureZoomAuthenticated(req, res, async () => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
@@ -15,13 +24,6 @@ export default async (req, res) => {
 
     // Let's lookup our webhook event to see if we already got this event.
 
-    const getZoomId = (req) => {
-      try {
-        return req.body.payload.object.id;
-      } catch {
-        return null
-      }
-    }
     const zoomCallId = getZoomId(req);
 
     const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallId?.toString() }, include: { schedulingLink: true } })
@@ -35,7 +37,6 @@ export default async (req, res) => {
     if (meeting) {
       fields.meeting = { connect: { id: meeting.id } }
     }
-
     await Prisma.create('webhookEvent', fields)
 
     if (!meeting) {
