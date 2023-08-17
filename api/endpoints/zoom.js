@@ -33,7 +33,7 @@ async function handleSpecialHackNightLogic(req, meeting) {
   const isHackNight = meeting.schedulingLink?.name === "1vu13b";
 
   if (isHackNight) 
-    await hackNightStats(req.body.event, meeting, req.body.paylod);
+    await hackNightStats(req.body.event, meeting, req.body.payload);
 }
 
 // Zoom will sometimes send duplicate events, drop an event, or send an
