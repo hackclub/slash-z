@@ -48,6 +48,8 @@ async function handleEvent(req, meeting) {
         event_ts: req.body.event_ts,
         event: req.body.event
       }  
+      console.log(JSON.stringify(req.body))
+      console.log(JSON.stringify(response))
       return response
   }
 
