@@ -15,18 +15,16 @@ async function getAssociatedMeeting(req) {
   }
 }
 
-async function persistWebhookEvents(req, meeting) {
-  const fields = {
+async function persistWebhookEventsIfNecessary(req, meeting) {
+  if (!meeting)
+    return
+
+  await Prisma.create('webhookEvent', {
     timestamp: new Date(req.body.event_ts),
     eventType: req.body.event,
     rawData: JSON.stringify(req.body, null, 2),
-  }
-
-  if (meeting) {
-    fields.meeting = { connect: { id: meeting.id } }
-  }
-  await Prisma.create('webhookEvent', fields)
-
+    meeting: { connect: { id: meeting.id } }
+  })
 }
 
 async function handleSpecialHackNightLogic(req, meeting) {
@@ -75,7 +73,7 @@ export default async (req, res) => {
   return await ensureZoomAuthenticated(req, res, async () => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
     const meeting = await getAssociatedMeeting(req);
-    await persistWebhookEvents(req, meeting);
+    await persistWebhookEventsIfNecessary(req, meeting);
     return await handleEvent(req, meeting);
   })
 }
