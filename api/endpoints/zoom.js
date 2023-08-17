@@ -24,7 +24,7 @@ export default async (req, res) => {
     }
     const zoomCallId = getZoomId(req);
 
-    const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallId.toString() }, include: { schedulingLink: true } })
+    const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallId?.toString() }, include: { schedulingLink: true } })
 
     const fields = {
       timestamp: new Date(req.body.event_ts),
