@@ -24,6 +24,10 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
     zoomKey: host.apiKey, 
   });
 
+  /**
+  * Invalidates a zoom call id
+  * @function
+  */
   const deleteMeeting = async () => {
     const response = await zoom.delete({ path: `meetings/${meeting.zoomID}` });
     if (response.http_code == 400) {
@@ -82,23 +86,11 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
     }).then((r) => r.json());
   }
 
-  // 2) set meeting status in zoom to 'end'
-  if(!fromWebhook){
-    // set the meeting status to 'end' 
-    // irrespective of participants
-    await zoom.put({
-      path: `meetings/${meeting.zoomID}/status`,
-      body: { action: "end" },
-    });
-
-    await Prisma.create('customLogs', { text: `slash_z_ended_call_${zoomMetrics?.total_records || "unknown"
-  }_participants`, zoomCallId: meeting.zoomID })
-  }
-
-  // 3) set the meeting end time 
+  // 2) set the meeting end time 
   await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
 
-  // delete the meeting from zoom to invalidate the url
+  // delete the meeting from zoom to invalidate the url 
+  // this will happen iff there are no participants left in a call
   await deleteMeeting();
 
   return meeting.id;
