@@ -39,7 +39,7 @@ async function handleEvent(req, meeting) {
   // First, handle events that do not require a meeting
   switch(req.body.event) {
     case 'endpoint.url_validation':    
-      const encryptedToken = crypto.createHmac('sha256', process.env.ZOOM_VERIFICATION_TOKEN).update(req.payload.plainToken).digest("hex");
+      const encryptedToken = crypto.createHmac('sha256', process.env.ZOOM_WEBHOOK_SECRET_TOKEN).update(req.payload.plainToken).digest("hex");
       const response = {
         payload: {
           plainToken: req.payload.plainToken,
