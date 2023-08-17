@@ -14,7 +14,6 @@ export default async (req, res) => {
     // event delayed (in testing I found up to 30 minutes late)
 
     // Let's lookup our webhook event to see if we already got this event.
-    const zoomCallID = req.body.payload.object.id
 
     const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallID.toString() }, include: { schedulingLink: true } })
 
@@ -31,7 +30,7 @@ export default async (req, res) => {
     await Prisma.create('webhookEvent', fields)
 
     if (!meeting) {
-      console.log('Meeting not found, skipping...', zoomCallID)
+      console.log('Meeting not found, skipping...', req.body.payload.object.id)
       return
     }
     
@@ -41,8 +40,8 @@ export default async (req, res) => {
 
     switch (req.body.event) {
       case 'meeting.ended':
-        await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: zoomCallID || "undefined" })
-        console.log('Attempting to close call w/ ID of', zoomCallID)
+        await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: req.body.payload.object.id || "undefined" })
+        console.log('Attempting to close call w/ ID of', req.body.payload.object.id)
         return await closeZoomCall(zoomCallID, false)
         break
       case 'meeting.participant_joined':
@@ -58,6 +57,9 @@ export default async (req, res) => {
         break
       case 'recording.completed':
         return await slackAppHomeOpened(meeting.creatorSlackID, false)
+        break
+      case 'endpoint.url_validation':
+        return true
         break
       default:
         console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
