@@ -76,6 +76,6 @@ export default async (req, res) => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
     const meeting = await getAssociatedMeeting(req);
     await persistWebhookEvents(req, meeting);
-    return await handleEvent(req.body.event, meeting);
+    return await handleEvent(req, meeting);
   })
 }
