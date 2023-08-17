@@ -8,10 +8,9 @@ import fetch from "node-fetch";
 * @function
 * @param {string} zoomID - The zoom call id
 * @param {boolean} forceClose - force close the zoom call. Defaults to false
-* @param {boolean} fromWebhook - The record ID 
 * @returns {Promise<Object>}
 */
-export default async (zoomID, forceClose = false, fromWebhook = false) => {
+export default async (zoomID, forceClose = false) => {
 
   const meeting = await Prisma.find("meeting", {
     where: { zoomID },
