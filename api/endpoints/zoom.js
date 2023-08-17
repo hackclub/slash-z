@@ -61,20 +61,31 @@ async function handleEvent(req, res, meeting) {
     case 'meeting.ended':
       await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: meeting.id || "undefined" })
       console.log('Attempting to close call w/ ID of', )
-      return await closeZoomCall(meeting.id, false)
-    case 'meeting.participant_joined':
+      await closeZoomCall(meeting.id, false)
+      break
+
+      case 'meeting.participant_joined':
       console.log('triggered!')
-      return await updateSlackCallParticipantList('add', meeting.slackCallID, req.body.payload.object.participant)
+      await updateSlackCallParticipantList('add', meeting.slackCallID, req.body.payload.object.participant)
+      break
+
     case 'meeting.participant_left':
-      return await updateSlackCallParticipantList('remove', meeting.slackCallID, req.body.payload.object.participant)
+      await updateSlackCallParticipantList('remove', meeting.slackCallID, req.body.payload.object.participant)
+      break
+
     case 'recording.completed':
-      return await slackAppHomeOpened(meeting.creatorSlackID, false)
+      await slackAppHomeOpened(meeting.creatorSlackID, false)
+      break
+
     default:
       console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
       console.log(`Just in case, here's the info:`)
       console.log(JSON.stringify(req.body, null, 2))
-      break
+      res.status(404)
+      return;
   }
+
+  res.status(200).send('Success!')
 }
 
 export default async (req, res) => {
@@ -82,6 +93,6 @@ export default async (req, res) => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
     const meeting = await getAssociatedMeeting(req);
     await persistWebhookEventsIfNecessary(req, meeting);
-    return await handleEvent(req, res, meeting);
+    await handleEvent(req, res, meeting);
   })
 }
