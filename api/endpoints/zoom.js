@@ -41,12 +41,8 @@ async function handleEvent(req, meeting) {
     case 'endpoint.url_validation':    
       const encryptedToken = crypto.createHmac('sha256', process.env.ZOOM_WEBHOOK_SECRET_TOKEN).update(req.body.payload.plainToken).digest("hex");
       const response = {
-        payload: {
-          plainToken: req.body.payload.plainToken,
-          encryptedToken: encryptedToken
-        },
-        event_ts: req.body.event_ts,
-        event: req.body.event
+        plainToken: req.body.payload.plainToken,
+        encryptedToken: encryptedToken
       }  
       console.log(JSON.stringify(req.body))
       console.log(JSON.stringify(response))
