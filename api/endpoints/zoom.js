@@ -72,8 +72,8 @@ export default async (req, res) => {
       return
     }
     
-    handleSpecialHackNightLogic(req, meeting)
+    await handleSpecialHackNightLogic(req, meeting)
 
-    handleEvent(req.body.event, meeting);
+    return await handleEvent(req.body.event, meeting);
   })
 }
