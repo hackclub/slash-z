@@ -15,10 +15,16 @@ export default async (req, res) => {
 
     // Let's lookup our webhook event to see if we already got this event.
 
-    let meeting;
-    if (req.body.payload.object.id) {
-      meeting = await Prisma.find('meeting', { where: { zoomID: req.body.payload.object.id.toString() }, include: { schedulingLink: true } })
+    const getZoomId = (req) => {
+      try {
+        return req.body.payload.object.id;
+      } catch {
+        return null
+      }
     }
+    const zoomCallId = getZoomId(req);
+
+    const meeting = await Prisma.find('meeting', { where: { zoomID: zoomCallId.toString() }, include: { schedulingLink: true } })
 
     const fields = {
       timestamp: new Date(req.body.event_ts),
@@ -33,7 +39,7 @@ export default async (req, res) => {
     await Prisma.create('webhookEvent', fields)
 
     if (!meeting) {
-      console.log('Meeting not found, skipping...', req.body.payload.object.id)
+      console.log('Meeting not found, skipping...', zoomCallId)
       return
     }
     
@@ -43,9 +49,9 @@ export default async (req, res) => {
 
     switch (req.body.event) {
       case 'meeting.ended':
-        await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: req.body.payload.object.id || "undefined" })
-        console.log('Attempting to close call w/ ID of', req.body.payload.object.id)
-        return await closeZoomCall(zoomCallID, false)
+        await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: zoomCallId || "undefined" })
+        console.log('Attempting to close call w/ ID of', )
+        return await closeZoomCall(zoomCallId, false)
         break
       case 'meeting.participant_joined':
         console.log('triggered!')
