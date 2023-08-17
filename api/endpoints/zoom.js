@@ -9,7 +9,7 @@ import hackNightStats from "../hack-night.js"
 async function getAssociatedMeeting(req) {
   try {
       const meetingId = req.body.payload.object.id;
-      return await Prisma.find('meeting', { where: { zoomID: zoomCallId?.toString() }, include: { schedulingLink: true } })
+      return await Prisma.find('meeting', { where: { zoomID: meetingId }, include: { schedulingLink: true } })
   } catch {
     return null
   }
