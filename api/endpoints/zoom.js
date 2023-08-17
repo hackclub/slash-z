@@ -4,7 +4,7 @@ import ensureZoomAuthenticated from "../ensure-zoom-authenticated.js"
 import updateSlackCallParticipantList from "../update-slack-call-participant-list.js"
 import slackAppHomeOpened from "../slack-app-home-opened.js"
 import hackNightStats from "../hack-night.js"
-
+import crypto from "crypto"
 
 async function getAssociatedMeeting(req) {
   try {
@@ -38,8 +38,17 @@ async function handleSpecialHackNightLogic(req, meeting) {
 async function handleEvent(req, meeting) {
   // First, handle events that do not require a meeting
   switch(req.body.event) {
-    case 'endpoint.url_validation':
-      return true
+    case 'endpoint.url_validation':    
+      const encryptedToken = crypto.createHmac('sha256', process.env.ZOOM_VERIFICATION_TOKEN).update(req.payload.plainToken).digest("hex");
+      const response = {
+        payload: {
+          plainToken: req.payload.plainToken,
+          encryptedToken: encryptedToken
+        },
+        event_ts: req.body.event_ts,
+        event: req.body.event
+      }  
+      return response
   }
 
   if (!meeting) {
