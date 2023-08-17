@@ -85,8 +85,8 @@ export default async (zoomID, forceClose = false, fromWebhook = false) => {
   // 2) set meeting status in zoom to 'end'
   if(!fromWebhook){
     
-    // we should close a call only if total_records is defined
-    if (zoomMetrics.total_records) {
+    // we should close a call only if total_records is defined and 0
+    if (zoomMetrics.total_records == 0) {
         await Prisma.create('customLogs', { text: `slash_z_ended_call_${zoomMetrics.total_records}_participants`, zoomCallId: meeting.zoomID })
 
         // set the meeting status to 'end' 
