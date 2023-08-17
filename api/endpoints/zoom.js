@@ -35,7 +35,7 @@ async function handleSpecialHackNightLogic(req, meeting) {
 }
 
 // Zoom will sometimes send duplicate events, drop an event, or send an
-async function handleEvent(req, meeting) {
+async function handleEvent(req, res, meeting) {
   // First, handle events that do not require a meeting
   switch(req.body.event) {
     case 'endpoint.url_validation':    
@@ -46,7 +46,8 @@ async function handleEvent(req, meeting) {
       }  
       console.log(JSON.stringify(req.body))
       console.log(JSON.stringify(response))
-      return response
+      res.status(200).json(response)
+      return;
   }
 
   if (!meeting) {
@@ -81,6 +82,6 @@ export default async (req, res) => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
     const meeting = await getAssociatedMeeting(req);
     await persistWebhookEventsIfNecessary(req, meeting);
-    return await handleEvent(req, meeting);
+    return await handleEvent(req, res, meeting);
   })
 }
