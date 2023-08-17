@@ -37,8 +37,21 @@ async function handleSpecialHackNightLogic(req, meeting) {
 }
 
 // Zoom will sometimes send duplicate events, drop an event, or send an
-async function handleEvent(evt, meeting) {
-  switch (evt) {
+async function handleEvent(req, meeting) {
+  // First, handle events that do not require a meeting
+  switch(req.body.event) {
+    case 'endpoint.url_validation':
+      return true
+  }
+
+  if (!meeting) {
+    console.log('Meeting not found, skipping...')
+    return
+  }
+
+  await handleSpecialHackNightLogic(req, meeting)
+
+  switch (req.body.event) {
     case 'meeting.ended':
       await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: meeting.id || "undefined" })
       console.log('Attempting to close call w/ ID of', )
@@ -50,8 +63,6 @@ async function handleEvent(evt, meeting) {
       return await updateSlackCallParticipantList('remove', meeting.slackCallID, req.body.payload.object.participant)
     case 'recording.completed':
       return await slackAppHomeOpened(meeting.creatorSlackID, false)
-    case 'endpoint.url_validation':
-      return true
     default:
       console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
       console.log(`Just in case, here's the info:`)
@@ -63,17 +74,8 @@ async function handleEvent(evt, meeting) {
 export default async (req, res) => {
   return await ensureZoomAuthenticated(req, res, async () => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
-
     const meeting = await getAssociatedMeeting(req);
     await persistWebhookEvents(req, meeting);
-
-    if (!meeting) {
-      console.log('Meeting not found, skipping...', zoomCallId)
-      return
-    }
-    
-    await handleSpecialHackNightLogic(req, meeting)
-
     return await handleEvent(req.body.event, meeting);
   })
 }
