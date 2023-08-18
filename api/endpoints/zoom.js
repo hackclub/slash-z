@@ -52,7 +52,7 @@ async function handleEvent(req, res, meeting) {
 
   if (!meeting) {
     console.log('Meeting not found, skipping...')
-    res.status(200)
+    res.status(404).send("That meeting does not exist")
     return
   }
 
@@ -82,7 +82,7 @@ async function handleEvent(req, res, meeting) {
       console.log(`Recieved '${req.body.event}' event from Zoom webhook, which I don't know how to process... Skipping`)
       console.log(`Just in case, here's the info:`)
       console.log(JSON.stringify(req.body, null, 2))
-      res.status(404)
+      res.status(415).send("Unsupported webhook event")
       return;
   }
 
