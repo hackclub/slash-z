@@ -60,9 +60,9 @@ async function handleEvent(req, res, meeting) {
 
   switch (req.body.event) {
     case 'meeting.ended':
-      await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: meeting.id || "undefined" })
+      await Prisma.create('customLogs', { text: 'zoom_end_meeting_webhook', zoomCallId: meeting.zoomID || "undefined" })
       console.log('Attempting to close call w/ ID of', )
-      await closeZoomCall(meeting.id, false)
+      await closeZoomCall(meeting.zoomID, false)
       break
 
       case 'meeting.participant_joined':
