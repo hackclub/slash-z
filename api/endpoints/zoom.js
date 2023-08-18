@@ -52,6 +52,7 @@ async function handleEvent(req, res, meeting) {
 
   if (!meeting) {
     console.log('Meeting not found, skipping...')
+    res.status(200)
     return
   }
 
