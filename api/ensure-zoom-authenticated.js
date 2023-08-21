@@ -4,6 +4,7 @@ export default async (req, res, callback) => {
   if (isZoomAuthenticRequest(req)) {
     await callback();
   } else {
+    metrics.increment("errors.zoom_webhook_auth_failed", 1);
     res.status(403).send('Unauthorized sender');
   }
 }
