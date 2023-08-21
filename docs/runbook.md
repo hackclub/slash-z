@@ -1,14 +1,28 @@
-
 # Slash-Z Runbook
 
+Generally, if you encounter an issue with slash-z — a malfunctioning or you find it misbehaving — create a related issue outlining the problem.
+
+## References
+- Grafana Dashboard: http://telemetry.hackclub.com/
+- Stale call: A Slack call with created two minutes ago relative to now with no participants in.
 
 ## Potential issue we can encounter in slash-z
 
 - Slash-z stops reporting to grafana
+- Slash-z does not update the participants on the slack call card
+- grafana dashboard reports high zoom license utilization
+- slash-z call links don't resolve
 
-## What to do in case of slash-z does not work properly
+## Slash-Z stops reporting to grafana
+/
 
-- Restart the Heroku dyno
+## Slash-Z does not update the participants on the Slack call card
+/
+## Grafana dashboard reports high zoom utilization
+This generally means that most of the available zoom licenses are being used in calls. This should generally automatically resolve after about two minutes if most of the calls are stale calls.
+
+## Slash-Z scheduled call links don't resolve
+This is most likely not a slash issue but rather an issue related to [hack.af](https://github.com/hackclub/hack.af). In case this is related to slash-z, it's best to check the slash-z logs to understand what actually happened.
 
 # How to certify that slash-z runs as it should
 
@@ -17,42 +31,48 @@
 1. Start a new call via slack using /z command
 2. Create a new call by hitting the endpoint [https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link](https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link) -- which the Google Calendar integration uses
 3. Report the number of open hosts along with the total number of zoom licenses in the db
-4. Keep track of the number of participants in a call
-5. Invalidate stale calls 
+4. Keep track of the number of participants in a call 
+5. Update the call participants list on a slack call card
+6. Invalidate stale calls 
 
 ## How to test if slash-z runs properly
 
 ## Testing slack calls 
 
-- start a new call from HackClub slack channel using `/z` command
-- A new call should be created and will look like this 
-![slack-call](./img/slack-call.png)
-- Join the call by clicking the Join button
-- Keep an eye on the Slack call message to make sure it updates with a gravar
-- If the participants card doesn't update, then something is definitely wrong
+1. start a new call from HackClub slack channel using `/z` command
+2. A new call should be created and will look like this 
+![slack-call](img/slack-call.png)
+3. Join the call by clicking the **Join** button
+4. After joining the call, the call card should updated with your gravatar ![slack-call-update](img/slack-call-update.png)
+5. Next, leave the call and your gravatar should disappear from the call card
 
-## Creating a new scheduled call
+## Testing scheduled calls
 
-- Start a new scheduled call by hitting [https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link](https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link)
-- get and copy the property value of `videoUri`
-- open the property value i.e the call link in a new tab -- this should trigger zoom to launch a new call 
-* take note of the zoom call id -- this will be useful later for following up with the call's events using the zstory script
+1. Start a new scheduled call by hitting [https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link](https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link)
+2. get and copy the property value of `videoUri`
+3. open the property value i.e the call link in a new tab — this should trigger zoom to launch a new call
+4. take note of the zoom call id -- this will be useful later for following up with the call's events using the zstory script
 > given a call such as **https://hackclub.zoom.us/j/81651504037?pwd=YlE1ekFHckNhSm9GZDJtd2NZNnozQT09#success**, the zoom id is right after the /j path -- in this case **81651504037**
-- join the call 
-* you may allow an additional person to join your same call to prove that the call link works okay
-- then leave the call with your testing partner if any
+5. join the call 
+6. you may allow an additional person to join your same call to prove that the call link works properly
+7. wait for two minutes while in the call
+8. then leave the call with your testing partner if any
 
-## Invalidate stale calls
+## Testing the garbage collector 
 
-- every minute, slash-z is going to fetch calls older than two minutes relative to it's current time and invalidate those if there are no participants in
+Every minute, slash-z is going to fetch stale calls and invalidate those if there are no participants in.
+1. First take a look at the Grafana dashboard and take note of the zoom license utilization
+2. Create a new call via Slack by running /z
+3. Do not join the call, checkout the Grafana dashboard again and the zoom license utilization should have risen.
+4. After two minutes, the zoom license utilization should drop; meaning the call was garbage collected since it's stale.
 
 ## Understanding the events that happened in a call
 
-* For a scheduled call, you will need the call id e.g obuvm
-- In your terminal, run `python3 scripts/zstory.py dissect obuvm` -- replace with your own call id
+1. For a scheduled call, you will need the call id e.g `obuvm`
+2. In your terminal, run `python3 scripts/zstory.py dissect obuvm` -- replace with your own call id
 
-* To understand the events in a particular call, you will required the call id generated by zoom e.g 
-- In your terminal, run `python3 scripts/zstory.py dissect 81651504037` -- replace with your own zoom call id
+1. To understand the events in a particular call, you will required the call id generated by zoom e.g 
+2. In your terminal, run `python3 scripts/zstory.py dissect 81651504037` -- replace with your own zoom call id
 
 
 
