@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import metrics from "../metrics.js";
 // this is a helper method to make sure the zoom request we get is authentic
 export default async (req, res, callback) => {
   if (isZoomAuthenticRequest(req)) {
