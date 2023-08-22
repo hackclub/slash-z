@@ -284,10 +284,9 @@ with psycopg.connect(config("DATABASE_URL")) as conn:
     with conn.cursor() as cursor:
         match args.command:
             case "dissect":
-                if args.meetid:
-                    if args.meetid and args.z:
-                        dissect_slack_meeting(cursor, args.meetid)
-                        quit()
+                if args.meetid and args.z:
+                    dissect_slack_meeting(cursor, args.meetid)
+                    quit()
 
                 if args.meetid and not args.z:
                     dissect_scheduled_meeting(cursor, args.meetid, args.start, args.end)
