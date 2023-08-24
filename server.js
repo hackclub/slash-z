@@ -1,7 +1,7 @@
 import './env.js'
 import './jobs/index.js'
 import transcript from './api/transcript.js'
-import {getTotalHosts, getOpenHosts} from "./api/state.js";
+import { getTotalHosts, getOpenHosts, getCurrentlyActiveUsers } from "./api/state.js";
 import express from 'express'
 import responseTime from 'response-time'
 import bugsnag from './bugsnag.js'
@@ -54,7 +54,9 @@ const listener = app.listen(port, () => {
 setInterval(async () => {
   const total = await getTotalHosts()
   const open = await getOpenHosts()
+  const cau = await getCurrentlyActiveUsers();
 
   metrics.gauge("hosts.open", open)
   metrics.gauge("hosts.total", total)
+  metrics.gauge("app.cau", cau);
 }, 1000);
