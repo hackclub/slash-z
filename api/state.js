@@ -43,5 +43,4 @@ export async function getCurrentlyActiveUsers() {
     }));
 
     return participants.reduce((acc, curr) => acc + curr, 0);
-
 }
