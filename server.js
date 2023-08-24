@@ -58,5 +58,5 @@ setInterval(async () => {
 
   metrics.gauge("hosts.open", open)
   metrics.gauge("hosts.total", total)
-  metrics.gauge("app.cau", cau);
+  metrics.gauge("app.active_users", cau);
 }, 1000);
