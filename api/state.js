@@ -38,7 +38,6 @@ export async function getCurrentlyActiveUsers() {
         return zoomMetrics.participants.filter(p => !Object.hasOwn(p, "leave_time")).length;
     }));
 
-    let totalParticipants = participants.length === 0 ? 0 : participants.reduce((acc, curr) => acc + curr, 0);
-    return totalParticipants;
+    return participants.reduce((acc, curr) => acc + curr, 0);
 
 }
