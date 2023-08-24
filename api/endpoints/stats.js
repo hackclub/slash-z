@@ -5,7 +5,7 @@ export default async (req, res) => {
     hosts: {
       total: await getTotalHosts(),
       open: await getOpenHosts(),
-      cau: await getCurrentlyActiveUsers()
+      active_users: await getCurrentlyActiveUsers()
     }
   }
   return res.send(data)
