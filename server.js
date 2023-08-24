@@ -54,9 +54,9 @@ const listener = app.listen(port, () => {
 setInterval(async () => {
   const total = await getTotalHosts()
   const open = await getOpenHosts()
-  const cau = await getCurrentlyActiveUsers();
+  const active_users = await getCurrentlyActiveUsers();
 
   metrics.gauge("hosts.open", open)
   metrics.gauge("hosts.total", total)
-  metrics.gauge("app.active_users", cau);
+  metrics.gauge("app.active_users", active_users);
 }, 1000);
