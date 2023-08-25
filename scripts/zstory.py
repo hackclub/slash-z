@@ -128,7 +128,7 @@ def trace_events(cursor: Cursor, meetingId: str):
                     (meetingId, int(meeting.timestamp()), int(now.timestamp())),
                 )
                 if overlap > 0:
-                    print("\033[93mOverlap \033[0;0m")
+                    print(f"\033[93mOverlap {meetingId} by {overlap} seconds\033[0;0m")
 
             start_time = time
             meetings.append(start_time)
@@ -177,7 +177,7 @@ def filter_by_date(cursor: Cursor, start: int, end: int | None):
 
                 if overlap > 0:
                     print(
-                        f"\033[93mOverlap with ({p_meeting[0]}) by {overlap} seconds \033[0;0m"
+                        f"\033[93mOverlap ({p_meeting[0]}) by {overlap} seconds \033[0;0m"
                     )
 
             prev_meetings.append(_meeting)
