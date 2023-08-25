@@ -97,7 +97,6 @@ def check_overlap(meet_1: (str, int, int), meet_2: (str, int, int)):
 
 
 def trace_events(cursor: Cursor, meetingId: str):
-    # print("\nEvents...")
     # query the WebHook events of the meeting
     cursor.execute(
         'SELECT (timestamp, "rawData") FROM "WebhookEvent" WHERE "meetingId"=%s ORDER BY timestamp ASC',
@@ -119,7 +118,6 @@ def trace_events(cursor: Cursor, meetingId: str):
 
         time = datetime.fromisoformat(timestamp)
         if event_type == "meeting.started":
-            # print(f"\033[94mStart time = {time}\033[0;0m")
 
             for meeting in meetings:
                 # in the situation where there are two meetings that were started using the same zoom_id
@@ -130,7 +128,7 @@ def trace_events(cursor: Cursor, meetingId: str):
                     (meetingId, int(meeting.timestamp()), int(now.timestamp())),
                 )
                 if overlap > 0:
-                    print(f"\033[93mOverlap \033[0;0m")
+                    print("\033[93mOverlap \033[0;0m")
 
             start_time = time
             meetings.append(start_time)
@@ -249,19 +247,20 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 
                 if overlap > 0:
                     print(
-                        f"\033[93mOverlap with ({p_meeting[0]}) by {overlap} seconds \033[0;0m"
+                        f"\033[93mOverlap ({p_meeting[0]}) by {overlap} seconds \033[0;0m"
                     )
-
+                    
             prev_meetings.append(_meeting)
 
         print(f"\nMEETING #{idx+1}  (ID ={meetingId})")
-        print(f"LICENSE LOCK ({zoomId}) @ {started_at}")
-        print(f"JOIN LINK: {join_url}")
+        print(f"{'LICENSE LOCK':>16} ({zoomId}) @ {started_at}")
+        print(f"{'JOIN LINK:':>14} {join_url}")
+        print(f"{'EVENT LOG:':>14}")
         trace_events(cursor, meetingId)
 
         prev_meeting = (meetingId, started_at)
-        print("END OF EVENT LOG")
-        print(f"LICENSE UNLOCK ({zoomId}) @ {ended_at}")
+        print(f"{'END OF EVENT LOG':>20}")
+        print(f"{'LICENSE UNLOCK':>18} {zoomId} @ {ended_at}")
 
 
 def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
@@ -277,16 +276,16 @@ def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
     ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
     print(f"\nMEETING (ID = {meeting_id})")
-    print(f"LICENSE LOCK ({zoom_id}) @ {started_at}")
-    print(f"JOIN LINK: {join_url}")
-    print("EVENT LOG:")
+    print(f"{'LICENSE LOCK':>16} ({zoom_id}) @ {started_at}")
+    print(f"{'JOIN LINK:':>14} {join_url}")
+    print(f"{'EVENT LOG:':>14}")
     trace_events(cursor, meeting_id)
-    print("END OF EVENT LOG")
-    print(f"LICENSE UNLOCK ({zoom_id}) @ {ended_at}")
+    print(f"{'END OF EVENT LOG':>20}")
+    print(f"{'LICENSE UNLOCK':>18} {zoom_id} @ {ended_at}")
 
 
 # connect to the database
-with psycopg.connect(config("db_connection")) as conn:
+with psycopg.connect(config("DATABASE_URL")) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
         match args.command:
