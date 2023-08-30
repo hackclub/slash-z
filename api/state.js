@@ -35,6 +35,10 @@ export async function getCurrentlyActiveUsers() {
             path: `metrics/meetings/${call.zoomID}/participants`
         });
 
+        if (zoomMetrics == null || !("participants" in zoomMetrics)) {
+          return 0;
+        }
+
         return zoomMetrics.participants.filter(p => !Object.hasOwn(p, "leave_time")).length;
     }));
 
