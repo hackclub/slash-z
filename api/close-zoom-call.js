@@ -42,7 +42,7 @@ export default async (zoomID, forceClose = false) => {
     path: `metrics/meetings/${meeting.zoomID}/participants`,
   });
 
-  if(!zoomMetrics){
+  if(!zoomMetrics) {
     await Prisma.create('customLogs', { text: `metrics_not_defined`, zoomCallId: meeting.zoomID })
     return null;
   }
@@ -59,7 +59,7 @@ export default async (zoomID, forceClose = false) => {
 
     return null;    
   }
-
+  
   if (!forceClose && zoomMetrics && zoomMetrics.total_records > 0) {
     console.log(
       `Meeting ${meeting.zoomID} has ${zoomMetrics?.total_records || "unknown"} participant(s). Not closing meeting. Run with forceClose=true to force close the meeting even with participants.`
@@ -67,7 +67,7 @@ export default async (zoomID, forceClose = false) => {
     return null;
   }
 
-  // ending the meeting happens in X steps...
+  if (zoomMetrics.http_code == 200 || forceClose) {
 
   // 1) if was posted in slack, end slack call
   if (meeting.slackCallID) {
@@ -82,15 +82,17 @@ export default async (zoomID, forceClose = false) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ id: meeting.slackCallID, duration }), // hard coding duration while debugging
-    }).then((r) => r.json());
+      }).then((r) => r.json());
+    }
+
+    // 2) set the meeting end time 
+    await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
+
+    // delete the meeting from zoom to invalidate the url 
+    // this will happen iff there are no participants left in a call
+    await deleteMeeting();
+
+    return meeting.id;
   }
-
-  // 2) set the meeting end time 
-  await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
-
-  // delete the meeting from zoom to invalidate the url 
-  // this will happen iff there are no participants left in a call
-  await deleteMeeting();
-
-  return meeting.id;
+  console.log("Not sure about the state of zoom call metrics, not closing the call");
 };
