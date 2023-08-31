@@ -23,7 +23,7 @@ Requirements:
 - schedulingLink id 
 - get the license used by filtering for meetings using the schedulingLinkId in the Meeting table and look under ZoomID 
 - also copy the meetingId
-* Migh\t also be useful to get the time that event happened
+* Might also be useful to get the time that event happened
 - get the events by looking into the WebhookEvent table using the meetingId copied 
 - a zoom license is released when a zoom meeting is destroyed
 
