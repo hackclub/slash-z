@@ -21,10 +21,12 @@ const findOrCreateMeeting = async (queryID) => {
     throw err
   }
 
+  const getOpenMeetingsCount = async () => await Prisma.count('meeting', { where: { endedAt: { equals: null }, schedulingLinkId: link.id } } );
   // find open meetings using the schedule link id
-  let openMeetingsCount = await Prisma.count('meeting', { where: { endedAt: {
-    equals: null,
-  }, schedulingLinkId: link.id } })
+  let openMeetingsCount = await getOpenMeetingsCount();
+
+  // if undefined, retry
+  if (!openMeetingsCount) openMeetingsCount = await getOpenMeetingsCount();
 
   let airtableMeeting
   // if no OPEN meeting for the schedule link, let's create one now!
