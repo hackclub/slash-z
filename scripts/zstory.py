@@ -3,8 +3,8 @@ import psycopg
 from psycopg.cursor import Cursor
 import json
 from datetime import datetime
-from decouple import config
 import sys
+import os
 
 """
 This tool helps get an overview or the "story" of a certain zoom call.
@@ -283,7 +283,8 @@ def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
 
 
 # connect to the database
-with psycopg.connect(config("DATABASE_URL")) as conn:
+databaseUrl = os.environ['DATABASE_URL']
+with psycopg.connect(databaseUrl) as conn:
     # open cursor to perform database operations
     with conn.cursor() as cursor:
         match args.command:
