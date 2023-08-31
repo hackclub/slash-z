@@ -237,9 +237,9 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         started_at = datetime.fromisoformat(started_at)
         ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
-        _meeting = (meetingId, int(started_at.timestamp()), int(ended_at.timestamp()))
+        _meeting = (meetingId, started_at, ended_at)
 
-        print(f"\nMEETING #{idx+1}  (ID ={meetingId})")
+        print(f"\nMEETING #{idx+1}  (ID = {meetingId})")
         if ended_at is not None:
             # check for overlapping meetings
             for p_meeting in prev_meetings:
