@@ -259,7 +259,12 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         trace_events(cursor, meetingId)
         prev_meeting = (meetingId, started_at)
         print(f"{'END OF EVENT LOG':>20}")
-        print(f"{'LICENSE UNLOCK':>18} {zoomId} @ {ended_at}")
+        if ended_at is None:
+            ansi_red = "\u001b[31m"
+            ansi_endc = "\033[0m"
+            print(f"{ansi_red}LICENSE STILL IN USE{ansi_endc}")
+        else:
+            print(f"{'LICENSE UNLOCKED':>18} @ {ended_at}")
 
 def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
     cursor.execute('SELECT (id, "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
