@@ -238,6 +238,8 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
         _meeting = (meetingId, int(started_at.timestamp()), int(ended_at.timestamp()))
+
+        print(f"\nMEETING #{idx+1}  (ID ={meetingId})")
         if ended_at is not None:
             # check for overlapping meetings
             for p_meeting in prev_meetings:
@@ -247,21 +249,17 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 
                 if overlap > 0:
                     print(
-                        f"\033[93mOverlap ({p_meeting[0]}) by {overlap} seconds \033[0;0m"
+                        f"\033[93m  WARNING!  This meeting overlaps with ({p_meeting[0]}) by {overlap} seconds \033[0;0m"
                     )
-                    
-            prev_meetings.append(_meeting)
 
-        print(f"\nMEETING #{idx+1}  (ID ={meetingId})")
+            prev_meetings.append(_meeting)
         print(f"{'LICENSE LOCK':>16} ({zoomId}) @ {started_at}")
         print(f"{'JOIN LINK:':>14} {join_url}")
         print(f"{'EVENT LOG:':>14}")
         trace_events(cursor, meetingId)
-
         prev_meeting = (meetingId, started_at)
         print(f"{'END OF EVENT LOG':>20}")
         print(f"{'LICENSE UNLOCK':>18} {zoomId} @ {ended_at}")
-
 
 def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
     cursor.execute('SELECT (id, "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
