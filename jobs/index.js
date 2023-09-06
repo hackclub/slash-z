@@ -14,11 +14,11 @@ if (isProd) {
   setTimeout(cleanupAirtableRecords, 1000 * 60 * 10) // after 10 minutes in milliseconds
 
   setTimeout(() => {
-  setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
+  setInterval(closeStaleCalls, 1000 * 120) // every 2 minutes
   }, 1000 * 60) // after 1 minute in milliseconds
 } else {
   closeStaleCalls()
   setTimeout(() => {
-  setInterval(closeStaleCalls, 1000 * 15) // every 15 seconds
+  setInterval(closeStaleCalls, 1000 * 120) // every 2 minutes
   }, 1000 * 60) // after 1 minute in milliseconds
 }
