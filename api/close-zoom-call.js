@@ -32,6 +32,9 @@ export default async (zoomID, forceClose = false) => {
     if (response.http_code == 400) {
       return metrics.increment("delete_meeting.warning", 1);
     } else if (response.http_code == 404) {
+      // Report this also as a general error...
+      metrics.increment("error.delete_meeting");
+
       return metrics.increment("delete_meeting.error", 1);
     }
     return metrics.increment("delete_meeting.success", 1);
@@ -43,6 +46,7 @@ export default async (zoomID, forceClose = false) => {
   });
 
   if(!zoomMetrics) {
+    metrics.increment("error.metrics_not_defined", 1);
     await Prisma.create('customLogs', { text: `metrics_not_defined`, zoomCallId: meeting.zoomID })
     return null;
   }
