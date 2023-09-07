@@ -59,4 +59,4 @@ setInterval(async () => {
   metrics.gauge("hosts.open", open)
   metrics.gauge("hosts.total", total)
   metrics.gauge("app.active_users", active_users);
-}, 1000);
+}, 1000 * 60);
