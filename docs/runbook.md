@@ -6,19 +6,15 @@ Generally, if you encounter an issue with slash-z — a malfunctioning or you fi
 - Grafana Dashboard: http://telemetry.hackclub.com/
 - Stale call: A Slack call with created two minutes ago relative to now with no participants in.
 
-## Potential issue we can encounter in slash-z
-
-- Slash-z stops reporting to grafana
-- Slash-z does not update the participants on the slack call card
-- Grafana dashboard reports high zoom license utilization
-- slash-z call links don't resolve
-- slash-z calls are not garbage collected
+## Users end up in separate calls when using the same scheduled call link
+1. Make sure the garbage collected is working properly by checking certify.md
+2. If not, you will have to re-enable this.
+3. If yes, you will need to investigate this on your own 😛
 
 ## Slash-Z stops reporting to grafana
 
-1. Run `ssh root@telemetry.hackclub.com`
-2. Run `htop` and look if grafana, graphite, statsd and the docker container is running
-3. If not, restart the service with `<insert-command-to-start-docker-container>`
+1. Check the logs of the slash-z Heroku dyno
+2. If the app crashed, restart it
 
 ## Slash-Z does not update the participants on the Slack call card
 

@@ -23,8 +23,10 @@
 
 ## Testing the garbage collector 
 
-1. First take a look at the Grafana dashboard and take note of the zoom license utilization
-2. Create a new call via Slack by running /z
-3. Checkout the Grafana dashboard again and the zoom license utilization should have risen.
-4. After two minutes, the zoom license utilization should drop; meaning the call was garbage collected since it's stale.
+1. Create a new call using /z in Slack and take note of the Meeting ID
+2. Join the call and wait for ~2 minutes
+3. Run `python3 scripts/zstory.py dissect -z <MeetingID>` to ensure the meeting has not been marked as ended
+    - If it has been while you're still in the call, then start looking into closeZoomCall.js/closeStaleCalls.js to make sure calls are not forcibly closed under wrong conditions.
+4. If not, leave the call and run the command from (3) again to make sure the call has been closed.
+5. If the call was closed almost immediately after you left, then the garbage collector works properly.
 
