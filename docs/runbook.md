@@ -9,12 +9,12 @@ Generally, if you encounter an issue with slash-z — a malfunctioning or you fi
 ## Users end up in separate calls when using the same scheduled call link
 1. Make sure the garbage collected is working properly by checking certify.md
 2. If not, you will have to re-enable this.
-3. If yes, you will need to investigate this on your own 😛
 
 ## Slash-Z stops reporting to grafana
 
 1. Check the logs of the slash-z Heroku dyno
 2. If the app crashed, restart it
+3. If the app occurs again, read the surrounding logs for relevant reasons for the crash .
 
 ## Slash-Z does not update the participants on the Slack call card
 
