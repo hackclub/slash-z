@@ -19,7 +19,7 @@ model Host {
   apiKey      String
   apiSecret   String
   zoomID      String     
-  hostKey     String
+  hostKey     String?
   meetings    Meeting[]
   errors      String[]
   ErrorLog    ErrorLog[]
