@@ -43,7 +43,7 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
   // ¯\_(ツ)_/¯
-  let host = await availableHost();
+  let host = await availableHojwtt();
 
   // no free hosts? let's try closing some stale zoom calls
   if (!host) {
@@ -115,14 +115,24 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
     });
   }
 
-  const hostKey = Math.random().toString().substr(2, 6).padEnd(6, 0);
+  let hostKey = Math.random().toString().substr(2, 6).padEnd(6, 0);
 
   // sendHostKey({creatorSlackID, hostKey})
 
-  await zoom.patch({
+  // attempt to set the host key
+  const keyResponse = await zoom.patch({
     path: `users/${host.zoomID}`,
     body: { host_key: hostKey },
   });
+
+  // update the host record with the new key
+  if (keyResponse !== 400) {
+    await Prisma.patch("host", host.id, {
+      data: {
+        hostKey: hostKey
+      }
+    });
+  } else hostKey = host.hostKey;
 
   // start a meeting with the zoom client
   const meeting = await zoom.post({
