@@ -43,7 +43,7 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
   // find an open host w/ less then 2 open meetings. why 2? Zoom lets us host up to 2 concurrent meetings
   // https://support.zoom.us/hc/en-us/articles/206122046-Can-I-Host-Concurrent-Meetings-
   // ¯\_(ツ)_/¯
-  let host = await availableHojwtt();
+  let host = await availableHost();
 
   // no free hosts? let's try closing some stale zoom calls
   if (!host) {
