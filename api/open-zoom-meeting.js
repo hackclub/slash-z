@@ -130,7 +130,19 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
     await Prisma.patch("host", host.id, {
       hostKey: hostKey
     });
-  } else hostKey = host.hostKey;
+  } else {
+    const hosts = await Prisma.get("host", {
+      where: {
+        email: host.email
+      }
+    });
+    // we know there are just two hosts with the same email
+    // so we grab what's left
+    const otherHost = hosts.filter(h => h.id != host.id)[0];
+
+    // re-assign the host key to the existing one
+    hostKey = otherHost.hostKey;
+  }
 
   // start a meeting with the zoom client
   const meeting = await zoom.post({
