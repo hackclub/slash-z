@@ -126,11 +126,9 @@ export default async ({ creatorSlackID, isHackNight } = {}) => {
   });
 
   // update the host record with the new key
-  if (keyResponse !== 400) {
+  if (keyResponse.http_code !== 400) {
     await Prisma.patch("host", host.id, {
-      data: {
-        hostKey: hostKey
-      }
+      hostKey: hostKey
     });
   } else hostKey = host.hostKey;
 
