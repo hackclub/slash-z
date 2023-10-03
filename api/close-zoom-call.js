@@ -47,6 +47,7 @@ export default async (zoomID, forceClose = false) => {
 
   console.log("----------");
   console.log("zoomMetrics ->", zoomMetrics);
+  console.log("force close -> ", forceClose);
   console.log("----------");
 
   if(!zoomMetrics) {
