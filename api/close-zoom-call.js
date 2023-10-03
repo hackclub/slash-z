@@ -79,6 +79,7 @@ export default async (zoomID, forceClose = false) => {
     const durationMs = Date.now() - startTime;
     const duration = Math.floor(durationMs / 1000);
 
+    console.log(`updating call ${meeting.zoomID} which had code ${zoomMetrics.http_code} and slack call ID ${meeting.slackCallID}`);
     const _slackPost = await fetch("https://slack.com/api/calls.end", {
       method: "post",
       headers: {
@@ -86,7 +87,10 @@ export default async (zoomID, forceClose = false) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ id: meeting.slackCallID, duration }), // hard coding duration while debugging
-      }).then((r) => r.json());
+      }).then((r) => r.json())
+        .catch(err => {
+          console.log("Failed to updated slack call ID with reason", err);
+        });
     }
 
     // 2) set the meeting end time 
