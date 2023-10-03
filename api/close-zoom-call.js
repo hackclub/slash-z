@@ -59,7 +59,7 @@ export default async (zoomID, forceClose = false) => {
     await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
 
     // we need to delete the meeting if not already deleted
-    await deleteMeeting();
+    // await deleteMeeting();
 
     return null;    
   }
