@@ -45,11 +45,6 @@ export default async (zoomID, forceClose = false) => {
     path: `metrics/meetings/${meeting.zoomID}/participants`,
   });
 
-  console.log("----------");
-  console.log("zoomMetrics ->", zoomMetrics);
-  console.log("force close -> ", forceClose);
-  console.log("----------");
-
   if(!zoomMetrics) {
     metrics.increment("error.metrics_not_defined", 1);
     await Prisma.create('customLogs', { text: `metrics_not_defined`, zoomCallId: meeting.zoomID })
@@ -58,13 +53,13 @@ export default async (zoomID, forceClose = false) => {
   
   // 400/404's denote meetings that do not exist.  We need to clean them up on our side.
   // they also denote meetings where all participants have left
-  if (zoomMetrics.http_code == 400 || zoomMetrics.http_code == 404) {
+  if (!forceClose && zoomMetrics.http_code == 400 || zoomMetrics.http_code == 404) {
     
     await Prisma.create('customLogs', { text: `metrics_meeting_doesnt_exist`, zoomCallId: meeting.zoomID })
     await Prisma.patch("meeting", meeting.id, { endedAt: new Date(Date.now()) })
 
     // we need to delete the meeting if not already deleted
-    // await deleteMeeting();
+    await deleteMeeting();
 
     return null;    
   }
