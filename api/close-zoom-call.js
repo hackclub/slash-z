@@ -45,6 +45,10 @@ export default async (zoomID, forceClose = false) => {
     path: `metrics/meetings/${meeting.zoomID}/participants`,
   });
 
+  console.log("----------");
+  console.log("zoomMetrics ->", zoomMetrics);
+  console.log("----------");
+
   if(!zoomMetrics) {
     metrics.increment("error.metrics_not_defined", 1);
     await Prisma.create('customLogs', { text: `metrics_not_defined`, zoomCallId: meeting.zoomID })
