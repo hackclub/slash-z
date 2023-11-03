@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 import sys
 import os
+from slack_sdk import WebClient
 
 """
 This tool helps get an overview or the "story" of a certain zoom call.
@@ -84,6 +85,7 @@ if not len(sys.argv) > 1:
     parser.print_help()
     quit()
 
+slack_client = WebClient(os.environ["SLACK_USER_OAUTH_TOKEN"])
 
 # meeting passed here is of the form
 # (meeting_id, start_time, end_time)
@@ -205,9 +207,9 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
         quit()
 
     queries = {
-        "normal": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "schedulingLinkId"=%s',
-        "start": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
-        "end": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC',
+        "normal": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL", "creatorSlackID") FROM "Meeting" WHERE "schedulingLinkId"=%s',
+        "start": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL", "creatorSlackID") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s ORDER BY "startedAt" ASC',
+        "end": 'SELECT (id, "zoomID", "startedAt", "endedAt", "joinURL", "creatorSlackID") FROM "Meeting" WHERE "schedulingLinkId"=%s AND "startedAt">=%s AND "startedAt"<=%s ORDER BY "startedAt" ASC',
     }
     # query meeting id and zoom license
     if start and end:
@@ -233,26 +235,30 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
     for idx, meeting in enumerate(meetings):
         overlap = 0
         # zoomId also refers to the zoom license
-        meetingId, zoomId, started_at, ended_at, join_url = meeting[0]
+        meetingId, zoomId, started_at, ended_at, join_url, creator_slack_id = meeting[0]
         started_at = datetime.fromisoformat(started_at)
         ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
         _meeting = (meetingId, started_at, ended_at)
 
+        slack_name = slack_client.users_info(user=creator_slack_id).get("user")["name"]
+
+
         print(f"\nMEETING #{idx+1}  (ID = {meetingId})")
+        print(f"CREATOR SLACK ID = {creator_slack_id} && NAME = @{slack_name}")
+        __meeting = (_meeting[0], int(_meeting[1].timestamp()), int(_meeting[2].timestamp()))
         if ended_at is not None:
             # check for overlapping meetings
             for p_meeting in prev_meetings:
-                # print("p_meeting = ", p_meeting)
-                # print("curr meeting = ", _meeting)
-                overlap = check_overlap(p_meeting, _meeting)
+                # __meeting has datetime object as int timestamps
+                overlap = check_overlap(p_meeting, __meeting)
 
                 if overlap > 0:
                     print(
                         f"\033[93m  WARNING!  This meeting overlaps with ({p_meeting[0]}) by {overlap} seconds \033[0;0m"
                     )
 
-            prev_meetings.append(_meeting)
+            prev_meetings.append(__meeting)
         print(f"{'LICENSE LOCK':>16} ({zoomId}) @ {started_at}")
         print(f"{'JOIN LINK:':>14} {join_url}")
         print(f"{'EVENT LOG:':>14}")
@@ -267,9 +273,9 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
             print(f"{'LICENSE UNLOCKED':>18} @ {ended_at}")
 
 def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
-    cursor.execute('SELECT (id, "startedAt", "endedAt", "joinURL") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
+    cursor.execute('SELECT (id, "startedAt", "endedAt", "joinURL", "creatorSlackID") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
     meeting = cursor.fetchone()
-    meeting_id, started_at, ended_at, join_url = meeting[0] if meeting else (None, None, None, None)
+    meeting_id, started_at, ended_at, join_url, creator_slack_id = meeting[0] if meeting else (None, None, None, None)
 
     if meeting_id is None:
         print(f"Could not find meeting with zoom ID {zoom_id}")
@@ -278,7 +284,10 @@ def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
     started_at = datetime.fromisoformat(started_at)
     ended_at = datetime.fromisoformat(ended_at) if ended_at else None
 
+    slack_name = slack_client.users_info(user=creator_slack_id).get("user")["name"]
+
     print(f"\nMEETING (ID = {meeting_id})")
+    print(f"CREATOR SLACK ID = {creator_slack_id} && NAME = @{slack_name}")
     print(f"{'LICENSE LOCK':>16} ({zoom_id}) @ {started_at}")
     print(f"{'JOIN LINK:':>14} {join_url}")
     print(f"{'EVENT LOG:':>14}")
