@@ -2,7 +2,7 @@
 .vscode
 .vercel
 node_modules
-.env
+*.env
 .replit
 package-lock.json
 .DS_Store
