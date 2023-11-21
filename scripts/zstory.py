@@ -275,7 +275,7 @@ def dissect_scheduled_meeting(cursor: Cursor, meetid: str, start, end):
 def dissect_slack_meeting(cursor: Cursor, zoom_id: str):
     cursor.execute('SELECT (id, "startedAt", "endedAt", "joinURL", "creatorSlackID") FROM "Meeting" WHERE "zoomID"=%s', (args.meetid,))  # type: ignore
     meeting = cursor.fetchone()
-    meeting_id, started_at, ended_at, join_url, creator_slack_id = meeting[0] if meeting else (None, None, None, None)
+    meeting_id, started_at, ended_at, join_url, creator_slack_id = meeting[0] if meeting else (None, None, None, None, None)
 
     if meeting_id is None:
         print(f"Could not find meeting with zoom ID {zoom_id}")
