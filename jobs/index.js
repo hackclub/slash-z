@@ -1,7 +1,6 @@
 import closeStaleCalls from '../api/close-stale-calls.js'
 import isProd from '../isprod.js'
 
-import './migrate-airtable-to-prisma.js'
 
 // this file should run in production-- it queues a bunch of tasks that are meant to run in production
 
