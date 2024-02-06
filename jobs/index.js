@@ -1,4 +1,3 @@
-import cleanupAirtableRecords from '../api/cleanup-airtable-records.js'
 import closeStaleCalls from '../api/close-stale-calls.js'
 import isProd from '../isprod.js'
 

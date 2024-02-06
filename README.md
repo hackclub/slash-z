@@ -118,7 +118,6 @@ as well as a host key that lets the user become host of the call.
 Following environment variables must be set:
 
 ```
-AIRBRIDGE_API_KEY
 DATABASE_URL
 
 SLACK_BOT_USER_OAUTH_ACCESS_TOKEN

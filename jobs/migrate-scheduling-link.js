@@ -1,4 +1,3 @@
-import airbridge from "../api/airbridge.js"
 import removeTable from "./remove-table.js"
 import batchUpload from "./batch-upload.js"
 
@@ -10,7 +9,6 @@ export default async ({ reset = false }) => {
     await removeTable('schedulingLink', { startTS })
   }
 
-  const links = await airbridge.get('Scheduling Links')
   const count = await batchUpload({
     startTS,
     table: 'schedulingLink',
