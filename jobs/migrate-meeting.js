@@ -1,4 +1,3 @@
-import airbridge from "../api/airbridge.js"
 import removeTable from "./remove-table.js"
 import batchUpload from "./batch-upload.js"
 
@@ -9,8 +8,6 @@ export default async ({ reset = false }) => {
   if (reset) {
     await removeTable('meeting', {startTS})
   }
-
-  const meetings = await airbridge.get('Meetings')
   const count = await batchUpload({
     startTS,
     table: 'meeting',

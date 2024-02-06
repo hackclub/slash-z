@@ -1,4 +1,3 @@
-import airbridge from "../api/airbridge.js"
 import prisma from "../api/prisma.js"
 import removeTable from "./remove-table.js"
 
@@ -10,7 +9,6 @@ export default async ({ reset = false }) => {
     await removeTable('host', {startTS})
   }
 
-  const hosts = await airbridge.get('Hosts')
   const results = await prisma.client.host.createMany({
     data: hosts.map(host => ({
       id: host.id,

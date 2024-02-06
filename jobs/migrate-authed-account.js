@@ -1,4 +1,3 @@
-import airbridge from "../api/airbridge.js"
 import prisma from "../api/prisma.js"
 import removeTable from "./remove-table.js"
 
@@ -10,7 +9,6 @@ export default async ({ reset = false }) => {
     await removeTable('authedAccount', {startTS})
   }
 
-  const accounts = await airbridge.get('Authed Accounts')
   const results = await prisma.client.authedAccount.createMany({
     data: accounts.map(account => ({
       id: account.id,

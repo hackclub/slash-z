@@ -1,4 +1,3 @@
-import airbridge from "../api/airbridge.js"
 import batchUpload from "./batch-upload.js"
 import removeTable from "./remove-table.js"
 
@@ -10,7 +9,7 @@ export default async ({ reset = false }) => {
     await removeTable('webhookEvent', {startTS})
   }
 
-  const events = await airbridge.get('Webhook Events')
+  
   const count = await batchUpload({
     startTS,
     table: 'webhookEvent',

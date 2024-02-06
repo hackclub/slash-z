@@ -1,4 +1,3 @@
-import airbridge from "./airbridge.js"
 import fetch from 'node-fetch'
 
 /**
@@ -30,10 +29,7 @@ export default async function(channelID) {
         !channelInfo.channel['is_group'] // is_group: private channel created before 2021
       )
     }),
-    // check Operations airtable to see if this channel isn't a club channel
-    airbridge.find('Clubs', {base: 'Operations', filterByFormula: `{Slack Channel ID}='${channelID}'`}).then(c => {
-      isPublic = isPublic && !Boolean(c)
-    })
+   
   ])
 
   return isPublic
