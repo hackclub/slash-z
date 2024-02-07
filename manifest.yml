@@ -19,8 +19,6 @@ features:
       description: Start a Zoom Pro meeting
       should_escape: true
 oauth_config:
-  redirect_urls:
-    - https://hack.af
   scopes:
     bot:
       - calls:read
