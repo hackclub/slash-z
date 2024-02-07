@@ -57,6 +57,7 @@ async function handleEvent(req, res, meeting) {
   }
 
   await handleSpecialHackNightLogic(req, meeting)
+  console.log("webhook event received -> ", req.body.event);
 
   switch (req.body.event) {
     case 'meeting.ended':
