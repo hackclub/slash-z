@@ -9,7 +9,7 @@ import crypto from "crypto"
 async function getAssociatedMeeting(req) {
   try {
       const meetingId = req.body.payload.object.id;
-      return await Prisma.find('meeting', { where: { zoomID: meetingId }, include: { schedulingLink: true } })
+      return await Prisma.find('meeting', { where: { zoomID: meetingId.toString() }, include: { schedulingLink: true } })
   } catch {
     return null
   }
