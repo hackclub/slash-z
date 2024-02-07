@@ -172,6 +172,7 @@ export default async (user, loading=true) => {
       taskArray.push(publishLoadingPage(user))
     }
 
+    console.log("homapge results -> ", results)
     await Promise.all(taskArray)
 
     await publishHomePage({user, results})
