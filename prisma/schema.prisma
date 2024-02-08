@@ -63,7 +63,7 @@ model SchedulingLink {
   meetings        Meeting[]
   meetingsIds     String[]
   creatorSlackID  String?
-  authedAccount   AuthedAccount[] @relation(fields: [authedAccountID], references: [id])
+  authedAccount   SchedulingLinksOnAuthedAccounts[]
   authedAccountID String?
 }
 
@@ -83,8 +83,16 @@ model ErrorLog {
 model AuthedAccount {
   id              String           @id @default(cuid())
   name            String?
-  schedulingLinks SchedulingLink[]
+  schedulingLinks SchedulingLinksOnAuthedAccounts[]
   slackID         String?
+}
+
+model SchedulingLinksOnAuthedAccounts {
+  link            SchedulingLink   @relation(fields: [slinkId], references:[id])
+  slinkId         String
+  acct            AuthedAccount    @relation(fields: [acctId], references:[id])
+  acctId          String
+  @@id([slinkId, acctId])
 }
 
 model CustomLogs {
