@@ -32,7 +32,7 @@ export default async (req, res) => {
   res.json({id,
     videoUri: `https://hack.af/z-join?id=${id}`,
     moreUri: `https://hack.af/z-phone?id=${id}`,
-    stagingVideoUri: !isProd ? `https://6e89-102-244-42-15.ngrok-free.app/api/endpoints/schedule-link?id=${id}` : null 
+    stagingVideoUri: !isProd ? `https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/schedule-link?id=${id}` : null 
   })
 
   Prisma.create('schedulingLink', {
