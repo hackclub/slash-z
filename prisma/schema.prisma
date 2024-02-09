@@ -63,7 +63,6 @@ model SchedulingLink {
   meetings        Meeting[]
   meetingsIds     String[]
   creatorSlackID  String?
-  // authedAccount   AuthedAccount[] @relation(fields: [authedAccountID], references: [id])
   authedAccount  AuthedAccount @relation(fields: [authedAccountID], references: [id])
   authedAccountID String
 }
