@@ -15,7 +15,7 @@
   "dependencies": {
     "@bugsnag/js": "^7.11.0",
     "@bugsnag/plugin-express": "^7.11.0",
-    "@prisma/client": "3.3.0",
+    "@prisma/client": "^5.9.1",
     "airtable-plus": "^1.0.4",
     "bottleneck": "^2.19.5",
     "dotenv": "^8.2.0",
@@ -26,7 +26,7 @@
     "node-fetch": "^2.6.1",
     "node-statsd": "^0.1.1",
     "nodemon": "^2.0.7",
-    "prisma": "3.3.0",
+    "prisma": "^5.9.1",
     "response-time": "^2.3.2",
     "zoomus": "^0.1.4"
   },
