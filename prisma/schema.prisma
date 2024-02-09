@@ -63,8 +63,9 @@ model SchedulingLink {
   meetings        Meeting[]
   meetingsIds     String[]
   creatorSlackID  String?
-  authedAccount   AuthedAccount[] @relation(fields: [authedAccountID], references: [id])
-  authedAccountID String?
+  // authedAccount   AuthedAccount[] @relation(fields: [authedAccountID], references: [id])
+  authedAccount  AuthedAccount @relation(fields: [authedAccountID], references: [id])
+  authedAccountID String
 }
 
 // Previously "Error" in the airtable version
@@ -83,7 +84,7 @@ model ErrorLog {
 model AuthedAccount {
   id              String           @id @default(cuid())
   name            String?
-  schedulingLinks SchedulingLink[]
+  schedulingLinks SchedulingLink[] 
   slackID         String?
 }
 
