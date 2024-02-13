@@ -35,7 +35,12 @@ export default async function() {
   const meetingsWithParticipants = await Promise.all(
     meetings.map(async m => {
       // logging meeting info`
+      console.log();
+      console.log("THIS IS SOME PUBLIC MEETING APART");
       console.log(m);
+      console.log("END - THIS IS SOME PUBLIC MEETING APART");
+      console.log(m);
+      console.log();
       return {
       channel: m.slackChannelId,
       channelFlavor: transcript(`channelFlavor.${m.slackChannelId}`, {}, null),
