@@ -67,6 +67,9 @@ const publishHomePage = async ({user, results}) => {
     }))
     blocks.push(transcript('appHome.recordedMeetings.completedHeader', { count: completedRecordings.length }))
     completedRecordings.forEach(recording => {
+      console.log()
+      console.log("Recording ->", recording)
+      console.log()
       blocks.push(transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
     })
     blocks.push(transcript('appHome.recordedMeetings.completedFooter'))
