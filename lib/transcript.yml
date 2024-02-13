@@ -29,7 +29,7 @@ publicMeetings:
   multiple: |
     Here are the public meetings currently running:
     ${this.meetings.map(m => this.t('publicMeetings.lineItem', { m })).join('\n')}
-  lineItem: "- <${this.m.joinUrl}| Join a call> in <#${this.m.channel}>${this.m.channelFlavor ? ' _(' + this.m.channelFlavor + ')_' : '' } with ${this.pluralize('participant', this.m.participantCount)}"
+  lineItem: "- <${this.m.joinURL}| Join a call> in <#${this.m.channel}>${this.m.channelFlavor ? ' _(' + this.m.channelFlavor + ')_' : '' } with ${this.pluralize('participant', this.m.participantCount)}"
 footnoteSymbols:
   - †
   - ‡

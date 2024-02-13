@@ -36,7 +36,7 @@ export default async function() {
     meetings.map(async m => ({
       channel: m.slackChannelId,
       channelFlavor: transcript(`channelFlavor.${m.slackChannelID}`, {}, null),
-      joinUrl: m.joinUrl,
+      joinURL: m.joinURL,
       participantCount: await getParticipantCount(m.slackCallID)
     }))
   )
