@@ -26,19 +26,23 @@ async function getParticipantCount(slackCallID) {
 }
 
 /**
-* Get a list of meetings having one or more participants
+* Get a list of public meetings having one or more participants
 * @function
 * @returns {Promise<Object[]>}
 */
 export default async function() {
   const meetings = await Prisma.get('meeting', {where: {NOT: {startedAt: {equals: null}}, endedAt: {equals: null}, public: true}})
   const meetingsWithParticipants = await Promise.all(
-    meetings.map(async m => ({
+    meetings.map(async m => {
+      // logging meeting info`
+      console.log(m);
+      return {
       channel: m.slackChannelId,
       channelFlavor: transcript(`channelFlavor.${m.slackChannelId}`, {}, null),
       joinUrl: m.joinUrl,
       participantCount: await getParticipantCount(m.slackCallID)
-    }))
+    };
+  })
   )
   return meetingsWithParticipants.filter(m => m.participantCount > 0)
 }
