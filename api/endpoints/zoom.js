@@ -93,6 +93,9 @@ export default async (req, res) => {
   return await ensureZoomAuthenticated(req, res, async () => {
     console.log(`Recieved Zoom '${req.body.event}' webhook...`)
     const meeting = await getAssociatedMeeting(req);
+    console.log()
+    console.log("Received WebHook event ->", req.body.event)
+    console.log()
     await persistWebhookEventsIfNecessary(req, meeting);
     await handleEvent(req, res, meeting);
   })
