@@ -43,7 +43,7 @@ export default async function() {
       console.log();
       return {
       channel: m.slackChannelId,
-      channelFlavor: transcript(`channelFlavor.${m.slackChannelId}`, {}, null),
+      channelFlavor: transcript(`channelFlavor.${m.slackChannelID}`, {}, null),
       joinUrl: m.joinUrl,
       participantCount: await getParticipantCount(m.slackCallID)
     };
