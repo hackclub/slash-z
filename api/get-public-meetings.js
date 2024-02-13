@@ -44,7 +44,7 @@ export default async function() {
       return {
       channel: m.slackChannelId,
       channelFlavor: transcript(`channelFlavor.${m.slackChannelID}`, {}, null),
-      joinUrl: m.joinUrl,
+      joinURL: m.joinURL,
       participantCount: await getParticipantCount(m.slackCallID)
     };
   })
