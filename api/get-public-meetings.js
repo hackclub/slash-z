@@ -35,8 +35,8 @@ export default async function() {
   const meetingsWithParticipants = await Promise.all(
     meetings.map(async m => ({
       channel: m.slackChannelId,
-      channelFlavor: transcript(`channelFlavor.${m.slackChannelId}`, {}, null),
-      joinUrl: m.joinUrl,
+      channelFlavor: transcript(`channelFlavor.${m.slackChannelID}`, {}, null),
+      joinURL: m.joinURL,
       participantCount: await getParticipantCount(m.slackCallID)
     }))
   )
