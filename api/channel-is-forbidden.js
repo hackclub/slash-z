@@ -12,6 +12,7 @@ export default (channelID) => {
     'C0M8PUPU6', // #ship
     'C0EA9S0A0', // #code
     'C0C78SG9L', // #hq
+    'C039PAG1AV7', // #cave-entrance-start
   ]
   return forbiddenChannels.includes(channelID)
 }
