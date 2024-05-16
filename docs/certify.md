@@ -13,7 +13,7 @@
 
 1. Start a new call by sending a GET request to [https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link](https://js-slash-z.herokuapp.com/api/endpoints/new-schedule-link)
 2. Get and copy the property value of `videoUri`
-3. paste the link in a new tag and take note of the zoom call id
+3. paste the link in a new tab and take note of the zoom call id
 > given a call such as **https://hackclub.zoom.us/j/81651504037?pwd=YlE1ekFHckNhSm9GZDJtd2NZNnozQT09#success**, the zoom id is right after the /j path -- in this case **81651504037**
 4. join the call 
 5. you may allow an additional person to join your same call to prove that the call link works properly
