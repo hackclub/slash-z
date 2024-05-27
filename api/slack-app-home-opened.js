@@ -53,7 +53,7 @@ const publishHomePage = async ({user, results}) => {
   }
 
   if (completed.length > 0) {
-    const completedRecordings = (await Promise.all(results.recordings.completed)).map(r => r.share_url).map(c => {
+    const completedRecordings = (await Promise.all(results.recordings.completed)).filter(r => r.share_url).map(c => {
       console.log("Recording Before Selection -> ", c);
       return ({
       password: c.settings.password,
