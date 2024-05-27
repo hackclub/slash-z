@@ -53,7 +53,9 @@ const publishHomePage = async ({user, results}) => {
   }
 
   if (completed.length > 0) {
-    const completedRecordings = (await Promise.all(results.recordings.completed)).map(c => ({
+    const completedRecordings = (await Promise.all(results.recordings.completed)).map(c => {
+      console.log("Recording Before Selection -> ", c);
+      return ({
       password: c.settings.password,
       url: c.share_url,
       meetingID: c.id,
@@ -64,14 +66,14 @@ const publishHomePage = async ({user, results}) => {
         return slackTimeString;
       })()}`,
       duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
-    }))
+    }) })
     blocks.push(transcript('appHome.recordedMeetings.completedHeader', { count: completedRecordings.length }))
-    console.log("Recordings");
+    // console.log("Recordings");
     completedRecordings.forEach(recording => {
-      console.log("Recording Start");
-      console.log(recording)
-      console.log("transcripted -> ", transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
-      console.log("Recording End");
+      // console.log("Recording Start");
+      // console.log(recording)
+      // console.log("transcripted -> ", transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
+      // console.log("Recording End");
       blocks.push(transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
     })
     blocks.push(transcript('appHome.recordedMeetings.completedFooter'))
