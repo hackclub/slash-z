@@ -66,7 +66,11 @@ const publishHomePage = async ({user, results}) => {
       duration: Math.max(c.duration, 1) // '0 minute call' -> '1 minute call'
     }))
     blocks.push(transcript('appHome.recordedMeetings.completedHeader', { count: completedRecordings.length }))
+    console.log("Recordings");
     completedRecordings.forEach(recording => {
+      console.log("Recording Start");
+      console.log(recording)
+      console.log("Recording End");
       blocks.push(transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
     })
     blocks.push(transcript('appHome.recordedMeetings.completedFooter'))
@@ -97,7 +101,7 @@ const publishHomePage = async ({user, results}) => {
 }
 
 /**
- * 
+ *
  * @param {string} user - user slack id
  */
 const getUserInfo = async user => {
@@ -105,7 +109,7 @@ const getUserInfo = async user => {
 }
 
 /**
- * 
+ *
  * @param {string} user - user slack id
  */
 const getRecordings = async (user) => {
