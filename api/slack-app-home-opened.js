@@ -53,7 +53,7 @@ const publishHomePage = async ({user, results}) => {
   }
 
   if (completed.length > 0) {
-    const completedRecordings = (await Promise.all(results.recordings.completed)).map(c => ({
+    const completedRecordings = (await Promise.all(results.recordings.completed)).filter(r => r.share_url).map(c => ({
       password: c.settings.password,
       url: c.share_url,
       meetingID: c.id,
@@ -97,7 +97,7 @@ const publishHomePage = async ({user, results}) => {
 }
 
 /**
- * 
+ *
  * @param {string} user - user slack id
  */
 const getUserInfo = async user => {
@@ -105,7 +105,7 @@ const getUserInfo = async user => {
 }
 
 /**
- * 
+ *
  * @param {string} user - user slack id
  */
 const getRecordings = async (user) => {
