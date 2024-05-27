@@ -70,6 +70,7 @@ const publishHomePage = async ({user, results}) => {
     completedRecordings.forEach(recording => {
       console.log("Recording Start");
       console.log(recording)
+      console.log("transcripted -> ", transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
       console.log("Recording End");
       blocks.push(transcript('appHome.recordedMeetings.completedIndividual', { ...recording }))
     })
