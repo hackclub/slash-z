@@ -40,14 +40,13 @@ export default async (req, res) => {
   }
 
   if (meeting.endedAt) {
-    return sendEphemeralMessage(response_url, 'Unable to retrieve the host code for a concluded meeting.');
+    return sendEphemeralMessage(response_url, 'Cannot retrieve the host code for a concluded meeting.');
   }
 
   if (meeting.creatorSlackID !== user_id) {
     return sendEphemeralMessage(response_url, '_You can only retrieve the host code for meetings you created._');
   }
   
-  if (meeting.creatorSlackID === user_id) {
-    return sendEphemeralMessage(response_url, `_Your meeting code is: *${meeting.hostKey}*_`);
-  }
+  return sendEphemeralMessage(response_url, `_Your meeting code is: *${meeting.hostKey}*_`);
+  
 };
