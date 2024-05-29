@@ -226,3 +226,4 @@ publicChannelFlavor:
 errors:
   userIsRestricted: Sorry, you need to be a full member of Hack Club in order to run this command.
   channelIsForbidden: Sorry, you can\'t start a meeting in this channel.
+  emptyHostCode: Sorry, you need to give a meeting ID to run this command.
