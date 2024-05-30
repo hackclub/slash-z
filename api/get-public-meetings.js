@@ -34,7 +34,7 @@ export default async function() {
   const meetings = await Prisma.get('meeting', {where: {NOT: {startedAt: {equals: null}}, endedAt: {equals: null}, public: true}})
   const meetingsWithParticipants = await Promise.all(
     meetings.map(async m => ({
-      channel: m.slackChannelId,
+      channel: m.slackChannelID,
       channelFlavor: transcript(`channelFlavor.${m.slackChannelID}`, {}, null),
       joinURL: m.joinURL,
       participantCount: await getParticipantCount(m.slackCallID)
