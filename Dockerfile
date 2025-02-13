@@ -4,6 +4,8 @@ FROM node:22-alpine
 # Install OpenSSL and other necessary dependencies
 RUN apk add --no-cache openssl
 
+RUN apk add --no-cache ca-certificates
+
 # Set working directory inside the container
 WORKDIR /app
 
