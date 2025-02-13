@@ -2,12 +2,10 @@ version: '3.8'
 
 services:
   slash-z:
-    image: node:22-alpine
+    build: .
     container_name: slash-z
-    working_dir: .
     env_file:
       - .env
-    command: sh -c "apk add --no-cache openssl && npm install && npm start"
     ports:
       - "3000"
     restart: unless-stopped
