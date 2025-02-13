@@ -11,5 +11,5 @@ services:
       - .env
     command: sh -c "apk add --no-cache openssl && npm install && npm start"
     ports:
-      - "3000:3000"
+      - "3000"
     restart: unless-stopped
