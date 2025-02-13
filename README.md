@@ -3,7 +3,7 @@
 [<img src="https://cloud-mii3ocl31-hack-club-bot.vercel.app/3untitled_artwork.jpg" width="400" align="right" alt="dinosaur chilling on a Zoom call with friends">](https://cloud-av0cos2o5-hack-club-bot.vercel.app/1untitled_artwork_2.mp4)
 
 
-_built by [@maxwofford](https://github.com/maxwofford) (initial version by [@zachlatta](https://github.com/zachlatta))_
+_maintained by [@grahamdarcey](https://github.com/grymmy), built by [@maxwofford](https://github.com/maxwofford) (initial version by [@zachlatta](https://github.com/zachlatta))_
 
 #### Features
 
