@@ -15,7 +15,7 @@ _maintained by [@grahamdarcey](https://github.com/grymmy), built by [@maxwofford
 
 #### Limitations
 
-- This is only intended for [Hack Clubbers](https://hack.af) in [the slack](https://hackclub.com/slack)
+- This is only intended for [Hack Clubbers](https://hack.club) in [the slack](https://hackclub.com/slack)
 
 ### Usage
 
@@ -28,7 +28,7 @@ Go to any channel (or DM) in the Hack Club Slack & run `/z`.
 #### Can I schedule meetings?
 
 Yep! Scheduled meetings are done through the [Google Calendar
-addon](https://hack.af/z-addon). Install it for your account, then create a
+addon](https://hack.club/z-addon). Install it for your account, then create a
 meeting by choosing the `/z` conference option on an event's settings page.
 
 #### Will my meeting have a 45 minute limit?
@@ -75,7 +75,7 @@ No, you can start calls as well as claim host in calls from any Zoom account.
 You can even do it without signing into a Zoom account.
 #### Do I need to use a Hack Club email address?
 
-No, `/z` as well as the [Google Calendar addon](https://hack.af) work with
+No, `/z` as well as the [Google Calendar addon](https://hack.club) work with
 any Gmail account that has permission to install addons.
 
 #### Can I use this on my personal Gmail account?
@@ -98,7 +98,7 @@ It depends on the settings your school put on your Gmail account.
 
 Some schools will put restrictions on their student accounts to prevent
 installing new addons. You'll need to install our [addon for creating
-scheduled meetings](https://hack.af/z-addon).
+scheduled meetings](https://hack.club/z-addon).
 
 Your school-issued Gmail account shouldn't interfere with any meetings created in Slack with `/z`.
 

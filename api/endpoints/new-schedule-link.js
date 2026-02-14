@@ -11,7 +11,7 @@ export default async (req, res) => {
   }
   if (!user.slackID) {
     // No slack ID for this user? they're unauthenticated! Let's return an auth challenge
-    const redirectUrl = isProd ? 'https://hack.af/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
+    const redirectUrl = isProd ? 'https://hack.club/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
     
     const state = { userID: user.id }
     console.log({state})
@@ -30,8 +30,8 @@ export default async (req, res) => {
   // let's spice this name creation up in the future too
   const id = Math.random().toString(36).substring(7)
   res.json({id,
-    videoUri: `https://hack.af/z-join?id=${id}`,
-    moreUri: `https://hack.af/z-phone?id=${id}`,
+    videoUri: `https://hack.club/z-join?id=${id}`,
+    moreUri: `https://hack.club/z-phone?id=${id}`,
     stagingVideoUri: !isProd ? `https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/schedule-link?id=${id}` : null 
   })
 

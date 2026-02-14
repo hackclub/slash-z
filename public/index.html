@@ -2,13 +2,13 @@
 <html>
   <head>
     <script>
-      // early on I made the mistake of using hack.af/z as the join link for
+      // early on I made the mistake of using hack.club/z as the join link for
       // calls. Now that I'm also using it as the homepage, we should check if the
       // user has an `id` in their URL params-- which indicates they're trying to
       // join a call. If so, let's redirect them
       const params = new URLSearchParams(location.search)
       if (params.get('id')) {
-        window.location.href = `https://hack.af/z-join?id=${params.get('id')}`
+        window.location.href = `https://hack.club/z-join?id=${params.get('id')}`
       }
     </script>
     <meta charset="utf-8" />

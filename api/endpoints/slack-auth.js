@@ -12,7 +12,7 @@ export default async (req, res) => {
 
   console.log({code, recordIDData, userID, meetingID})
 
-  const tokenRedirectUri = isProd ? "https://hack.af/z/slack-auth" : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth";
+  const tokenRedirectUri = isProd ? "https://hack.club/z/slack-auth" : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth";
   // Generate the token request
   const tokenUrl = 'https://slack.com/api/oauth.v2.access' +
                       `?code=${code}` +

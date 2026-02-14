@@ -187,7 +187,7 @@ appHome:
       type: section
       text:
         type: mrkdwn
-        text: "Want to create a scheduled meeting link? You can install the the Google Calendar add-on at https://hack.af/z-addon."
+        text: "Want to create a scheduled meeting link? You can install the the Google Calendar add-on at https://hack.club/z-addon."
   scheduledHostKeys:
     multiple:
       type: section

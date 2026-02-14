@@ -40,5 +40,5 @@ Generally, if you encounter an issue with slash-z — a malfunctioning or you fi
 
 ## Slash-Z scheduled call links don't resolve
 
-This is most likely not a slash issue but rather an issue related to [hack.af](https://github.com/hackclub/hack.af). In case this is related to slash-z, it's best to check the slash-z logs to understand what actually happened.
+This is most likely not a slash issue but rather an issue related to [hack.club](https://github.com/hackclub/hack.af). In case this is related to slash-z, it's best to check the slash-z logs to understand what actually happened.
 
