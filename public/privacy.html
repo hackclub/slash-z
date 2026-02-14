@@ -1,58 +1,105 @@
 <!DOCTYPE html>
-<html class="h-100">
-
+<html>
 <head>
-  <title>Slash Z</title>
-  <link rel="icon" type="image/png" href="favicon.ico">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <meta charset="utf-8" />
+    <title>Privacy Policy - Slash Z</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" href="https://css.hackclub.com/theme.css" />
+    <style>
+      body {
+        font-size: var(--font-3);
+      }
+
+      header {
+        background: var(--purple);
+        color: var(--white);
+        padding: var(--spacing-6) var(--spacing-0) var(--spacing-6);
+        text-align: center;
+      }
+
+      header > p, header > p > a {
+        color: var(--white)!important;
+      }
+
+      .container {
+        margin: var(--spacing-4) auto;
+      }
+
+      .card {
+        /* Styles from css-starter/index.html if needed, or public/index.html */
+        /* Assuming card styles are globally available or defined in theme.css */
+      }
+
+      footer {
+        margin-top: var(--spacing-6);
+        padding: var(--spacing-4);
+        background: var(--smoke);
+        text-align: center;
+        color: var(--muted);
+      }
+      h2.headline {
+        /* Match headline style from public/index.html if desired */
+        /* For now, using default h2 and card structure */
+      }
+    </style>
+    <meta property="og:title" content="Privacy Policy - Slash Z" />
+    <meta name="twitter:title" content="Privacy Policy - Slash Z" />
+    <meta name="description" content="Privacy Policy for Slash Z, a Hack Club community tool." />
+    <meta property="og:description" content="Privacy Policy for Slash Z, a Hack Club community tool." />
+    <meta name="twitter:description" content="Privacy Policy for Slash Z, a Hack Club community tool." />
 </head>
+<body>
+    <a href="https://hackclub.com/"><img style="position: absolute; top: 0; left: 10px; border: 0; width: 256px; z-index: 999;" src="https://assets.hackclub.com/flag-orpheus-left.svg" alt="Hack Club"/></a>
 
-<body class="d-flex flex-column h-100">
-  <main class="flex-shrink-0">
-    <div class="container">
-      <h1 class="mt-5">Privacy Policy</h1>
+    <header>
+        <h1 class="ultratitle">Privacy Policy</h1>
+        <p class="headline">How we handle your data for Slash Z at <a href="https://hackclub.com">Hack Club</a>.</p>
+    </header>
 
-      <h2>Collection of Routine Information</h2>
-
-      <strong>/z</strong> tracks basic information about users. This information includes, but is not limited to:
-
-      <ul>
-        <li>email address: used as a unique ID to tie a Slack account to a Google account</li>
-        <li>IP address: used for administration and debugging</li>
-        <li>Slack user ID: used as a unique ID to tie a Slack account to a Google account</li>
-        <li>Calendar event details: used to setup scheduled links</li>
-      </ul>
-
-      <h2>Cookies</h2>
-
-      We don't track nor intentionally set browser cookies.
-
-      <h2>Advertisement and Other Third Parties</h2>
-
-      We don't sell ads.
-
-      See <a href="https://slack.com/trust/privacy/privacy-policy">Slack's privacy policy</a> and <a
-        href="https://zoom.us/privacy">Zoom's privacy policy</a>
-
-      <h2>Security</h2>
-
-      The security of your personal information is important to us, but remember that no method of transmission over the
-      Internet, or method of electronic storage, is 100% secure. While we strive to use commercially acceptable means to
-      protect your personal information, we cannot guarantee its absolute security.
-
-      <h2>Changes To This Privacy Policy</h2>
-
-      This Privacy Policy is effective as of the date it is published. You can see previous changes with update times on
-      <a href="https://github.com/hackclub/slash-z">our repo</a>.
-
-      We reserve the right to update or change our Privacy Policy at any time.
-
-      <h2>Contact Information</h2>
-
-      For any questions or concerns regarding the privacy policy, please reach out at slash-z@hackclub.com.
+    <div class="container card">
+        <h2 class="headline">Collection of Routine Information</h2>
+        <p><em>Slash Z</em> tracks basic information about users. This information includes, but is not limited to:</p>
+        <ul>
+            <li>Email address: used as a unique ID to tie a Slack account to a Google account.</li>
+            <li>IP address: used for administration and debugging.</li>
+            <li>Slack user ID: used as a unique ID to tie a Slack account to a Google account.</li>
+            <li>Calendar event details: used to set up scheduled links.</li>
+        </ul>
     </div>
-  </main>
-</body>
 
+    <div class="container card">
+        <h2 class="headline">Cookies</h2>
+        <p>We don't track nor intentionally set browser cookies.</p>
+    </div>
+
+    <div class="container card">
+        <h2 class="headline">Advertisement and Other Third Parties</h2>
+        <p>We don't sell ads. See <a href="https://slack.com/privacy-policy" target="_blank">Slack's privacy policy</a> and <a href="https://policies.google.com/privacy" target="_blank">Zoom's privacy policy</a>.</p>
+    </div>
+
+    <div class="container card">
+        <h2 class="headline">Security</h2>
+        <p>The security of your personal information is important to us, but remember that no method of transmission over the Internet, or method of electronic storage, is 100% secure. While we strive to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute security.</p>
+    </div>
+
+    <div class="container card">
+        <h2 class="headline">Changes To This Privacy Policy</h2>
+        <p>This Privacy Policy is effective as of the date it is published. You can see previous changes with update times on <a href="https://github.com/hackclub/slash-z" target="_blank">our repo</a>. We reserve the right to update or change our Privacy Policy at any time.</p>
+    </div>
+
+    <div class="container card">
+        <h2 class="headline">Contact Information</h2>
+        <p>For any questions or concerns regarding the privacy policy, please reach out at <a href="mailto:slash-z@hackclub.com">slash-z@hackclub.com</a>.</p>
+    </div>
+
+    <footer>
+        <p>
+            &copy; 2021-<span id="current-year"></span> <a href="https://hackclub.com">The Hack Foundation</a>. Read our <a href="./support.html">Support</a> and <a href="./tos.html">Terms of Service</a>.
+        </p>
+    </footer>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
 </html>

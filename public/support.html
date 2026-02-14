@@ -1,5 +1,75 @@
-<h1>Support</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Support - Slash Z</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" href="https://css.hackclub.com/theme.css" />
+    <style>
+      body {
+        font-size: var(--font-3);
+      }
 
-<p>We'll provide best-effort support for keeping <strong>/z</strong> maintained and working for users.</p>
+      header {
+        background: var(--purple);
+        color: var(--white);
+        padding: var(--spacing-6) var(--spacing-0) var(--spacing-6);
+        text-align: center;
+      }
 
-<p>Find a bug? Please report it (screenshots are super helpful!) by emailing us at slash-z@hackclub.com.</p>
+      header > p, header > p > a {
+        color: var(--white)!important;
+      }
+
+      .container {
+        margin: var(--spacing-4) auto;
+      }
+
+      .card {
+        /* Styles from css-starter/index.html if needed, or public/index.html */
+        /* Assuming card styles are globally available or defined in theme.css */
+      }
+
+      footer {
+        margin-top: var(--spacing-6);
+        padding: var(--spacing-4);
+        background: var(--smoke);
+        text-align: center;
+        color: var(--muted);
+      }
+      h2.headline {
+        /* Match headline style from public/index.html if desired */
+      }
+    </style>
+    <meta property="og:title" content="Support - Slash Z" />
+    <meta name="twitter:title" content="Support - Slash Z" />
+    <meta name="description" content="Support information for Slash Z, a Hack Club community tool." />
+    <meta property="og:description" content="Support information for Slash Z, a Hack Club community tool." />
+    <meta name="twitter:description" content="Support information for Slash Z, a Hack Club community tool." />
+</head>
+<body>
+    <a href="https://hackclub.com/"><img style="position: absolute; top: 0; left: 10px; border: 0; width: 256px; z-index: 999;" src="https://assets.hackclub.com/flag-orpheus-left.svg" alt="Hack Club"/></a>
+
+    <header>
+        <h1 class="ultratitle">Support</h1>
+        <p class="headline">Help and contact information for Slash Z.</p>
+    </header>
+
+    <div class="container card">
+        <h2 class="headline">Getting Help</h2>
+        <p>We'll provide best-effort support for keeping <strong>Slash Z</strong> maintained and working for users.</p>
+        <p>Find a bug? Please report it (screenshots are super helpful!) by emailing us at <a href="mailto:slash-z@hackclub.com">slash-z@hackclub.com</a>.</p>
+        <p>You can also check our <a href="./privacy.html">Privacy Policy</a> and <a href="./tos.html">Terms of Service</a>.</p>
+    </div>
+
+    <footer>
+        <p>
+            &copy; 2021-<span id="current-year"></span> <a href="https://hackclub.com">The Hack Foundation</a>.
+        </p>
+    </footer>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

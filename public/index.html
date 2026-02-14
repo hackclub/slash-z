@@ -1,42 +1,126 @@
 <!DOCTYPE html>
-<html class="h-100">
-<head>
-  <script>
-    // early on I made the mistake of using hack.af/z as the join link for
-    // calls. Now that I'm also using it as the homepage, we should check if the
-    // user has an `id` in their URL params-- which indicates they're trying to
-    // join a call. If so, let's redirect them
-    const params = new URLSearchParams(location.search)
-    if (params.get('id')) {
-      window.location.href = `https://hack.af/z-join?id=${params.get('id')}`
-    }
-  </script>
-  <title>Slash Z</title>
-  <link rel="icon" type="image/png" href="favicon.ico">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-</head>
-<body class="d-flex flex-column h-100">
-  <main class="flex-shrink-0">
-    <div class="container">
-      <h1 class="mt-5">Slash Z</h1>
-      <p class="lead">Slash Z is a tool for <a href="https://hackclub.com">Hack Club</a> community members to schedule club meeting video-calls hassle-free.</p>
-      <p>
-        It's free to use for any Hack Club community members, even without a
-        Zoom Pro account. All you have to do is run "/z" in a Slack message.
-      </p>
-      <div class="container">
-        <div class="row">
-          <div class="col-sm">
-            <img class="img-thumbnail rounded" src="https://cloud-grl3n7i0e-hack-club-bot.vercel.app/0z-demo.gif">
-          </div>
-          <div class="col-sm">
-            <img class="img-thumbnail rounded" src="https://cloud-9zgxl6zn4-hack-club-bot.vercel.app/1screen_shot_2021-03-05_at_10.44.37_am.png">
-          </div>
+<html>
+  <head>
+    <script>
+      // early on I made the mistake of using hack.club/z as the join link for
+      // calls. Now that I'm also using it as the homepage, we should check if the
+      // user has an `id` in their URL params-- which indicates they're trying to
+      // join a call. If so, let's redirect them
+      const params = new URLSearchParams(location.search)
+      if (params.get('id')) {
+        window.location.href = `https://hack.club/z-join?id=${params.get('id')}`
+      }
+    </script>
+    <meta charset="utf-8" />
+    <title>Slash Z</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" href="https://css.hackclub.com/theme.css" />
+    <style>
+      body {
+        font-size: var(--font-3);
+      }
+
+      header {
+        background: var(--purple);
+        color: var(--white);
+        padding: var(--spacing-6) var(--spacing-0) var(--spacing-6);
+        text-align: center;
+      }
+
+
+
+      header > p, header > p > a {
+        color: var(--white)!important;
+      }
+
+      .container {
+        margin: var(--spacing-4) auto;
+      }
+
+      .blurb {
+        border: 2px dashed var(--border);
+        border-radius: var(--radii-default);
+        font-size: var(--font-4);
+        padding: var(--spacing-4);
+      }
+
+      .demo-images {
+        display: flex;
+        gap: var(--spacing-4);
+        margin: var(--spacing-4) 0;
+        flex-wrap: wrap;
+      }
+
+      .demo-images img {
+        max-width: 100%;
+        border-radius: var(--radii-default);
+        border: 2px solid var(--border);
+      }
+
+      .demo-images > div {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .badge {
+        background: var(--blue);
+        color: var(--white);
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--radii-default);
+        font-size: var(--font-1);
+        font-weight: bold;
+      }
+
+      footer {
+        margin-top: var(--spacing-6);
+        padding: var(--spacing-4);
+        background: var(--smoke);
+        text-align: center;
+        color: var(--muted);
+      }
+
+      @media (max-width: 768px) {
+         .demo-images {
+           flex-direction: column;
+         }
+       }
+    </style>
+
+    <meta property="og:title" content="Slash Z - Hack Club Video Calls" />
+    <meta name="twitter:title" content="Slash Z - Hack Club Video Calls" />
+    <meta name="description" content="Slash Z is a tool for Hack Club community members to schedule club meeting video-calls hassle-free." />
+    <meta property="og:description" content="Slash Z is a tool for Hack Club community members to schedule club meeting video-calls hassle-free." />
+    <meta name="twitter:description" content="Slash Z is a tool for Hack Club community members to schedule club meeting video-calls hassle-free." />
+  </head>
+
+  <body>
+    <a href="https://hackclub.com/"><img style="position: absolute; top: 0; left: 10px; border: 0; width: 256px; z-index: 999;" src="https://assets.hackclub.com/flag-orpheus-left.svg" alt="Hack Club"/></a>
+
+    <header>
+      <h1 class="ultratitle">Slash Z</h1>
+      <p class="headline">Video calls for <a href="https://hackclub.com">Hack Club</a> community members, hassle-free.</p>
+    </header>
+
+    <div class="container blurb">
+      <p>Slash Z makes it easy for any Hack Club community member to schedule video calls, even without a Zoom Pro account. Just run <code>/z</code> in any Slack message!</p>
+    </div>
+
+    <div class="card container">
+      <h2 class="headline">How it works</h2>
+      <p>Simply type <code>/z</code> in any Slack channel or direct message to instantly create a video call. No setup required!</p>
+      
+      <div class="demo-images">
+        <div>
+          <img src="https://cloud-grl3n7i0e-hack-club-bot.vercel.app/0z-demo.gif" alt="Slash Z demo showing the /z command in action">
+        </div>
+        <div>
+          <img src="https://cloud-9zgxl6zn4-hack-club-bot.vercel.app/1screen_shot_2021-03-05_at_10.44.37_am.png" alt="Slash Z interface screenshot">
         </div>
       </div>
-      <hr class="my-5">
-      <h2 class="">Google Calendar add-on <span class="badge badge-primary">New ✨</span></span></h1>
+    </div>
+
+    <div class="card container">
+      <h2 class="headline">Google Calendar add-on <span class="badge">New ✨</span></h2>
       <p class="lead">Need to schedule in advance, or have recurring club meetings? No problem.</p>
       <p>
         You'll need to OAuth with Google and share calendar access so we can
@@ -45,16 +129,14 @@
         easily as you would any other conference provider.
       </p>
       <p>Keep in mind Slash Z is only provided to members in <a href="https://hackclub.com/slack">Hack Club's community</a>, so you'll only be able to use the Google Calendar add-on if you already have a Slack Account that works with Slash Z.</p>
-      <div class="container">
-        <div class="row">
-          <div class="col-sm">
-            <img class="img-thumbnail rounded" src="https://cloud-9zgxl6zn4-hack-club-bot.vercel.app/2screen_shot_2021-02-23_at_11.05.02_am.png">
-          </div>
-        </div>
+      
+      <div style="margin: var(--spacing-4) 0;">
+        <img src="https://cloud-9zgxl6zn4-hack-club-bot.vercel.app/2screen_shot_2021-02-23_at_11.05.02_am.png" alt="Google Calendar integration screenshot" style="max-width: 100%; border-radius: var(--radii-default); border: 2px solid var(--border);">
       </div>
-      <!-- <img src="https://cloud-9zgxl6zn4-hack-club-bot.vercel.app/2screen_shot_2021-02-23_at_11.05.02_am.png"> -->
-      <hr class="my-5">
-      <h3>The other stuff...</h3>
+    </div>
+
+    <div class="card container">
+      <h2 class="headline">Open Source</h2>
       <p>
         Just like everything else we do at Hack Club, the source code
         <a href="https://github.com/hackclub/slash-z">
@@ -65,15 +147,16 @@
           for the Google Calendar add-on
         </a> are all open-source; you can read it for yourself to understand how it works.
       </p>
-      <p>For more details, you can read our <a href="./privacy.html">privacy policy</a>, <a href="./support.html">contact info</a>, and <a href="./tos.html">terms of service</a></p>
+      <p>For more details, you can read our <a href="./privacy.html">privacy policy</a>, <a href="./support.html">contact info</a>, and <a href="./tos.html">terms of service</a>.</p>
     </div>
-  </main>
-  <footer class="footer mt-auto py-3 bg-light">
-    <div class="container">
-      <span class="text-muted">
-        © 2021 <a href="https://hackclub.com">The Hack Foundation</a>
-      </span>
-    </div>
-  </footer>
-</body>
+
+    <footer>
+      <p>
+        &copy; 2021-<span id="current-year"></span> <a href="https://hackclub.com">The Hack Foundation</a>
+      </p>
+    </footer>
+    <script>
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+  </body>
 </html>

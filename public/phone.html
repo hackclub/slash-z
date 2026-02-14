@@ -1,26 +1,96 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dial in</title>
+    <meta charset="utf-8" />
+    <title>Slash Z - Dial In</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" href="https://css.hackclub.com/theme.css" />
+    <style>
+      body {
+        font-size: var(--font-3);
+      }
+
+      header {
+        background: var(--purple);
+        color: var(--white);
+        padding: var(--spacing-6) var(--spacing-0) var(--spacing-6);
+        text-align: center;
+      }
+
+      header > p, header > p > a {
+        color: var(--white)!important;
+      }
+
+      .container {
+        margin: var(--spacing-4) auto;
+      }
+      
+      .content-card {
+        padding: var(--spacing-4);
+      }
+
+      footer {
+        margin-top: var(--spacing-6);
+        padding: var(--spacing-4);
+        background: var(--smoke);
+        text-align: center;
+        color: var(--muted);
+      }
+    </style>
+
+    <meta property="og:title" content="Slash Z - Dial In" />
+    <meta name="twitter:title" content="Slash Z - Dial In" />
+    <meta name="description" content="Dial-in information for your Slash Z video call." />
+    <meta property="og:description" content="Dial-in information for your Slash Z video call." />
+    <meta name="twitter:description" content="Dial-in information for your Slash Z video call." />
   </head>
+
   <body>
-    <p class='phone-link'></p>
-    <p class='join-link'></p>
-    <p>If you scheduled this call, you can get your host key <a href="https://slack.com/app_redirect?team=T0266FRGM&app=A01LXD7TYG7">in Slack once the call has started</a>.</p>
+    <a href="https://hackclub.com/"><img style="position: absolute; top: 0; left: 10px; border: 0; width: 256px; z-index: 999;" src="https://assets.hackclub.com/flag-orpheus-left.svg" alt="Hack Club"/></a>
+
+    <header>
+      <h1 class="ultratitle">Slash Z</h1>
+      <p class="headline">Dial In Information</p>
+    </header>
+
+    <div class="card container content-card">
+      <p class='phone-link'></p>
+      <p class='join-link'></p>
+      <p>If you scheduled this call, you can get your host key <a href="https://slack.com/app_redirect?team=T0266FRGM&app=A01LXD7TYG7">in Slack once the call has started</a>.</p>
+      <p><a href="./index.html">Home</a> | <a href="./privacy.html">Privacy Policy</a> | <a href="./support.html">Support</a> | <a href="./tos.html">Terms of Service</a></p>
+    </div>
+
+    <footer>
+      <p>
+        &copy; 2021-<span id="current-year"></span> <a href="https://hackclub.com">The Hack Foundation</a>
+      </p>
+    </footer>
     <script>
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+      
       const params = new URLSearchParams(location.search)
       const meetingID = params.get('meetingID')
 
-      const a = document.createElement('a')
-      // I found this call-in number on Zoom's home page
-      a.href = `tel:+13017158592,,${meetingID}#`
-      a.innerText = `Join this call at +13017158592,,${meetingID}#`
-      document.querySelector('.phone-link').appendChild(a)
+      const phoneLinkP = document.querySelector('.phone-link');
+      if (meetingID) {
+        const a = document.createElement('a');
+        // I found this call-in number on Zoom's home page
+        a.href = `tel:+13017158592,,${meetingID}#`;
+        a.innerText = `Join this call at +13017158592,,${meetingID}#`;
+        phoneLinkP.appendChild(a);
+      } else {
+        phoneLinkP.innerText = 'Meeting ID not found in URL.';
+      }
 
-      const b = document.createElement('a')
-      b.href = `https://hackclub.zoom.us/j/${meetingID}`
-      b.innerText = `https://hackclub.zoom.us/j/${meetingID}`
-      document.querySelector('.join-link').appendChild(b)
+      const joinLinkP = document.querySelector('.join-link');
+      if (meetingID) {
+        const b = document.createElement('a');
+        b.href = `https://hackclub.zoom.us/j/${meetingID}`;
+        b.innerText = `https://hackclub.zoom.us/j/${meetingID}`;
+        joinLinkP.appendChild(b);
+      } else {
+        joinLinkP.innerText = 'Meeting ID not found in URL.';
+      }
     </script>
   </body>
 </html>

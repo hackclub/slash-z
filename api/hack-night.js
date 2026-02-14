@@ -34,7 +34,7 @@ export async function setBookmarkTitle (title) {
       bookmark_id: 'Bk027L39LR9A',
       channel_id: 'C0JDWKJVA',
       emoji: ':zoom:',
-      link: 'https://hack.af/night?key=' + currentTimeHash(),
+      link: 'https://hack.club/night?key=' + currentTimeHash(),
       title
     })
   });

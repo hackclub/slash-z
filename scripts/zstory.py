@@ -48,7 +48,7 @@ filter_parser = subparser.add_parser(
 dissector.add_argument(
     "meetid",
     default=None,
-    help="The zoom schedule id e.g yzu4r in hack.af/z-join?id=yzu4r",
+    help="The zoom schedule id e.g yzu4r in hack.club/z-join?id=yzu4r",
 )  # argument is zoomID or call link name
 dissector.add_argument(
     "-z",
