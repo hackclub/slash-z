@@ -8,7 +8,7 @@ export default async (req, res) => {
 
   console.log({code, recordIDData})
   
-  const {userID, meetingID} = JSON.parse(Buffer.from(decodeURIComponent(recordIDData), "base64").toString())
+  const {userID, meetingID, callbackUri} = JSON.parse(Buffer.from(decodeURIComponent(recordIDData), "base64").toString())
 
   console.log({code, recordIDData, userID, meetingID})
 
@@ -43,8 +43,14 @@ export default async (req, res) => {
   if (user) {
     const slackData = await fetch(tokenUrl, {method: 'post'}).then(r => r.json())
     await Prisma.patch('authedAccount', userID, { slackID: slackData['authed_user']['id'] })
-    // res.status(200).send('It worked! You can close this tab now')
-    res.redirect('/auth-success.html')
+
+    // If a callback URI was provided (e.g. from a cal.com integration),
+    // redirect there instead of the default success page.
+    if (callbackUri) {
+      res.redirect(callbackUri)
+    } else {
+      res.redirect('/auth-success.html')
+    }
   } else {
     // oh, we're far off the yellow brick road now...
     // res.status(422).send('Uh oh...')
