@@ -3,6 +3,20 @@ import fetch from 'node-fetch'
 import findOrCreateMeeting from "../find-or-create-meeting.js"
 import isProd from '../../isprod.js'
 
+const ALLOWED_CALLBACK_HOSTS = (process.env.ALLOWED_CALLBACK_HOSTS || 'cal.hackclub.com')
+  .split(',')
+  .map(h => h.trim().toLowerCase())
+
+function isAllowedCallbackUri(uri) {
+  try {
+    const parsed = new URL(uri)
+    if (parsed.protocol !== 'https:') return false
+    return ALLOWED_CALLBACK_HOSTS.includes(parsed.hostname.toLowerCase())
+  } catch {
+    return false
+  }
+}
+
 export default async (req, res) => {
   const {code, state: recordIDData} = req.query
 
@@ -46,7 +60,7 @@ export default async (req, res) => {
 
     // If a callback URI was provided (e.g. from a cal.com integration),
     // redirect there instead of the default success page.
-    if (callbackUri) {
+    if (callbackUri && isAllowedCallbackUri(callbackUri)) {
       res.redirect(callbackUri)
     } else {
       res.redirect('/auth-success.html')
