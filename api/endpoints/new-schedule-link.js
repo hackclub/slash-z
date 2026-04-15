@@ -14,6 +14,13 @@ export default async (req, res) => {
     const redirectUrl = isProd ? 'https://hack.club/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
     
     const state = { userID: user.id }
+
+    // If the caller passed a callback_uri, include it in the OAuth state
+    // so slack-auth.js can redirect there after linking the Slack identity.
+    if (req.query.callback_uri) {
+      state.callbackUri = req.query.callback_uri
+    }
+
     console.log({state})
     const stateString = encodeURIComponent(Buffer.from(JSON.stringify(state), "utf8").toString("base64"))
     
