@@ -1,6 +1,22 @@
 import Prisma from "../prisma.js"
 import isProd from "../../isprod.js"
 
+// Hosts allowed as callback_uri redirect targets.
+// Set ALLOWED_CALLBACK_HOSTS env var to a comma-separated list to override.
+const ALLOWED_CALLBACK_HOSTS = (process.env.ALLOWED_CALLBACK_HOSTS || 'cal.hackclub.com')
+  .split(',')
+  .map(h => h.trim().toLowerCase())
+
+function isAllowedCallbackUri(uri) {
+  try {
+    const parsed = new URL(uri)
+    if (parsed.protocol !== 'https:') return false
+    return ALLOWED_CALLBACK_HOSTS.includes(parsed.hostname.toLowerCase())
+  } catch {
+    return false
+  }
+}
+
 export default async (req, res) => {
   console.log({name: req.query.id})
 
@@ -14,6 +30,13 @@ export default async (req, res) => {
     const redirectUrl = isProd ? 'https://hack.club/z/slack-auth' : "https://slash-z-staging-1ae8b1c9e24a.herokuapp.com/api/endpoints/slack-auth"
     
     const state = { userID: user.id }
+
+    // If the caller passed a callback_uri, include it in the OAuth state
+    // so slack-auth.js can redirect there after linking the Slack identity.
+    if (req.query.callback_uri && isAllowedCallbackUri(req.query.callback_uri)) {
+      state.callbackUri = req.query.callback_uri
+    }
+
     console.log({state})
     const stateString = encodeURIComponent(Buffer.from(JSON.stringify(state), "utf8").toString("base64"))
     
