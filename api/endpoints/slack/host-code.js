@@ -3,12 +3,12 @@ import userIsRestricted from "../../user-is-restricted.js";
 import channelIsForbidden from "../../channel-is-forbidden.js";
 import transcript from '../../transcript.js';
 import fetch from 'node-fetch';
+import ensureSlackAuthenticated from '../../ensure-slack-authenticated.js';
 
 const sendEphemeralMessage = (url, text) => {
   return fetch(url, {
     method: 'post',
     headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -18,7 +18,9 @@ const sendEphemeralMessage = (url, text) => {
   });
 };
 
-export default async (req, res) => {
+// exported for the /api/endpoints/slack dispatcher, which verifies the
+// request signature before dispatching here
+export const hostCode = async (req, res) => {
   const { user_id, response_url, channel_id, text } = req.body;
 
   if (await userIsRestricted(user_id)) {
@@ -48,5 +50,9 @@ export default async (req, res) => {
   }
   
   return sendEphemeralMessage(response_url, `_Your meeting code is: *${meeting.hostKey}*_`);
-  
+
 };
+
+// this file is also mounted directly at /api/endpoints/slack/host-code by
+// routes.js, so it must verify the Slack request signature itself
+export default (req, res) => ensureSlackAuthenticated(req, res, () => hostCode(req, res));

@@ -6,8 +6,11 @@ import openZoomMeeting from '../../open-zoom-meeting.js'
 import transcript from '../../transcript.js'
 import fetch from 'node-fetch'
 import metrics from '../../../metrics.js'
+import ensureSlackAuthenticated from '../../ensure-slack-authenticated.js'
 
-export default async (req, res) => {
+// exported for the /api/endpoints/slack dispatcher, which verifies the
+// request signature before dispatching here
+export const slashZ = async (req, res) => {
   console.log({
     user_id: req.body.user_id,
     channel_id: req.body.channel_id,
@@ -19,7 +22,6 @@ export default async (req, res) => {
     return fetch(req.body.response_url, {
       method: 'post',
       headers: {
-        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -33,7 +35,6 @@ export default async (req, res) => {
     return fetch(req.body.response_url, {
       method: 'post',
       headers: {
-        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -46,7 +47,6 @@ export default async (req, res) => {
   const loadingSlackPost = await fetch(req.body.response_url, {
     method: 'post',
     headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -63,7 +63,6 @@ export default async (req, res) => {
     const errorSlackPost = await fetch(req.body.response_url, {
       method: 'post',
       headers: {
-        'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -149,7 +148,6 @@ export default async (req, res) => {
   const slackPost = await fetch(req.body.response_url, {
     method: 'post',
     headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(slackPostFields)
@@ -158,7 +156,6 @@ export default async (req, res) => {
   await fetch(req.body.response_url, {
     method: 'post',
     headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -206,6 +203,10 @@ export default async (req, res) => {
     
   } catch (error) { // just in case I completely break /z
     console.error(error);
-    
+
   }
 }
+
+// this file is also mounted directly at /api/endpoints/slack/slash-z by
+// routes.js, so it must verify the Slack request signature itself
+export default (req, res) => ensureSlackAuthenticated(req, res, () => slashZ(req, res))

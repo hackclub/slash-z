@@ -1,7 +1,7 @@
 import ensureSlackAuthenticated from "../../ensure-slack-authenticated.js"
-import slashZ from './slash-z.js'
-import slashZRooms from './slash-z-rooms.js'
-import hostCode from "./host-code.js"
+import { slashZ } from './slash-z.js'
+import { slashZRooms } from './slash-z-rooms.js'
+import { hostCode } from "./host-code.js"
 import isProd from "../../../isprod.js"
 
 export default async (req, res) => {
