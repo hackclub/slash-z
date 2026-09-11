@@ -11,8 +11,11 @@ import routes from './routes.js'
 const app = express()
 
 app.use(bugsnag().requestHandler)
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+// keep the raw request bytes around so Slack request signatures can be
+// verified against exactly what Slack signed (see api/ensure-slack-authenticated.js)
+const rawBodySaver = (req, res, buf) => { req.rawBody = buf }
+app.use(express.json({ verify: rawBodySaver }))
+app.use(express.urlencoded({ extended: true, verify: rawBodySaver }))
 app.use(responseTime(function (req, res, time) {
 app.use(express.static('public'))
 app.use(bugsnag().errorHandler)

@@ -1,8 +1,11 @@
 import getPublicMeetings from "../../get-public-meetings.js"
 import transcript from "../../transcript.js"
 import fetch from 'node-fetch'
+import ensureSlackAuthenticated from '../../ensure-slack-authenticated.js'
 
-export default async (req, res) => {
+// exported for the /api/endpoints/slack dispatcher, which verifies the
+// request signature before dispatching here
+export const slashZRooms = async (req, res) => {
   const meetings = await getPublicMeetings()
 
   let messageText = ''
@@ -17,7 +20,6 @@ export default async (req, res) => {
   await fetch(req.body.response_url, {
     method: 'post',
     headers: {
-      'Authorization': `Bearer ${process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -26,3 +28,7 @@ export default async (req, res) => {
     })
   })
 }
+
+// this file is also mounted directly at /api/endpoints/slack/slash-z-rooms by
+// routes.js, so it must verify the Slack request signature itself
+export default (req, res) => ensureSlackAuthenticated(req, res, () => slashZRooms(req, res))
