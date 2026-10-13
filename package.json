@@ -10,7 +10,15 @@
     "dev": "NODE_ENV=development nodemon",
     "start": "npx prisma generate && node server.js",
     "fmt": "npx prettier",
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:race": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathIgnorePatterns=/node_modules/ -- race.test.js"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/race.test.js",
+      "<rootDir>/.claude/"
+    ]
   },
   "dependencies": {
     "@bugsnag/js": "^7.11.0",
