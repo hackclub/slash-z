@@ -1,7 +1,7 @@
-import { resolve, relative, extname, basename, dirname } from 'path'
+import { resolve, relative, extname, basename, dirname, join, sep } from 'path'
 import { readdir } from 'fs/promises'
 import os from "os";
-import { pathToFileURL } from "url";
+import { pathToFileURL, fileURLToPath } from "url";
 import recordError from './api/record-error.js'
 
 /**
@@ -36,8 +36,7 @@ export default async (app) => {
         return
       }
 
-      const moduleURL = new URL(import.meta.url);
-      const __dirname = decodeURIComponent(dirname(moduleURL.pathname));
+      const __dirname = dirname(fileURLToPath(import.meta.url));
 
       // if it's an index.js file, use the parent directory's name
       // ex. '/api/slack/index.js' is hosted at '/api/slack' (no index)
@@ -45,11 +44,11 @@ export default async (app) => {
       // if it's NOT an index.js file, include the basename
       // ex. '/api/zoom/new.js' is hosted at '/api/zoom/new'
       if (basename(file, extname(file)) != 'index') {
-        routePath = `${routePath}/${basename(file, extname(file))}`
+        routePath = join(routePath, basename(file, extname(file)))
       }
+      // normalise Windows separators so routes are always '/api/...'
+      routePath = routePath.split(sep).join('/')
 
-      routePath = os.platform() === "win32" ? routePath.split("\\").slice(7).join("/") : routePath;
-      
       const fileUri = os.platform() === "win32" ? pathToFileURL(file) : file;
       const route = (await import(fileUri)).default // just to test we can load the file
 
